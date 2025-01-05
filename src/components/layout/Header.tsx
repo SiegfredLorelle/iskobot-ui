@@ -1,14 +1,14 @@
 'use client'
 
 import Image from "next/image";
-import { IconSunFilled, IconMoonFilled } from '@tabler/icons-react';
-import { useTheme } from '@/components/theme/provider';
+import ThemeToggle from "@/components/theme/Toggle";
+import Link from "next/link";
 
 export default function Header() {
   return (
     <header className="flex mx-4 my-3">
       <Logo />
-      <DarkMode />
+      <ThemeToggle />
     </header>
   )
 }
@@ -16,7 +16,7 @@ export default function Header() {
 const Logo = () => {
   return (
     <h1 className="inline-block">
-      <a href="/" className="flex items-center gap-2">
+      <Link href="/" className="flex items-center gap-2">
         <Image 
           src="/assets/icons/vercel.svg"
           alt="Iskobot Logo"
@@ -24,21 +24,8 @@ const Logo = () => {
           height={16}
         />
         <span className="text-lg">Iskobot</span>
-      </a>
+      </Link>
     </h1>
-  )
-};
-
-const DarkMode = () => {
-  const {   theme, toggleTheme } = useTheme();
-  return (
-    <button className="ms-auto" onClick={toggleTheme}>
-      {
-        theme === "light" ?
-        (<IconMoonFilled />) :
-        (<IconSunFilled />)
-      }
-    </button>
   )
 };
 
