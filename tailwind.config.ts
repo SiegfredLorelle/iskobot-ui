@@ -14,6 +14,6 @@ export default {
       },
     },
   },
-  darkMode: 'class', // Enables dark mode with class strategy
+  darkMode: "class", // Enables dark mode with class strategy
   plugins: [],
 } satisfies Config;

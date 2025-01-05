@@ -1,5 +1,3 @@
-'use client'
-
 import Image from "next/image";
 import ThemeToggle from "@/components/theme/Toggle";
 import Link from "next/link";
@@ -10,14 +8,14 @@ export default function Header() {
       <Logo />
       <ThemeToggle />
     </header>
-  )
+  );
 }
 
 const Logo = () => {
   return (
     <h1 className="inline-block">
       <Link href="/" className="flex items-center gap-2">
-        <Image 
+        <Image
           src="/assets/icons/vercel.svg"
           alt="Iskobot Logo"
           width={16}
@@ -26,6 +24,5 @@ const Logo = () => {
         <span className="text-lg">Iskobot</span>
       </Link>
     </h1>
-  )
+  );
 };
-

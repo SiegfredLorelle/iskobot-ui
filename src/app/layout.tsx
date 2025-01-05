@@ -7,10 +7,10 @@ export const metadata: Metadata = {
   title: "Iskobot",
   description: "RAG enhanced chatbot for PUP",
   authors: [
-    {name: "Siegfred Lorelle Mina", url: "#"},
-    {name: "Geaus Caskie Fabro", url: "#"},
-    {name: "Harold Amad", url: "#"},
-    {name: "Angelo Miguel de Padua", url: "#"},
+    { name: "Siegfred Lorelle Mina", url: "#" },
+    { name: "Geaus Caskie Fabro", url: "#" },
+    { name: "Harold Amad", url: "#" },
+    { name: "Angelo Miguel de Padua", url: "#" },
   ],
   keywords: "chatbot, pup, polytechnic university of the philippines, rag",
 };
@@ -22,12 +22,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-
-      <body
-        className={"antialiased"}
-      >
+      <body className={"antialiased"}>
         <Providers>
-          <Header/>
+          <Header />
           {children}
         </Providers>
       </body>
