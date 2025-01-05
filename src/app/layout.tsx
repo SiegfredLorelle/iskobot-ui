@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import Header from "@/components/Header";
+import Header from "@/components/layout/Header";
+import { ThemeProvider } from "@/components/theme/provider";
 
 export const metadata: Metadata = {
   title: "Iskobot",
@@ -21,11 +22,14 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+
       <body
         className={"antialiased"}
       >
-        <Header/>
-        {children}
+        <ThemeProvider>
+          <Header/>
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );

@@ -1,5 +1,8 @@
+'use client'
+
 import Image from "next/image";
-import { IconSunFilled } from '@tabler/icons-react';
+import { IconSunFilled, IconMoonFilled } from '@tabler/icons-react';
+import { useTheme } from '@/components/theme/provider';
 
 export default function Header() {
   return (
@@ -27,9 +30,14 @@ const Logo = () => {
 };
 
 const DarkMode = () => {
+  const {   theme, toggleTheme } = useTheme();
   return (
-    <button className="ms-auto">
-      <IconSunFilled />
+    <button className="ms-auto" onClick={toggleTheme}>
+      {
+        theme === "light" ?
+        (<IconMoonFilled />) :
+        (<IconSunFilled />)
+      }
     </button>
   )
 };
