@@ -11,17 +11,19 @@ export function useChat(): useChatReturn {
     setError(null);
     
     // You can switch between local and production endpoints
-    const endpoint = 'http://127.0.0.1:8080/query';
+    // const endpoint = 'http://127.0.0.1:8080/query';
     // const endpoint = 'https://run-rag-116711660246.asia-east1.run.app/query';
+    const endpoint = process.env.NEXT_PUBLIC_CHATBOT_ENDPOINT || ''
+    console.log(endpoint);
     
     try {
-      const response = await fetch(endpoint, {
+      const response = await fetch(`${endpoint}/query`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          query: message  // Use the actual message parameter
+          query: message
         }),
       });
       
