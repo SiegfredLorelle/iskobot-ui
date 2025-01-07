@@ -1,4 +1,4 @@
-import ChatInput from "@/components/chat/Chatbox"; // Adjust the import path as needed
+import ChatInput from "@/components/chat/ChatInput"; // Adjust the import path as needed
 
 export default function Footer() {
   return (

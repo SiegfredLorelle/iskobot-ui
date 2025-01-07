@@ -2,18 +2,24 @@
 
 import { useState } from "react";
 import { IconSend } from "@tabler/icons-react";
+import { useChat } from "@/app/(chat)/hooks/useChat";
 
-const Chatbox = () => {
+export default function ChatInput() {
   const [message, setMessage] = useState("");
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setMessage(e.target.value);
   };
+  
+  const {getBotResponse, isLoading, error} = useChat();
 
   const handleSend = () => {
     if (message.trim() !== "") {
       console.log("Message sent:", message);
+      const a = getBotResponse(message);
+      console.log(a);
       setMessage(""); // Clear the input after sending
+
     }
   };
 
@@ -76,5 +82,3 @@ const Chatbox = () => {
     </div>
   );
 };
-
-export default Chatbox;
