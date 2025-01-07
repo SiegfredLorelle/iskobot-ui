@@ -1,6 +1,5 @@
-export type useChatReturn = {
+export interface useChatReturn {
   isLoading: boolean;
-  error:  string | null;
+  error: string | null;
   getBotResponse: (message: string) => Promise<string>;
-
-};
+}

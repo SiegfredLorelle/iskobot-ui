@@ -5,21 +5,26 @@ import { IconSend } from "@tabler/icons-react";
 import { useChat } from "@/app/(chat)/hooks/useChat";
 
 export default function ChatInput() {
-  const [message, setMessage] = useState("");
+  const [message, setMessage] = useState('');
+  const [responses, setResponses] = useState<string[]>([]);
+  const {getBotResponse, isLoading, error} = useChat();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setMessage(e.target.value);
   };
   
-  const {getBotResponse, isLoading, error} = useChat();
 
-  const handleSend = () => {
-    if (message.trim() !== "") {
-      console.log("Message sent:", message);
-      const a = getBotResponse(message);
-      console.log(a);
-      setMessage(""); // Clear the input after sending
+  const handleSend = async () => {
+    if (message.trim() === '') return;
 
+    try {
+      const response = await getBotResponse(message);
+      setResponses(prev => [...prev, response]);
+      console.log(response);
+      setMessage('');  // Clear input after successful send
+    } catch (err) {
+      // Error state is already handled in the hook
+      console.error('Failed to send message:', err);
     }
   };
 
