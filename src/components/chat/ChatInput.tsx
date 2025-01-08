@@ -5,26 +5,25 @@ import { IconSend } from "@tabler/icons-react";
 import { useChat } from "@/app/(chat)/hooks/useChat";
 
 export default function ChatInput() {
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = useState("");
   const [responses, setResponses] = useState<string[]>([]);
-  const {getBotResponse, isLoading, error} = useChat();
+  const { getBotResponse, isLoading, error } = useChat();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setMessage(e.target.value);
   };
-  
 
   const handleSend = async () => {
-    if (message.trim() === '') return;
+    if (message.trim() === "") return;
 
     try {
       const response = await getBotResponse(message);
-      setResponses(prev => [...prev, response]);
+      setResponses((prev) => [...prev, response]);
       console.log(response);
-      setMessage('');  // Clear input after successful send
+      setMessage(""); // Clear input after successful send
     } catch (err) {
       // Error state is already handled in the hook
-      console.error('Failed to send message:', err);
+      console.error("Failed to send message:", err);
     }
   };
 
@@ -47,7 +46,10 @@ export default function ChatInput() {
             onKeyDown={handleKeyDown}
             className="flex-grow bg-gray-700 text-gray-300 placeholder-gray-400 focus:outline-none"
           />
-          <button onClick={handleSend} className="ml-2 text-gray-300 hover:text-white">
+          <button
+            onClick={handleSend}
+            className="ml-2 text-gray-300 hover:text-white"
+          >
             <IconSend className="w-6 h-6 rotate-45" />
           </button>
         </div>
@@ -63,7 +65,11 @@ export default function ChatInput() {
               stroke="currentColor"
               className="w-6 h-6"
             >
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M12 4v16m8-8H4"
+              />
             </svg>
           </button>
           <button className="text-gray-300 hover:text-white">
@@ -86,4 +92,4 @@ export default function ChatInput() {
       </div>
     </div>
   );
-};
+}

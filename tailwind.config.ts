@@ -13,7 +13,7 @@ export default {
         foreground: "var(--foreground)",
         primary: "var(--primary)",
         secondary: "var(--secondary)",
-        text: "var(--text),"
+        text: "var(--text)",
       },
     },
   },
