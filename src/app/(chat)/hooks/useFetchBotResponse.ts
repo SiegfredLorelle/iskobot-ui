@@ -1,16 +1,13 @@
-// src/app/(chat)/hooks/useChat.ts
 import { useState } from "react";
-import { useChatReturn } from "@/app/(chat)/types/useChatReturn";
 
-export function useChat(): useChatReturn {
+export function useFetchBotResponse() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const getBotResponse = async (message: string): Promise<string> => {
+  const fetchBotResponse = async (message: string): Promise<string> => {
     setIsLoading(true);
     setError(null);
 
-    // You can switch between local and production endpoints
     const endpoint = process.env.NEXT_PUBLIC_CHATBOT_ENDPOINT || "";
     console.log(endpoint);
 
@@ -20,15 +17,13 @@ export function useChat(): useChatReturn {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          query: message,
-        }),
+        body: JSON.stringify({ query: message }),
       });
 
       if (!response.ok) {
         const errorData = await response.text();
         throw new Error(
-          `HTTP error! status: ${response.status}, message: ${errorData}`,
+          `HTTP error! status: ${response.status}, message: ${errorData}`
         );
       }
 
@@ -43,15 +38,11 @@ export function useChat(): useChatReturn {
       const errorMessage =
         err instanceof Error ? err.message : "An unexpected error occurred";
       setError(errorMessage);
-      throw err; // Re-throw the error to handle it in the component
+      throw err;
     } finally {
       setIsLoading(false);
     }
   };
 
-  return {
-    isLoading,
-    error,
-    getBotResponse,
-  };
+  return { fetchBotResponse, isLoading, error };
 }
