@@ -11,7 +11,7 @@ import { useFetchBotResponse } from "@/app/(chat)/hooks/useFetchBotResponse";
 
 export default function InputMode() {
   const { fetchBotResponse, isLoading, error } = useFetchBotResponse();
-  const { addUserChat, addBotChat } = useChat();
+  const { setMode, addUserChat, addBotChat } = useChat();
 
   const [message, setMessage] = useState("");
 
@@ -25,9 +25,11 @@ export default function InputMode() {
     addUserChat(message);
 
     try {
+      setMode("loading");
       const response = await fetchBotResponse(message);
       console.log(response);
       addBotChat(response);
+      setMode("input");
       setMessage(""); // Clear input after successful send
     } catch (err) {
       // Error state is already handled in the hook
@@ -42,7 +44,7 @@ export default function InputMode() {
   };
 
   return (
-    <div className="flex items-center w-full">
+    <div className="h-full bg-primary flex items-center w-full items-center rounded-3xl px-4 py-4 shadow-lg">
       {!message ? (
         <button
           onClick={handleSend}
@@ -62,7 +64,7 @@ export default function InputMode() {
           textarea.style.height = "auto";
           textarea.style.height = `${textarea.scrollHeight}px`;
         }}
-        className="w-full bg-primary text-text max-h-[45vh] text-center flex items-center placeholder-text focus:outline-none p-2 resize-none leading-relaxed"
+        className="w-full bg-primary text-text max-h-[45vh] text-center flex items-center placeholder-text focus:outline-none resize-none px-3 leading-relaxed"
         rows={1}
       />
       <button

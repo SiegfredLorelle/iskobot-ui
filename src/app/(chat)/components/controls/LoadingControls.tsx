@@ -1,10 +1,12 @@
 "use client";
 
+import { IconPlayerStop } from '@tabler/icons-react';
+
 export default function LoadingMode() {
-
   return (
-    <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 w-full max-w-2xl px-4">
-
-    </div>
+    <button className="h-full bg-primary flex items-center items-center rounded-3xl px-4 py-4 shadow-lg flex items-center ml-2 mt-auto py-2 text-text flex hover:text-hover-clr">
+          <span>Stop Generating</span>
+          <IconPlayerStop className="mx-2 w-6 h-6" stroke={2} />
+    </button>
   );
 }
