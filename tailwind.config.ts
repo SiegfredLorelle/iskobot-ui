@@ -14,6 +14,7 @@ export default {
         primary: "var(--primary)",
         secondary: "var(--secondary)",
         text: "var(--text)",
+        "hover-clr": "var(--hover-clr)",
       },
     },
   },
