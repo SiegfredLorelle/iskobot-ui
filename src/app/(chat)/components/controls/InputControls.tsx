@@ -11,7 +11,8 @@ import { useFetchBotResponse } from "@/app/(chat)/hooks/useFetchBotResponse";
 
 export default function InputMode() {
   const { fetchBotResponse, isLoading, error } = useFetchBotResponse();
-  const { setMode, addUserChat, addBotChat } = useChat();
+  const { setModeToLoading, setModeToInput, addUserChat, addBotChat } =
+    useChat();
 
   const [message, setMessage] = useState("");
 
@@ -25,11 +26,11 @@ export default function InputMode() {
     addUserChat(message);
 
     try {
-      setMode("loading");
+      setModeToLoading();
       const response = await fetchBotResponse(message);
       console.log(response);
       addBotChat(response);
-      setMode("input");
+      setModeToInput();
       setMessage(""); // Clear input after successful send
     } catch (err) {
       // Error state is already handled in the hook

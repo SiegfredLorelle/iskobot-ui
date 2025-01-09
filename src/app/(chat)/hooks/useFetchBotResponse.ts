@@ -23,7 +23,7 @@ export function useFetchBotResponse() {
       if (!response.ok) {
         const errorData = await response.text();
         throw new Error(
-          `HTTP error! status: ${response.status}, message: ${errorData}`
+          `HTTP error! status: ${response.status}, message: ${errorData}`,
         );
       }
 
