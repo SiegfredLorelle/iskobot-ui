@@ -1,17 +1,34 @@
+'use client'
+
+import { useState } from "react";
 import Link from "next/link";
 import ChatBox from "./components/ChatBox";
+import Controls from "@/app/(chat)/components/Controls";
 
 export default function Home() {
+  const [chats, setChats] = useState<{text: string, isUser: boolean}[]>([]);
+  const addUserChat = (text: string) => {
+    setChats((prev) => [...prev, {text: text, isUser: true}]);
+  };
+  const addBotChat = (text: string) => {
+    setChats((prev) => [...prev, {text: text, isUser: false}]);
+  };
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <ChatBox
-          isUser={true}
-          text="When you use curly braces {} in an arrow function, you need to explicitly use return to return a value. However, in your case, since you are returning JSX, you can omit the curly braces and use parentheses () for an implicit return."
-        />
+    <div className="my-3 px-3 flex w-full justify-center min-h-screen">
+      <main className="max-w-2xl w-full mx-auto flex flex-col gap-8">
+          {chats.map((chat, index)=> (
+            <ChatBox
+              key={index}
+              isUser={chat.isUser}
+              text={chat.text}
+            />
+          ))}
         <Link href="/admin">Go Admin</Link>
       </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center"></footer>
+      <footer className="flex items-center justify-center">
+        <Controls addUserChat={addUserChat} addBotChat={addBotChat} />
+      </footer>
     </div>
   );
 }
