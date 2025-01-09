@@ -43,13 +43,13 @@ export default function Controls({ addUserChat, addBotChat }: ControlsProps) {
 
   return (
     <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 w-full max-w-2xl px-4">
-      <div className="flex flex-col items-center bg-gray-700 rounded-2xl px-4 py-4 shadow-lg">
+      <div className="flex flex-col items-center bg-primary rounded-3xl px-4 py-4 shadow-lg">
         {/* Input Field */}
         <div className="flex items-center w-full">
           {!message ? (
             <button
               onClick={handleSend}
-              className="ml-2 mt-auto py-2 text-gray-300 hover:text-white"
+              className="ml-2 mt-auto py-2 text-text hover:text-hover-clr"
             >
               <IconDotsVertical className="w-6 h-6" />
             </button>
@@ -65,12 +65,12 @@ export default function Controls({ addUserChat, addBotChat }: ControlsProps) {
               textarea.style.height = "auto";
               textarea.style.height = `${textarea.scrollHeight}px`;
             }}
-            className="w-full bg-gray-700 text-gray-300 max-h-[45vh] text-center flex items-center placeholder-gray-400 focus:outline-none p-2 resize-none leading-relaxed"
+            className="w-full bg-primary text-text max-h-[45vh] text-center flex items-center placeholder-text focus:outline-none p-2 resize-none leading-relaxed"
             rows={1}
           />
           <button
             onClick={handleSend}
-            className="ml-2 mt-auto py-2 text-gray-300 hover:text-white"
+            className="ml-2 mt-auto py-2 text-text hover:text-hover-clr"
           >
             {message ? (
               <IconSend className="w-6 h-6" />

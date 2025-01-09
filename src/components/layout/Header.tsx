@@ -21,7 +21,7 @@ const Logo = () => {
           width={16}
           height={16}
         />
-        <span className="text-lg">Iskobot</span>
+        <span className="text-lg hover:text-hover-clr">Iskobot</span>
       </Link>
     </h1>
   );

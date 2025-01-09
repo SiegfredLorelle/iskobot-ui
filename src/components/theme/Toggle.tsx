@@ -17,7 +17,11 @@ export default function ThemeToggle() {
       className="ms-auto"
       onClick={() => setTheme(resolvedTheme === "light" ? "dark" : "light")}
     >
-      {resolvedTheme === "light" ? <IconMoonFilled /> : <IconSunFilled />}
+      {resolvedTheme === "light" ? (
+        <IconMoonFilled className="hover:text-hover-clr" />
+      ) : (
+        <IconSunFilled className="hover:text-hover-clr" />
+      )}
     </button>
   );
 }
