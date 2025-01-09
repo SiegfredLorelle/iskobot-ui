@@ -1,7 +1,7 @@
 import ChatBubble from "@/app/(chat)/components/ChatBubble";
 import { ChatBoxProps } from "@/app/(chat)/types/ChatBoxProps";
 
-export default function ChatBox({ text, isUser=false }: ChatBoxProps) {
+export default function ChatBox({ text, isUser = false }: ChatBoxProps) {
   return (
     <div className={`flex ${isUser ? "flex-row-reverse ml-auto" : "flex-row"}`}>
       <ChatBubble />

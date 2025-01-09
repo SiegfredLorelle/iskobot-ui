@@ -6,7 +6,6 @@ import { useChat } from "@/app/(chat)/hooks/useChat";
 
 export default function ChatInput() {
   const [message, setMessage] = useState("");
-  const [responses, setResponses] = useState<string[]>([]);
   const { getBotResponse, isLoading, error } = useChat();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -18,7 +17,6 @@ export default function ChatInput() {
 
     try {
       const response = await getBotResponse(message);
-      setResponses((prev) => [...prev, response]);
       console.log(response);
       setMessage(""); // Clear input after successful send
     } catch (err) {

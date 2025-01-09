@@ -4,7 +4,6 @@ import { useState } from "react";
 import { IconSend } from "@tabler/icons-react";
 import { useChat } from "@/app/(chat)/hooks/useChat";
 import { ControlsProps } from "@/app/(chat)/types/ControlsProps";
-import { text } from "stream/consumers";
 
 export default function Controls({ addUserChat, addBotChat }: ControlsProps) {
   const [message, setMessage] = useState("");
@@ -14,7 +13,6 @@ export default function Controls({ addUserChat, addBotChat }: ControlsProps) {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setMessage(e.target.value);
   };
-
 
   const handleSend = async () => {
     if (message.trim() === "") return;

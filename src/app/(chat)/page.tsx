@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import { useState } from "react";
 import Link from "next/link";
@@ -6,24 +6,20 @@ import ChatBox from "./components/ChatBox";
 import Controls from "@/app/(chat)/components/Controls";
 
 export default function Home() {
-  const [chats, setChats] = useState<{text: string, isUser: boolean}[]>([]);
+  const [chats, setChats] = useState<{ text: string; isUser: boolean }[]>([]);
   const addUserChat = (text: string) => {
-    setChats((prev) => [...prev, {text: text, isUser: true}]);
+    setChats((prev) => [...prev, { text: text, isUser: true }]);
   };
   const addBotChat = (text: string) => {
-    setChats((prev) => [...prev, {text: text, isUser: false}]);
+    setChats((prev) => [...prev, { text: text, isUser: false }]);
   };
 
   return (
     <div className="my-3 px-3 flex w-full justify-center min-h-screen">
       <main className="max-w-2xl w-full mx-auto flex flex-col gap-8">
-          {chats.map((chat, index)=> (
-            <ChatBox
-              key={index}
-              isUser={chat.isUser}
-              text={chat.text}
-            />
-          ))}
+        {chats.map((chat, index) => (
+          <ChatBox key={index} isUser={chat.isUser} text={chat.text} />
+        ))}
         <Link href="/admin">Go Admin</Link>
       </main>
       <footer className="flex items-center justify-center">
