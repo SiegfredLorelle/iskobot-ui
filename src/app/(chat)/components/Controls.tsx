@@ -1,7 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { IconSend, IconMicrophoneFilled, IconDotsVertical } from "@tabler/icons-react";
+import { useState } from "react";
+import {
+  IconSend,
+  IconMicrophoneFilled,
+  IconDotsVertical,
+} from "@tabler/icons-react";
 import { useChat } from "@/app/(chat)/hooks/useChat";
 import { ControlsProps } from "@/app/(chat)/types/ControlsProps";
 
@@ -13,7 +17,6 @@ export default function Controls({ addUserChat, addBotChat }: ControlsProps) {
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setMessage(e.target.value);
   };
-
 
   const handleSend = async () => {
     if (message.trim() === "") return;
@@ -43,15 +46,14 @@ export default function Controls({ addUserChat, addBotChat }: ControlsProps) {
       <div className="flex flex-col items-center bg-gray-700 rounded-2xl px-4 py-4 shadow-lg">
         {/* Input Field */}
         <div className="flex items-center w-full">
-          {!message ? 
+          {!message ? (
             <button
               onClick={handleSend}
               className="ml-2 mt-auto py-2 text-gray-300 hover:text-white"
             >
               <IconDotsVertical className="w-6 h-6" />
-            </button> : 
-            null
-          }
+            </button>
+          ) : null}
           <textarea
             autoFocus
             placeholder="Type your message..."
@@ -60,7 +62,7 @@ export default function Controls({ addUserChat, addBotChat }: ControlsProps) {
             onKeyDown={handleKeyDown}
             onInput={(e) => {
               const textarea = e.target as HTMLTextAreaElement;
-              textarea.style.height = 'auto';
+              textarea.style.height = "auto";
               textarea.style.height = `${textarea.scrollHeight}px`;
             }}
             className="w-full bg-gray-700 text-gray-300 max-h-[45vh] text-center flex items-center placeholder-gray-400 focus:outline-none p-2 resize-none leading-relaxed"
@@ -70,11 +72,11 @@ export default function Controls({ addUserChat, addBotChat }: ControlsProps) {
             onClick={handleSend}
             className="ml-2 mt-auto py-2 text-gray-300 hover:text-white"
           >
-            {
-            message ?
-              <IconSend className="w-6 h-6" /> :
+            {message ? (
+              <IconSend className="w-6 h-6" />
+            ) : (
               <IconMicrophoneFilled className="w-6 h-6" />
-            }
+            )}
           </button>
         </div>
       </div>
