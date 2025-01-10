@@ -10,13 +10,9 @@ export default function Chats() {
         <ChatBox key={index} isUser={chat.isUser} text={chat.text} />
       ))}
       {isBotTyping && (
-        <div className="flex items-center gap-2">
-          <div className="bg-primary rounded-full w-8 h-8"></div>
-          <div className="p-3 bg-primary text-text rounded-md max-w-md">
-            <p>...</p>
-          </div>
-        </div>
-      )}
+        <ChatBox text={"..."} />
+      )
+    }
     </div>
   );
 }

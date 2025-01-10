@@ -7,7 +7,8 @@ export default function LoadingMode() {
   const { setModeToInput } = useChat(); 
 
   const handleStopGenerating = () => {
-    setModeToInput(); 
+    setModeToInput();
+    // STOP FETCHING AS WELL 
   };
 
   return (

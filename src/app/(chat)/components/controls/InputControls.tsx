@@ -1,7 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { IconSend, IconMicrophoneFilled } from "@tabler/icons-react";
+import {
+  IconSend,
+  IconMicrophoneFilled,
+  IconDotsVertical,
+} from "@tabler/icons-react";
 import { useChat } from "../../contexts/ChatContext";
 import { useFetchBotResponse } from "@/app/(chat)/hooks/useFetchBotResponse";
 
@@ -47,7 +51,16 @@ export default function InputControls() {
   };
 
   return (
+    
     <div className="h-full w-full bg-primary flex items-center rounded-3xl px-4 py-4 shadow-lg mb-4">
+      {!message ? (
+        <button
+          onClick={handleSend}
+          className="ml-2 mt-auto py-2 text-text hover:text-hover-clr"
+        >
+          <IconDotsVertical className="w-6 h-6" />
+      </button>
+      ) : null}
       <textarea
         autoFocus
         placeholder="Type your message..."
