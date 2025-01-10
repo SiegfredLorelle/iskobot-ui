@@ -10,7 +10,6 @@ export function useFetchBotResponse() {
 
     const endpoint = process.env.NEXT_PUBLIC_CHATBOT_ENDPOINT || "";
     console.log(endpoint);
-    console.log(process.env.NEXT_PUBLIC_CHATBOT_ENDPOINT);
 
     try {
       const response = await fetch(`${endpoint}/query`, {

@@ -1,4 +1,3 @@
-// chat/context/ChatContext.tsx
 import { createContext, useContext, useState } from "react";
 import { ChatContextType } from "../types/ChatContextType";
 import { Mode } from "../types/Mode";
@@ -8,23 +7,23 @@ const ChatContext = createContext<ChatContextType | null>(null);
 
 export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
   const [chats, setChats] = useState<{ text: string; isUser: boolean }[]>([]);
+  const [isBotTyping, setIsBotTyping] = useState(false); // Add state for typing indicator
+
   const addUserChat = (text: string) => {
-    setChats((prev) => [...prev, { text: text, isUser: true }]);
-  };
-  const addBotChat = (text: string) => {
-    setChats((prev) => [...prev, { text: text, isUser: false }]);
+    setChats((prev) => [...prev, { text, isUser: true }]);
   };
 
+  const addBotChat = (text: string) => {
+    setChats((prev) => [...prev, { text, isUser: false }]);
+  };
+
+  const showTypingIndicator = () => setIsBotTyping(true); // Function to show typing indicator
+  const hideTypingIndicator = () => setIsBotTyping(false); // Function to hide typing indicator
+
   const [mode, setMode] = useState<Mode>("input");
-  const setModeToLoading = () => {
-    setMode("loading");
-  };
-  const setModeToSettings = () => {
-    setMode("settings");
-  };
-  const setModeToInput = () => {
-    setMode("input");
-  };
+  const setModeToLoading = () => setMode("loading");
+  const setModeToSettings = () => setMode("settings");
+  const setModeToInput = () => setMode("input");
 
   const value: ChatContextType = {
     chats,
@@ -34,6 +33,9 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
     setModeToLoading,
     setModeToSettings,
     setModeToInput,
+    isBotTyping,
+    showTypingIndicator,
+    hideTypingIndicator,
   };
 
   return <ChatContext.Provider value={value}>{children}</ChatContext.Provider>;
