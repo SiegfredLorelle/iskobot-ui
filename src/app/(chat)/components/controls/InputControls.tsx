@@ -45,7 +45,7 @@ export default function InputMode() {
   };
 
   return (
-    <div className="h-full bg-primary flex items-center w-full items-center rounded-3xl px-4 py-4 shadow-lg">
+    <div className="h-full bg-primary flex items-center w-full items-center rounded-3xl px-4 py-4 shadow-lg mb-4">
       {!message ? (
         <button
           onClick={handleSend}
