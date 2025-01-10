@@ -51,7 +51,6 @@ export default function InputControls() {
   };
 
   return (
-    
     <div className="h-full w-full bg-primary flex items-center rounded-3xl px-4 py-4 shadow-lg mb-4">
       {!message ? (
         <button
@@ -59,7 +58,7 @@ export default function InputControls() {
           className="ml-2 mt-auto py-2 text-text hover:text-hover-clr"
         >
           <IconDotsVertical className="w-6 h-6" />
-      </button>
+        </button>
       ) : null}
       <textarea
         autoFocus

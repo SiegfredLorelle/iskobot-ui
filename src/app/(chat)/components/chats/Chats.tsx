@@ -9,10 +9,7 @@ export default function Chats() {
       {chats.map((chat, index) => (
         <ChatBox key={index} isUser={chat.isUser} text={chat.text} />
       ))}
-      {isBotTyping && (
-        <ChatBox text={"..."} />
-      )
-    }
+      {isBotTyping && <ChatBox text={"..."} />}
     </div>
   );
 }

@@ -11,4 +11,4 @@ export type ChatContextType = {
   isBotTyping: boolean;
   showTypingIndicator: () => void;
   hideTypingIndicator: () => void;
-}
+};

@@ -4,11 +4,11 @@ import { IconPlayerStop } from "@tabler/icons-react";
 import { useChat } from "../../contexts/ChatContext";
 
 export default function LoadingMode() {
-  const { setModeToInput } = useChat(); 
+  const { setModeToInput } = useChat();
 
   const handleStopGenerating = () => {
     setModeToInput();
-    // STOP FETCHING AS WELL 
+    // STOP FETCHING AS WELL
   };
 
   return (
