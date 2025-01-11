@@ -52,12 +52,34 @@ export default function InputControls() {
     }
   };
 
-  // Function to handle button click
-  const handleRecording = (): void => {
+  // Function to handle button click (start/stop recording)
+  const handleRecording = async (): Promise<void> => {
     console.log("clicked");
+  
+    if (!isRecording) {
+      try {
+        console.log("Requesting microphone access...");
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        setAudioStream(stream);
+        setIsRecording(true); // Mark as recording
+        console.log("Microphone access granted");
+      } catch (err) {
+        console.error("Microphone access denied", err);
+        alert("Microphone access was denied. Please check your permissions.");
+      }
+    } else {
+      if (audioStream) {
+        const tracks = audioStream.getTracks();
+        tracks.forEach((track) => track.stop());
+        setAudioStream(null);
+      }
+      setIsRecording(false);
+      console.log("Recording stopped");
+    }
+  
     setIsClicked((prevState) => !prevState); // Toggle the clicked state
   };
-
+  
   return (
     <div className="h-full w-full bg-primary flex items-center rounded-3xl px-4 py-4 shadow-lg mb-4">
       {!message ? (
