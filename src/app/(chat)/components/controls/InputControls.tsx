@@ -75,7 +75,10 @@ export default function InputControls() {
         rows={1}
       />
       <button
-        onClick={handleSend}
+        onClick={() => {
+          console.log("clicked");
+          // Add other logic for sending a message here
+        }}
         aria-label="Send message"
         className="ml-2 py-2 text-text hover:text-hover-clr"
       >
