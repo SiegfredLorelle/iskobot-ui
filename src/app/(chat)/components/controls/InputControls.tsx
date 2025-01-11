@@ -1,11 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import {
-  IconSend,
-  IconMicrophoneFilled,
-  IconDotsVertical,
-} from "@tabler/icons-react";
+import { HiDotsVertical } from "react-icons/hi";
+import { IoIosSend } from "react-icons/io";
+import { TiMicrophone } from "react-icons/ti";
 import { useChat } from "../../contexts/ChatContext";
 import { useFetchBotResponse } from "@/app/(chat)/hooks/useFetchBotResponse";
 
@@ -57,7 +55,7 @@ export default function InputControls() {
           onClick={handleSend}
           className="ml-2 mt-auto py-2 text-text hover:text-hover-clr"
         >
-          <IconDotsVertical className="w-6 h-6" />
+          <HiDotsVertical className="w-6 h-6" />
         </button>
       ) : null}
       <textarea
@@ -83,9 +81,9 @@ export default function InputControls() {
         className="ml-2 py-2 text-text hover:text-hover-clr"
       >
         {message ? (
-          <IconSend className="w-6 h-6" />
+          <IoIosSend className="w-6 h-6" />
         ) : (
-          <IconMicrophoneFilled className="w-6 h-6" />
+          <TiMicrophone className="w-6 h-6" />
         )}
       </button>
     </div>
