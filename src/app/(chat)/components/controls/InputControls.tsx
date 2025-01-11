@@ -21,6 +21,8 @@ export default function InputControls() {
 
   const [message, setMessage] = useState("");
   const [isClicked, setIsClicked] = useState(false); // State to track button click
+  const [isRecording, setIsRecording] = useState(false); // To manage recording state
+  const [audioStream, setAudioStream] = useState<MediaStream | null>(null); // To store the audio stream
 
   const handleSend = async () => {
     const trimmedMessage = message.trim();
