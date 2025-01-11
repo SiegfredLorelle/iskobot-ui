@@ -4,6 +4,7 @@ import { useState } from "react";
 import { HiDotsVertical } from "react-icons/hi";
 import { IoIosSend } from "react-icons/io";
 import { TiMicrophone } from "react-icons/ti";
+import { FaStop } from "react-icons/fa";
 import { useChat } from "../../contexts/ChatContext";
 import { useFetchBotResponse } from "@/app/(chat)/hooks/useFetchBotResponse";
 
@@ -19,6 +20,7 @@ export default function InputControls() {
   } = useChat();
 
   const [message, setMessage] = useState("");
+  const [isClicked, setIsClicked] = useState(false); // State to track button click
 
   const handleSend = async () => {
     const trimmedMessage = message.trim();
@@ -48,6 +50,12 @@ export default function InputControls() {
     }
   };
 
+  // Function to handle button click
+  const handleRecording = (): void => {
+    console.log("clicked");
+    setIsClicked((prevState) => !prevState); // Toggle the clicked state
+  };
+
   return (
     <div className="h-full w-full bg-primary flex items-center rounded-3xl px-4 py-4 shadow-lg mb-4">
       {!message ? (
@@ -73,14 +81,13 @@ export default function InputControls() {
         rows={1}
       />
       <button
-        onClick={() => {
-          console.log("clicked");
-          // Add other logic for sending a message here
-        }}
-        aria-label="Send message"
+        onClick={handleRecording}
+        aria-label="Send or stop"
         className="ml-2 py-2 text-text hover:text-hover-clr"
       >
-        {message ? (
+        {isClicked ? (
+          <FaStop className="w-6 h-6 text-red-500" />
+        ) : message ? (
           <IoIosSend className="w-6 h-6" />
         ) : (
           <TiMicrophone className="w-6 h-6" />
