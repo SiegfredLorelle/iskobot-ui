@@ -23,7 +23,9 @@ export default function InputControls() {
   const [message, setMessage] = useState("");
   const [isRecording, setIsRecording] = useState(false);
   const [audioStream, setAudioStream] = useState<MediaStream | null>(null);
-  const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null);
+  const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(
+    null,
+  );
 
   const handleSend = async () => {
     const trimmedMessage = message.trim();
@@ -57,7 +59,9 @@ export default function InputControls() {
     try {
       if (!isRecording) {
         // Start recording
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        const stream = await navigator.mediaDevices.getUserMedia({
+          audio: true,
+        });
         setAudioStream(stream);
 
         const recorder = new MediaRecorder(stream);
@@ -132,7 +136,13 @@ export default function InputControls() {
       />
       <button
         onClick={message ? handleSend : handleRecording}
-        aria-label={message ? "Send message" : isRecording ? "Stop and download recording" : "Start recording"}
+        aria-label={
+          message
+            ? "Send message"
+            : isRecording
+              ? "Stop and download recording"
+              : "Start recording"
+        }
         className="ml-2 py-2 text-text hover:text-hover-clr"
       >
         {message ? (
