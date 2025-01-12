@@ -4,6 +4,8 @@ export type ChatContextType = {
   chats: { text: string; isUser: boolean }[];
   addUserChat: (text: string) => void;
   addBotChat: (text: string) => void;
+  deleteLastChat: () => void;
+  deleteAllChats: () => void;
   mode: Mode;
   setModeToLoading: () => void;
   setModeToSettings: () => void;
