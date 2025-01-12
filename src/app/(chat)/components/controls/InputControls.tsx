@@ -24,35 +24,74 @@ export default function InputControls() {
   const [isRecording, setIsRecording] = useState(false);
   const [audioStream, setAudioStream] = useState<MediaStream | null>(null);
   const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null);
-  const [audioChunks, setAudioChunks] = useState<Blob[]>([]);
-  const [audioUrl, setAudioUrl] = useState<string>("");
+
+  const handleSend = async () => {
+    const trimmedMessage = message.trim();
+    if (!trimmedMessage) return;
+
+    addUserChat(trimmedMessage);
+
+    try {
+      setModeToLoading();
+      showTypingIndicator();
+      const response = await fetchBotResponse(trimmedMessage);
+      hideTypingIndicator();
+      addBotChat(response);
+    } catch (err) {
+      console.error("Failed to send message:", err);
+      hideTypingIndicator();
+    } finally {
+      setModeToInput();
+      setMessage("");
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleSend();
+    }
+  };
 
   const handleRecording = async (): Promise<void> => {
     try {
       if (!isRecording) {
+        // Start recording
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
         setAudioStream(stream);
-  
+
         const recorder = new MediaRecorder(stream);
+        const chunks: Blob[] = [];
+
         recorder.ondataavailable = (event) => {
-          setAudioChunks((prevChunks) => [...prevChunks, event.data]);
+          chunks.push(event.data);
         };
-        
+
+        recorder.onstop = () => {
+          if (chunks.length > 0) {
+            const audioBlob = new Blob(chunks, { type: "audio/wav" });
+            const url = URL.createObjectURL(audioBlob);
+
+            // Automatically download the current recording
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = `recording-${new Date().toISOString()}.wav`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+
+            // Clean up
+            URL.revokeObjectURL(url);
+          }
+        };
+
         recorder.start();
         setMediaRecorder(recorder);
         setIsRecording(true);
       } else {
+        // Stop recording
         if (mediaRecorder) {
           mediaRecorder.stop();
-          mediaRecorder.onstop = () => {
-            if (audioChunks.length > 0) {
-              const audioBlob = new Blob(audioChunks, { type: "audio/wav" });
-              const url = URL.createObjectURL(audioBlob);
-              setAudioUrl(url);
-              setAudioChunks([]); // Reset chunks
-            }
-          };
-  
           // Stop all tracks
           if (audioStream) {
             audioStream.getTracks().forEach((track) => track.stop());
@@ -67,44 +106,16 @@ export default function InputControls() {
     }
   };
 
-  const handleSend = async () => {
-    const trimmedMessage = message.trim();
-    if (!trimmedMessage) return;
-
-    addUserChat(trimmedMessage);
-
-    try {
-      setModeToLoading();
-      showTypingIndicator(); // Show typing indicator while bot is generating a response
-      const response = await fetchBotResponse(trimmedMessage);
-      hideTypingIndicator(); // Hide typing indicator after receiving the response
-      addBotChat(response); // Add the bot's response
-    } catch (err) {
-      console.error("Failed to send message:", err);
-      hideTypingIndicator(); // Ensure indicator is hidden even on error
-    } finally {
-      setModeToInput();
-      setMessage(""); // Clear the textfield
-    }
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      handleSend();
-    }
-  };
-
   return (
     <div className="h-full w-full bg-primary flex items-center rounded-3xl px-4 py-4 shadow-lg mb-4">
-      {!message ? (
+      {!message && !isRecording && (
         <button
           onClick={handleSend}
           className="ml-2 mt-auto py-2 text-text hover:text-hover-clr"
         >
           <IconDotsVertical className="w-6 h-6" />
         </button>
-      ) : null}
+      )}
       <textarea
         autoFocus
         placeholder="Type your message..."
@@ -121,13 +132,13 @@ export default function InputControls() {
       />
       <button
         onClick={message ? handleSend : handleRecording}
-        aria-label={message ? "Send message" : "Record audio"}
+        aria-label={message ? "Send message" : isRecording ? "Stop and download recording" : "Start recording"}
         className="ml-2 py-2 text-text hover:text-hover-clr"
       >
         {message ? (
           <IconSend className="w-6 h-6" />
         ) : (
-          <IconMicrophoneFilled 
+          <IconMicrophoneFilled
             className={`w-6 h-6 ${isRecording ? "text-red-500" : ""}`}
           />
         )}
