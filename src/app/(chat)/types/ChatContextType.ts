@@ -7,6 +7,7 @@ export type ChatContextType = {
   addBotMessage: (text: string) => void;
   deleteLastMessage: () => void;
   deleteAllMessage: () => void;
+  sendMessageToBot: (message: string) => void;
   mode: Mode;
   setModeToLoading: () => void;
   setModeToSettings: () => void;

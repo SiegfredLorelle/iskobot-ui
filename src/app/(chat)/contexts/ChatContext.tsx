@@ -3,12 +3,17 @@ import { Mode } from "../types/Mode";
 import { ChatContextType } from "../types/ChatContextType";
 import { ChatMessage } from "../types/ChatMessageType";
 import { chatReducer } from "../reducers/chatReducer";
+import { useFetchBotResponse } from "../hooks/useFetchBotResponse";
 
 const ChatContext = createContext<ChatContextType | null>(null);
 
 export const ChatProvider: React.FC<{children: React.ReactNode}> = ({ children }) => {
+  const { fetchBotResponse } = useFetchBotResponse();
   /* Chat messages */
   const [messages, dispatch] = useReducer(chatReducer, []);
+  const [mode, setMode] = useState<Mode>("input");
+  const [isBotTyping, setBotTyping] = useState(false);
+
   const createMessage = (text: string, isUser: boolean): ChatMessage => ({
     id: crypto.randomUUID(),
     text,
@@ -27,17 +32,32 @@ export const ChatProvider: React.FC<{children: React.ReactNode}> = ({ children }
   const deleteAllMessage = () => {
     dispatch({type: "DELETE_ALL"})
   }
-  
+
+  const sendMessageToBot = async (message: string) => {
+    try {
+      addUserMessage(message);
+      setModeToLoading();
+      showTypingIndicator();
+      const response = await fetchBotResponse(message);
+      hideTypingIndicator();
+      addBotMessage(response);
+    } catch (err) {
+      console.error("Failed to send message:", err);
+      hideTypingIndicator();
+    } finally {
+      setModeToInput();
+    }
+  };
+
   /* Controls Mode */
-  const [mode, setMode] = useState<Mode>("input");
   const setModeToSettings = () => setMode("settings");
   const setModeToInput = () => setMode("input");
   const setModeToLoading = () => setMode("loading");
 
   /* Bot Typing State */
-  const [isBotTyping, setBotTyping] = useState(false);
   const showTypingIndicator = () => setBotTyping(true);
   const hideTypingIndicator = () => setBotTyping(false);
+
   
   const value = useMemo(() => ({
     messages,
@@ -45,6 +65,7 @@ export const ChatProvider: React.FC<{children: React.ReactNode}> = ({ children }
     addBotMessage,
     deleteLastMessage,
     deleteAllMessage,
+    sendMessageToBot,
     mode,
     setModeToLoading,
     setModeToSettings,
