@@ -17,7 +17,7 @@ export default function SettingsMode() {
           className="fixed inset-0 w-screen h-screen bg-black/10 cursor-pointer z-1"
           onClick={() => setModeToInput()}
         />,
-        document.body
+        document.body,
       )}
 
       {/* Content */}
@@ -30,12 +30,18 @@ export default function SettingsMode() {
           <span>Regenerate Last Chat</span>
         </button>
 
-        <button className="py-2 text-text hover:text-hover-clr" aria-label="Delete last chat">
+        <button
+          className="py-2 text-text hover:text-hover-clr"
+          aria-label="Delete last chat"
+        >
           <IconBackspace className="m-auto mb-2 w-6 h-6" />
           <span>Delete Last Chat</span>
         </button>
 
-        <button className="py-2 text-text hover:text-hover-clr" aria-label="Delete all chats">
+        <button
+          className="py-2 text-text hover:text-hover-clr"
+          aria-label="Delete all chats"
+        >
           <IconTrash className="m-auto mb-2 w-6 h-6" />
           <span>Delete All Chats</span>
         </button>

@@ -20,10 +20,10 @@ export default function InputControls() {
     showTypingIndicator,
     hideTypingIndicator,
   } = useChat();
-  
+
   const handleSettings = () => {
     setModeToSettings();
-  }
+  };
 
   const [message, setMessage] = useState("");
   const [isRecording, setIsRecording] = useState(false);
