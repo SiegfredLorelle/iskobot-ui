@@ -1,16 +1,14 @@
+import { ChatMessage } from "./ChatMessageType";
 import { Mode } from "./Mode";
 
 export type ChatContextType = {
-  chats: { text: string; isUser: boolean }[];
-  addUserChat: (text: string) => void;
-  addBotChat: (text: string) => void;
-  deleteLastChat: () => void;
-  deleteAllChats: () => void;
+  messages: ChatMessage[];
+  addUserMessage: (text: string) => void;
+  addBotMessage: (text: string) => void;
+  deleteLastMessage: () => void;
+  deleteAllMessages: () => void;
   mode: Mode;
-  setModeToLoading: () => void;
-  setModeToSettings: () => void;
-  setModeToInput: () => void;
+  setMode: (mode: Mode) => void;
   isBotTyping: boolean;
-  showTypingIndicator: () => void;
-  hideTypingIndicator: () => void;
+  setBotTyping: (typing: boolean) => void;
 };

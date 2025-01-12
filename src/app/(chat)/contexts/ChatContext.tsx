@@ -1,46 +1,35 @@
-import { createContext, useContext, useState } from "react";
-import { ChatContextType } from "../types/ChatContextType";
+import { createContext, useContext, useReducer, useState } from "react";
 import { Mode } from "../types/Mode";
+import { ChatContextType } from "../types/ChatContextType";
+import { ChatMessage } from "../types/ChatMessageType";
+import { chatReducer } from "../reducers/chatReducer";
 
 const ChatContext = createContext<ChatContextType | null>(null);
 
 export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
-  const [chats, setChats] = useState<{ text: string; isUser: boolean }[]>([]);
-  const addUserChat = (text: string) => {
-    setChats((prev) => [...prev, { text, isUser: true }]);
-  };
-  const addBotChat = (text: string) => {
-    setChats((prev) => [...prev, { text, isUser: false }]);
-  };
-  const deleteLastChat = () => {
-    setChats(chats.slice(0, -1));
-  }
-  const deleteAllChats = () => {
-    setChats([]);
-  };
-  
-  const [isBotTyping, setIsBotTyping] = useState(false);
-  const showTypingIndicator = () => setIsBotTyping(true);
-  const hideTypingIndicator = () => setIsBotTyping(false);
-
+  const [messages, dispatch] = useReducer(chatReducer, []);
   const [mode, setMode] = useState<Mode>("input");
-  const setModeToLoading = () => setMode("loading");
-  const setModeToSettings = () => setMode("settings");
-  const setModeToInput = () => setMode("input");
+  const [isBotTyping, setBotTyping] = useState(false);
+
+  const createMessage = (text: string, isUser: boolean): ChatMessage => ({
+    id: crypto.randomUUID(),
+    text,
+    isUser,
+    timestamp: new Date(),
+  });
 
   const value: ChatContextType = {
-    chats,
-    addUserChat,
-    addBotChat,
-    deleteLastChat,
-    deleteAllChats,
+    messages,
+    addUserMessage: (text: string) => 
+      dispatch({ type: 'ADD_MESSAGE', payload: createMessage(text, true) }),
+    addBotMessage: (text: string) => 
+      dispatch({ type: 'ADD_MESSAGE', payload: createMessage(text, false) }),
+    deleteLastMessage: () => dispatch({ type: 'DELETE_LAST' }),
+    deleteAllMessages: () => dispatch({ type: 'DELETE_ALL' }),
     mode,
-    setModeToLoading,
-    setModeToSettings,
-    setModeToInput,
+    setMode,
     isBotTyping,
-    showTypingIndicator,
-    hideTypingIndicator,
+    setBotTyping,
   };
 
   return <ChatContext.Provider value={value}>{children}</ChatContext.Provider>;
