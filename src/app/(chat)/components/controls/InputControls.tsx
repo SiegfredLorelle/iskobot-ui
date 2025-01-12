@@ -21,6 +21,51 @@ export default function InputControls() {
   } = useChat();
 
   const [message, setMessage] = useState("");
+  const [isRecording, setIsRecording] = useState(false);
+  const [audioStream, setAudioStream] = useState<MediaStream | null>(null);
+  const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null);
+  const [audioChunks, setAudioChunks] = useState<Blob[]>([]);
+  const [audioUrl, setAudioUrl] = useState<string>("");
+
+  const handleRecording = async (): Promise<void> => {
+    try {
+      if (!isRecording) {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        setAudioStream(stream);
+  
+        const recorder = new MediaRecorder(stream);
+        recorder.ondataavailable = (event) => {
+          setAudioChunks((prevChunks) => [...prevChunks, event.data]);
+        };
+        
+        recorder.start();
+        setMediaRecorder(recorder);
+        setIsRecording(true);
+      } else {
+        if (mediaRecorder) {
+          mediaRecorder.stop();
+          mediaRecorder.onstop = () => {
+            if (audioChunks.length > 0) {
+              const audioBlob = new Blob(audioChunks, { type: "audio/wav" });
+              const url = URL.createObjectURL(audioBlob);
+              setAudioUrl(url);
+              setAudioChunks([]); // Reset chunks
+            }
+          };
+  
+          // Stop all tracks
+          if (audioStream) {
+            audioStream.getTracks().forEach((track) => track.stop());
+            setAudioStream(null);
+          }
+        }
+        setIsRecording(false);
+      }
+    } catch (err) {
+      console.error("Error handling recording:", err);
+      alert("Microphone access denied or other error.");
+    }
+  };
 
   const handleSend = async () => {
     const trimmedMessage = message.trim();
@@ -75,14 +120,16 @@ export default function InputControls() {
         rows={1}
       />
       <button
-        onClick={handleSend}
-        aria-label="Send message"
+        onClick={message ? handleSend : handleRecording}
+        aria-label={message ? "Send message" : "Record audio"}
         className="ml-2 py-2 text-text hover:text-hover-clr"
       >
         {message ? (
           <IconSend className="w-6 h-6" />
         ) : (
-          <IconMicrophoneFilled className="w-6 h-6" />
+          <IconMicrophoneFilled 
+            className={`w-6 h-6 ${isRecording ? "text-red-500" : ""}`}
+          />
         )}
       </button>
     </div>
