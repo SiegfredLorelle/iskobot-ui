@@ -12,6 +12,7 @@ import { useFetchBotResponse } from "@/app/(chat)/hooks/useFetchBotResponse";
 export default function InputControls() {
   const { fetchBotResponse } = useFetchBotResponse();
   const {
+    setModeToSettings,
     setModeToLoading,
     setModeToInput,
     addUserChat,
@@ -19,6 +20,10 @@ export default function InputControls() {
     showTypingIndicator,
     hideTypingIndicator,
   } = useChat();
+
+  const handleSettings = () => {
+    setModeToSettings();
+  };
 
   const [message, setMessage] = useState("");
   const [isRecording, setIsRecording] = useState(false);
@@ -114,7 +119,7 @@ export default function InputControls() {
     <div className="h-full w-full bg-primary flex items-center rounded-3xl px-4 py-4 shadow-lg mb-4">
       {!message && !isRecording && (
         <button
-          onClick={handleSend}
+          onClick={handleSettings}
           className="ml-2 mt-auto py-2 text-text hover:text-hover-clr"
         >
           <IconDotsVertical className="w-6 h-6" />
@@ -143,7 +148,7 @@ export default function InputControls() {
               ? "Stop and download recording"
               : "Start recording"
         }
-        className="ml-2 py-2 text-text hover:text-hover-clr"
+        className="ml-2 mt-auto py-2 text-text hover:text-hover-clr"
       >
         {message ? (
           <IconSend className="w-6 h-6" />
