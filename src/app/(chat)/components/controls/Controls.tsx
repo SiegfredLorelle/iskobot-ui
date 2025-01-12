@@ -9,7 +9,7 @@ export default function Controls() {
   const { mode } = useChat();
 
   return (
-    <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 w-full max-w-2xl px-4 flex flex-row justify-center">
+    <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 w-full max-w-2xl px-4 flex flex-row justify-center z-10">
       {mode === "input" && <InputControls />}
       {mode === "settings" && <SettingsControls />}
       {mode === "loading" && <LoadingControls />}
