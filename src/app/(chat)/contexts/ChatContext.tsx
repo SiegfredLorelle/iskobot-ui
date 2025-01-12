@@ -20,7 +20,7 @@ export const ChatProvider = ({ children }: { children: React.ReactNode }) => {
   const showTypingIndicator = () => setIsBotTyping(true); // Function to show typing indicator
   const hideTypingIndicator = () => setIsBotTyping(false); // Function to hide typing indicator
 
-  const [mode, setMode] = useState<Mode>("input");
+  const [mode, setMode] = useState<Mode>("settings");
   const setModeToLoading = () => setMode("loading");
   const setModeToSettings = () => setMode("settings");
   const setModeToInput = () => setMode("input");
