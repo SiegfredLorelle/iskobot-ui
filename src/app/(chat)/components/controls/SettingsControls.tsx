@@ -6,7 +6,13 @@ import { useChat } from "../../contexts/ChatContext";
 import { createPortal } from "react-dom";
 
 export default function SettingsMode() {
-  const { messages, sendMessageToBot, setModeToInput, deleteAllMessage, deleteLastMessage } = useChat();
+  const {
+    messages,
+    sendMessageToBot,
+    setModeToInput,
+    deleteAllMessage,
+    deleteLastMessage,
+  } = useChat();
   const controlsRef = useRef<HTMLDivElement>(null);
 
   const handleSettingsClose = () => {
@@ -30,7 +36,7 @@ export default function SettingsMode() {
     deleteLastMessage();
     setModeToInput();
   };
-  const  handleDeleteAllMessage = () => {
+  const handleDeleteAllMessage = () => {
     deleteAllMessage();
     setModeToInput();
   };
@@ -44,18 +50,19 @@ export default function SettingsMode() {
         <div
           className="fixed inset-0 w-screen h-screen bg-black/10 cursor-pointer z-1"
           onClick={handleSettingsClose}
-          />,
-          document.body,
-        )}
+        />,
+        document.body,
+      )}
 
       {/* Content */}
       <div
         ref={controlsRef}
         className="fixed inset-x-4 bottom-4 z-[2] bg-primary flex items-center justify-around rounded-3xl px-4 py-4 shadow-lg"
-        >
-        <button className="py-2 text-text hover:text-hover-clr disabled:opacity-50 disabled:cursor-not-allowed" 
-        onClick={handleRegenerate}
-        disabled={isMessagesEmpty}
+      >
+        <button
+          className="py-2 text-text hover:text-hover-clr disabled:opacity-50 disabled:cursor-not-allowed"
+          onClick={handleRegenerate}
+          disabled={isMessagesEmpty}
         >
           <IconRefresh className="m-auto mb-2 w-6 h-6" />
           <span>Regenerate Last Chat</span>
@@ -66,8 +73,7 @@ export default function SettingsMode() {
           aria-label="Delete last chat"
           onClick={handleDeleteLastMessage}
           disabled={isMessagesEmpty}
-
-          >
+        >
           <IconBackspace className="m-auto mb-2 w-6 h-6" />
           <span>Delete Last Chat</span>
         </button>

@@ -3,4 +3,4 @@ export type ChatMessage = {
   text: string;
   isUser: boolean;
   timestamp: Date;
-}
+};
