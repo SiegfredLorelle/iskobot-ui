@@ -15,8 +15,8 @@ export default function InputControls() {
     setModeToSettings,
     setModeToLoading,
     setModeToInput,
-    addUserChat,
-    addBotChat,
+    addUserMessage,
+    addBotMessage,
     showTypingIndicator,
     hideTypingIndicator,
   } = useChat();
@@ -36,14 +36,14 @@ export default function InputControls() {
     const trimmedMessage = message.trim();
     if (!trimmedMessage) return;
 
-    addUserChat(trimmedMessage);
+    addUserMessage(trimmedMessage);
 
     try {
       setModeToLoading();
       showTypingIndicator();
       const response = await fetchBotResponse(trimmedMessage);
       hideTypingIndicator();
-      addBotChat(response);
+      addBotMessage(response);
     } catch (err) {
       console.error("Failed to send message:", err);
       hideTypingIndicator();

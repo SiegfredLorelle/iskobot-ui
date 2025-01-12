@@ -1,14 +1,5 @@
-export interface ChatMessage {
-  id: string;
-  text: string;
-  isUser: boolean;
-  timestamp: Date;
-}
-
-export type ChatAction = 
-  | { type: 'ADD_MESSAGE'; payload: ChatMessage }
-  | { type: 'DELETE_LAST' }
-  | { type: 'DELETE_ALL' };
+import { ChatAction } from "../types/ChatActionType";
+import { ChatMessage } from "../types/ChatMessageType";
 
 export function chatReducer(state: ChatMessage[], action: ChatAction): ChatMessage[] {
   switch (action.type) {

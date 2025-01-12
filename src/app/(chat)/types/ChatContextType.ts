@@ -6,9 +6,12 @@ export type ChatContextType = {
   addUserMessage: (text: string) => void;
   addBotMessage: (text: string) => void;
   deleteLastMessage: () => void;
-  deleteAllMessages: () => void;
+  deleteAllMessage: () => void;
   mode: Mode;
-  setMode: (mode: Mode) => void;
+  setModeToLoading: () => void;
+  setModeToSettings: () => void;
+  setModeToInput: () => void;
   isBotTyping: boolean;
-  setBotTyping: (typing: boolean) => void;
+  showTypingIndicator: () => void;
+  hideTypingIndicator: () => void;
 };
