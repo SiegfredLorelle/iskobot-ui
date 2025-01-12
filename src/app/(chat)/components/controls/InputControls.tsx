@@ -7,19 +7,9 @@ import {
   IconDotsVertical,
 } from "@tabler/icons-react";
 import { useChat } from "../../contexts/ChatContext";
-import { useFetchBotResponse } from "@/app/(chat)/hooks/useFetchBotResponse";
 
 export default function InputControls() {
-  const { fetchBotResponse } = useFetchBotResponse();
-  const {
-    setModeToSettings,
-    setModeToLoading,
-    setModeToInput,
-    addUserChat,
-    addBotChat,
-    showTypingIndicator,
-    hideTypingIndicator,
-  } = useChat();
+  const { setModeToSettings, sendMessageToBot } = useChat();
 
   const handleSettings = () => {
     setModeToSettings();
@@ -35,22 +25,7 @@ export default function InputControls() {
   const handleSend = async () => {
     const trimmedMessage = message.trim();
     if (!trimmedMessage) return;
-
-    addUserChat(trimmedMessage);
-
-    try {
-      setModeToLoading();
-      showTypingIndicator();
-      const response = await fetchBotResponse(trimmedMessage);
-      hideTypingIndicator();
-      addBotChat(response);
-    } catch (err) {
-      console.error("Failed to send message:", err);
-      hideTypingIndicator();
-    } finally {
-      setModeToInput();
-      setMessage("");
-    }
+    sendMessageToBot(trimmedMessage);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
