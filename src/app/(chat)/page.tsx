@@ -8,15 +8,10 @@ import Front from "./components/front/Front";
 
 const ChatContent = () => {
   const { messages } = useChat();
-  return (
-    <div>
-      {messages.length === 0 ? <Front /> : <Chats />}
-    </div>
-  )
+  return <div>{messages.length === 0 ? <Front /> : <Chats />}</div>;
 };
 
 export default function ChatPage() {
-
   return (
     <ChatProvider>
       <div className="my-3 px-3 flex w-full justify-center min-h-screen">

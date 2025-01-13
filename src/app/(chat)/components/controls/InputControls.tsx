@@ -9,7 +9,8 @@ import {
 import { useChat } from "../../contexts/ChatContext";
 
 export default function InputControls() {
-  const { userInput, setUserInput, setModeToSettings, sendMessageToBot } = useChat();
+  const { userInput, setUserInput, setModeToSettings, sendMessageToBot } =
+    useChat();
 
   const handleSettings = () => {
     setModeToSettings();
