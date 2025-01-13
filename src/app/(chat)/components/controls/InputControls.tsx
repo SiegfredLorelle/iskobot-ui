@@ -115,7 +115,7 @@ export default function InputControls() {
           textarea.style.height = "auto";
           textarea.style.height = `${textarea.scrollHeight}px`;
         }}
-        className="w-full bg-primary-clr text-text-clr max-h-[45vh] text-center flex items-center placeholder-text-clr focus:outline-none resize-none px-3 leading-relaxed"
+        className="w-full bg-primary-clr text-text-clr max-h-[45vh] text-center flex items-center placeholder-text-clr focus:outline-hidden resize-none px-3 leading-relaxed"
         rows={1}
       />
       <button
