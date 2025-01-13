@@ -14,8 +14,8 @@ const ChatContent = () => {
 export default function ChatPage() {
   return (
     <ChatProvider>
-      <div className="my-3 px-3 flex w-full justify-center min-h-screen">
-        <main className="max-w-2xl w-full mx-auto flex flex-col gap-8">
+      <div className="my-9 px-3 flex w-full justify-center">
+        <main className="lg:max-w-4xl w-full mx-auto flex flex-col gap-8">
           <ChatContent />
           <Link href="/admin">Go Admin</Link>
         </main>
