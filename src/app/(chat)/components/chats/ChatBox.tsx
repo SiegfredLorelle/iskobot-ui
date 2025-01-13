@@ -1,11 +1,17 @@
 import ChatBubble from "@/app/(chat)/components/chats/ChatBubble";
-import { ChatBoxProps } from "@/app/(chat)/types/ChatBoxProps";
+import type { ChatBoxProps } from "@/app/(chat)/types/ChatBoxProps";
 
-export default function ChatBox({ text, isUser = false }: ChatBoxProps) {
+export default function ChatBox({
+  text,
+  isUser = false,
+  wide = false,
+}: ChatBoxProps) {
   return (
     <div className={`flex ${isUser ? "flex-row-reverse ml-auto" : "flex-row"}`}>
       <ChatBubble />
-      <div className="p-3 bg-primary text-text rounded-md max-w-md">
+      <div
+        className={`p-3 bg-primary text-text rounded-md ${wide ? "p-5 w-full text-2xl font-bold" : "p-4 max-w-md"} `}
+      >
         <p>{text}</p>
       </div>
     </div>

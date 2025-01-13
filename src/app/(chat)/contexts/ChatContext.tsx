@@ -5,9 +5,9 @@ import React, {
   useReducer,
   useState,
 } from "react";
-import { Mode } from "../types/Mode";
-import { ChatContextType } from "../types/ChatContextType";
-import { ChatMessage } from "../types/ChatMessageType";
+import type { Mode } from "../types/Mode";
+import type { ChatContextType } from "../types/ChatContextType";
+import type { ChatMessage } from "../types/ChatMessageType";
 import { chatReducer } from "../reducers/chatReducer";
 import { useFetchBotResponse } from "../hooks/useFetchBotResponse";
 
@@ -22,7 +22,7 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({
   /* Chat messages */
   const [messages, dispatch] = useReducer(chatReducer, []);
   const [mode, setMode] = useState<Mode>("input");
-  const [isBotTyping, setBotTyping] = useState(false);
+  const [userInput, setUserInput] = useState("");
 
   const createMessage = (text: string, isUser: boolean): ChatMessage => ({
     id: crypto.randomUUID(),
@@ -47,13 +47,10 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({
     try {
       addUserMessage(message);
       setModeToLoading();
-      showTypingIndicator();
       const response = await fetchBotResponse(message);
-      hideTypingIndicator();
       addBotMessage(response);
     } catch (err) {
       console.error("Failed to send message:", err);
-      hideTypingIndicator();
     } finally {
       setModeToInput();
     }
@@ -63,10 +60,6 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({
   const setModeToSettings = () => setMode("settings");
   const setModeToInput = () => setMode("input");
   const setModeToLoading = () => setMode("loading");
-
-  /* Bot Typing State */
-  const showTypingIndicator = () => setBotTyping(true);
-  const hideTypingIndicator = () => setBotTyping(false);
 
   const value = useMemo(
     () => ({
@@ -80,11 +73,10 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({
       setModeToLoading,
       setModeToSettings,
       setModeToInput,
-      isBotTyping,
-      showTypingIndicator,
-      hideTypingIndicator,
+      userInput,
+      setUserInput,
     }),
-    [messages, mode, isBotTyping],
+    [messages, mode, userInput],
   );
   return <ChatContext.Provider value={value}>{children}</ChatContext.Provider>;
 };

@@ -8,7 +8,7 @@ export default function LoadingMode() {
 
   const handleStopGenerating = () => {
     setModeToInput();
-    // STOP FETCHING AS WELL
+    // TODO: STOP FETCHING AS WELL
   };
 
   return (

@@ -1,5 +1,5 @@
-import { ChatMessage } from "./ChatMessageType";
-import { Mode } from "./Mode";
+import type { ChatMessage } from "./ChatMessageType";
+import type { Mode } from "./Mode";
 
 export type ChatContextType = {
   messages: ChatMessage[];
@@ -12,7 +12,6 @@ export type ChatContextType = {
   setModeToLoading: () => void;
   setModeToSettings: () => void;
   setModeToInput: () => void;
-  isBotTyping: boolean;
-  showTypingIndicator: () => void;
-  hideTypingIndicator: () => void;
+  userInput: string;
+  setUserInput: (userInput: string) => void;
 };
