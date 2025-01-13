@@ -27,7 +27,16 @@
   ::file-selector-button {
     border-color: var(--color-gray-200, currentColor);
   }
+  button,
+  [role='button'] {
+    cursor: pointer;
+  }
+  button:disabled,
+  [role='button']:disabled {
+    cursor: default;
+  }
 }
+
 
 :root {
   --background-clr: #f8f8f8;
