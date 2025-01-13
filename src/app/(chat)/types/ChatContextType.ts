@@ -14,7 +14,4 @@ export type ChatContextType = {
   setModeToInput: () => void;
   userInput: string;
   setUserInput: (userInput: string) => void;
-  isBotTyping: boolean;
-  showTypingIndicator: () => void;
-  hideTypingIndicator: () => void;
 };
