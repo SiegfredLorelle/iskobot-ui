@@ -43,23 +43,26 @@ export default function InputControls() {
           audio: true,
         });
         setAudioStream(stream);
-  
+
         const recorder = new MediaRecorder(stream);
         const chunks: Blob[] = [];
-  
+
         recorder.ondataavailable = (event) => {
           chunks.push(event.data);
         };
-  
+
         recorder.onstop = async () => {
           if (chunks.length > 0) {
             const audioBlob = new Blob(chunks, { type: "audio/wav" });
-  
+
             // Create FormData to send audio file to the server
             const formData = new FormData();
-            formData.append("audio_file", audioBlob, `recording-${new Date().toISOString()}.wav`);
-  
-            
+            formData.append(
+              "audio_file",
+              audioBlob,
+              `recording-${new Date().toISOString()}.wav`,
+            );
+
             // TODO: CREATE A CUSTOM HOOK FOR THIS, SIMILAR TO useFetchBotRespone
             const endpoint = process.env.NEXT_PUBLIC_CHATBOT_ENDPOINT || "";
             console.log(endpoint);
@@ -68,11 +71,11 @@ export default function InputControls() {
                 method: "POST",
                 body: formData, // The audio file in FormData
               });
-  
+
               if (!response.ok) {
                 throw new Error("Failed to send audio to server");
               }
-  
+
               const result = await response.json();
               console.log("Transcription result:", result);
             } catch (error) {
@@ -81,7 +84,7 @@ export default function InputControls() {
             }
           }
         };
-  
+
         recorder.start();
         setMediaRecorder(recorder);
         setIsRecording(true);
@@ -101,7 +104,7 @@ export default function InputControls() {
       console.error("Error handling recording:", err);
       alert("Microphone access denied or other error.");
     }
-  };  
+  };
 
   return (
     <div className="h-full w-full bg-primary flex items-center rounded-3xl px-4 py-4 shadow-lg mb-4">
