@@ -23,6 +23,7 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({
   const [messages, dispatch] = useReducer(chatReducer, []);
   const [mode, setMode] = useState<Mode>("input");
   const [isBotTyping, setBotTyping] = useState(false);
+  const [userInput, setUserInput] = useState("");
 
   const createMessage = (text: string, isUser: boolean): ChatMessage => ({
     id: crypto.randomUUID(),
@@ -80,11 +81,13 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({
       setModeToLoading,
       setModeToSettings,
       setModeToInput,
+      userInput,
+      setUserInput,
       isBotTyping,
       showTypingIndicator,
       hideTypingIndicator,
     }),
-    [messages, mode, isBotTyping],
+    [messages, mode, userInput, isBotTyping],
   );
   return <ChatContext.Provider value={value}>{children}</ChatContext.Provider>;
 };

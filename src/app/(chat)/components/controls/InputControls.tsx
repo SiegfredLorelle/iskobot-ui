@@ -9,13 +9,12 @@ import {
 import { useChat } from "../../contexts/ChatContext";
 
 export default function InputControls() {
-  const { setModeToSettings, sendMessageToBot } = useChat();
+  const { userInput, setUserInput, setModeToSettings, sendMessageToBot } = useChat();
 
   const handleSettings = () => {
     setModeToSettings();
   };
 
-  const [message, setMessage] = useState("");
   const [isRecording, setIsRecording] = useState(false);
   const [audioStream, setAudioStream] = useState<MediaStream | null>(null);
   const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(
@@ -23,9 +22,10 @@ export default function InputControls() {
   );
 
   const handleSend = async () => {
-    const trimmedMessage = message.trim();
+    const trimmedMessage = userInput.trim();
     if (!trimmedMessage) return;
     sendMessageToBot(trimmedMessage);
+    setUserInput("");
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -108,7 +108,7 @@ export default function InputControls() {
 
   return (
     <div className="h-full w-full bg-primary flex items-center rounded-3xl px-4 py-4 shadow-lg mb-4">
-      {!message && !isRecording && (
+      {!userInput && !isRecording && (
         <button
           onClick={handleSettings}
           className="ml-2 mt-auto py-2 text-text hover:text-hover-clr"
@@ -119,8 +119,8 @@ export default function InputControls() {
       <textarea
         autoFocus
         placeholder="Type your message..."
-        value={message}
-        onChange={(e) => setMessage(e.target.value)}
+        value={userInput}
+        onChange={(e) => setUserInput(e.target.value)}
         onKeyDown={handleKeyDown}
         onInput={(e) => {
           const textarea = e.target as HTMLTextAreaElement;
@@ -131,9 +131,9 @@ export default function InputControls() {
         rows={1}
       />
       <button
-        onClick={message ? handleSend : handleRecording}
+        onClick={userInput ? handleSend : handleRecording}
         aria-label={
-          message
+          userInput
             ? "Send message"
             : isRecording
               ? "Stop and download recording"
@@ -141,7 +141,7 @@ export default function InputControls() {
         }
         className="ml-2 mt-auto py-2 text-text hover:text-hover-clr"
       >
-        {message ? (
+        {userInput ? (
           <IconSend className="w-6 h-6" />
         ) : (
           <IconMicrophoneFilled

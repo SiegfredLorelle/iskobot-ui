@@ -3,7 +3,7 @@ import SampleInquiry from "./SampleInquiry"
 export default function SampleInquiries() {
   const sampleInquiries: string[] = [
     "When is the application for school year 2025-2026?",
-    "Give me some recommended learning materials on Operating Systems",
+    "Give me some recommended learning materials on Operating Systems.",
     "Who should I contact for more information?",
   ]
 
