@@ -7,6 +7,7 @@ import {
   IconDotsVertical,
 } from "@tabler/icons-react";
 import { useChat } from "../../contexts/ChatContext";
+import { useAudioTranscription } from "../../hooks/useAudioTranscription";
 
 export default function InputControls() {
   const { userInput, setUserInput, setModeToSettings, sendMessageToBot } =
@@ -21,6 +22,7 @@ export default function InputControls() {
   const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(
     null,
   );
+  const { transcribeAudio, isLoading, error, transcriptionResult } = useAudioTranscription();
 
   const handleSend = async () => {
     const trimmedMessage = userInput.trim();
@@ -36,7 +38,7 @@ export default function InputControls() {
     }
   };
 
-  const handleRecording = async (): Promise<void> => {
+  const handleRecording = async () => {
     try {
       if (!isRecording) {
         // Start recording
@@ -46,7 +48,7 @@ export default function InputControls() {
         setAudioStream(stream);
 
         const recorder = new MediaRecorder(stream);
-        const chunks: Blob[] = [];
+        const chunks = [];
 
         recorder.ondataavailable = (event) => {
           chunks.push(event.data);
@@ -61,27 +63,11 @@ export default function InputControls() {
             formData.append(
               "audio_file",
               audioBlob,
-              `recording-${new Date().toISOString()}.wav`,
+              `recording-${new Date().toISOString()}.wav`
             );
 
-            // TODO: CREATE A CUSTOM HOOK FOR THIS, SIMILAR TO useFetchBotRespone
-            const endpoint = process.env.NEXT_PUBLIC_CHATBOT_ENDPOINT || "";
-            try {
-              const response = await fetch(`${endpoint}/transcribe`, {
-                method: "POST",
-                body: formData, // The audio file in FormData
-              });
-
-              if (!response.ok) {
-                throw new Error("Failed to send audio to server");
-              }
-
-              const result = await response.json();
-              console.log("Transcription result:", result);
-            } catch (error) {
-              console.error("Error sending audio to server:", error);
-              alert("Error sending audio to server.");
-            }
+            // Use the custom hook to transcribe audio
+            await transcribeAudio(formData);
           }
         };
 
@@ -92,6 +78,7 @@ export default function InputControls() {
         // Stop recording
         if (mediaRecorder) {
           mediaRecorder.stop();
+
           // Stop all tracks
           if (audioStream) {
             audioStream.getTracks().forEach((track) => track.stop());
