@@ -9,11 +9,11 @@ export default {
   theme: {
     extend: {
       colors: {
-        background: "var(--background)",
-        foreground: "var(--foreground)",
-        primary: "var(--primary)",
-        secondary: "var(--secondary)",
-        text: "var(--text)",
+        "background-clr": "var(--background-clr)",
+        "foreground-clr": "var(--foreground-clr)",
+        "primary-clr": "var(--primary-clr)",
+        "secondary-clr": "var(--secondary-clr)",
+        "text-clr": "var(--text-clr)",
         "hover-clr": "var(--hover-clr)",
       },
     },

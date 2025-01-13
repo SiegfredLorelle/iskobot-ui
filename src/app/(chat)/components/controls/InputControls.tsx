@@ -95,11 +95,11 @@ export default function InputControls() {
   };
 
   return (
-    <div className="h-full w-full bg-primary flex items-center rounded-3xl px-4 py-4 shadow-lg mb-4">
+    <div className="h-full w-full bg-primary-clr flex items-center rounded-3xl px-4 py-4 shadow-lg mb-4">
       {!userInput && !isRecording && (
         <button
           onClick={handleSettings}
-          className="ml-2 mt-auto py-2 text-text hover:text-hover-clr"
+          className="ml-2 mt-auto py-2 text-text-clr hover:text-hover-clr"
         >
           <IconDotsVertical className="w-6 h-6" />
         </button>
@@ -115,7 +115,7 @@ export default function InputControls() {
           textarea.style.height = "auto";
           textarea.style.height = `${textarea.scrollHeight}px`;
         }}
-        className="w-full bg-primary text-text max-h-[45vh] text-center flex items-center placeholder-text focus:outline-none resize-none px-3 leading-relaxed"
+        className="w-full bg-primary-clr text-text-clr max-h-[45vh] text-center flex items-center placeholder-text-clr focus:outline-none resize-none px-3 leading-relaxed"
         rows={1}
       />
       <button
@@ -127,7 +127,7 @@ export default function InputControls() {
               ? "Stop and download recording"
               : "Start recording"
         }
-        className="ml-2 mt-auto py-2 text-text hover:text-hover-clr"
+        className="ml-2 mt-auto py-2 text-text-clr hover:text-hover-clr"
       >
         {userInput ? (
           <IconSend className="w-6 h-6" />
