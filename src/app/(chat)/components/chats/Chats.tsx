@@ -9,7 +9,7 @@ export default function Chats() {
       {messages.map((message, index) => (
         <ChatBox key={index} isUser={message.isUser} text={message.text} />
       ))}
-      {mode === "loading" && <ChatBox text={"..."} />}
+      {mode === "loading" && <ChatBox text="..." />}
     </div>
   );
 }

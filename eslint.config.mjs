@@ -28,9 +28,9 @@ export default [
   pluginReact.configs.flat.recommended,
   {
     rules: {
-      "react/react-in-jsx-scope": "off", // Explicitly turning off this rule
-      "prettier/prettier": "error", // Ensure Prettier errors are flagged
-      "no-console": ["warn", { allow: ["warn", "error"] }],
+      //Prettier
+      "prettier/prettier": "error",
+      // TypeScript
       "@typescript-eslint/consistent-type-imports": [
         "error",
         {
@@ -43,6 +43,18 @@ export default [
       "@typescript-eslint/explicit-module-boundary-types": "off",
       "@typescript-eslint/no-inferrable-types": "error",
       "@typescript-eslint/consistent-type-definitions": ["error", "type"],
+      "no-console": ["warn", { allow: ["warn", "error"] }],
+      "no-debugger": "error",
+      // React
+      "react/react-in-jsx-scope": "off",
+      "react/jsx-key": "error",
+      "react/jsx-curly-brace-presence": [
+        "error",
+        {
+          props: "never",
+          children: "never",
+        },
+      ],
     },
   },
 ];
