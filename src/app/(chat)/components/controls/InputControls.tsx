@@ -51,21 +51,37 @@ export default function InputControls() {
           chunks.push(event.data);
         };
 
-        recorder.onstop = () => {
+        recorder.onstop = async () => {
           if (chunks.length > 0) {
             const audioBlob = new Blob(chunks, { type: "audio/wav" });
-            const url = URL.createObjectURL(audioBlob);
 
-            // Automatically download the current recording
-            const link = document.createElement("a");
-            link.href = url;
-            link.download = `recording-${new Date().toISOString()}.wav`;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+            // Create FormData to send audio file to the server
+            const formData = new FormData();
+            formData.append(
+              "audio_file",
+              audioBlob,
+              `recording-${new Date().toISOString()}.wav`,
+            );
 
-            // Clean up
-            URL.revokeObjectURL(url);
+            // TODO: CREATE A CUSTOM HOOK FOR THIS, SIMILAR TO useFetchBotRespone
+            const endpoint = process.env.NEXT_PUBLIC_CHATBOT_ENDPOINT || "";
+            console.log(endpoint);
+            try {
+              const response = await fetch(`${endpoint}/transcribe`, {
+                method: "POST",
+                body: formData, // The audio file in FormData
+              });
+
+              if (!response.ok) {
+                throw new Error("Failed to send audio to server");
+              }
+
+              const result = await response.json();
+              console.log("Transcription result:", result);
+            } catch (error) {
+              console.error("Error sending audio to server:", error);
+              alert("Error sending audio to server.");
+            }
           }
         };
 
