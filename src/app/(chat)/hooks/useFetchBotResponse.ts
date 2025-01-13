@@ -9,8 +9,6 @@ export function useFetchBotResponse() {
     setError(null);
 
     const endpoint = process.env.NEXT_PUBLIC_CHATBOT_ENDPOINT || "";
-    console.log(endpoint);
-
     try {
       const response = await fetch(`${endpoint}/query`, {
         method: "POST",

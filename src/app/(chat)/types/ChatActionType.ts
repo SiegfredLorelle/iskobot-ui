@@ -1,4 +1,4 @@
-import { ChatMessage } from "./ChatMessageType";
+import type { ChatMessage } from "./ChatMessageType";
 
 export type ChatAction =
   | { type: "ADD_MESSAGE"; payload: ChatMessage }

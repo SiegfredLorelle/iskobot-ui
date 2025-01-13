@@ -66,7 +66,6 @@ export default function InputControls() {
 
             // TODO: CREATE A CUSTOM HOOK FOR THIS, SIMILAR TO useFetchBotRespone
             const endpoint = process.env.NEXT_PUBLIC_CHATBOT_ENDPOINT || "";
-            console.log(endpoint);
             try {
               const response = await fetch(`${endpoint}/transcribe`, {
                 method: "POST",

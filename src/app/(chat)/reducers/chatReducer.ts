@@ -1,5 +1,5 @@
-import { ChatAction } from "../types/ChatActionType";
-import { ChatMessage } from "../types/ChatMessageType";
+import type { ChatAction } from "../types/ChatActionType";
+import type { ChatMessage } from "../types/ChatMessageType";
 
 export function chatReducer(
   state: ChatMessage[],

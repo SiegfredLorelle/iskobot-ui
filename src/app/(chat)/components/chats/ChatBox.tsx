@@ -1,5 +1,5 @@
 import ChatBubble from "@/app/(chat)/components/chats/ChatBubble";
-import { ChatBoxProps } from "@/app/(chat)/types/ChatBoxProps";
+import type { ChatBoxProps } from "@/app/(chat)/types/ChatBoxProps";
 
 export default function ChatBox({
   text,

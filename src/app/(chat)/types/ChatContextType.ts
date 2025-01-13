@@ -1,5 +1,5 @@
-import { ChatMessage } from "./ChatMessageType";
-import { Mode } from "./Mode";
+import type { ChatMessage } from "./ChatMessageType";
+import type { Mode } from "./Mode";
 
 export type ChatContextType = {
   messages: ChatMessage[];

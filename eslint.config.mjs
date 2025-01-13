@@ -22,6 +22,7 @@ export default [
       globals: globals.browser,
     },
   },
+
   pluginJs.configs.recommended,
   ...tseslint.configs.recommended,
   pluginReact.configs.flat.recommended,
@@ -29,7 +30,19 @@ export default [
     rules: {
       "react/react-in-jsx-scope": "off", // Explicitly turning off this rule
       "prettier/prettier": "error", // Ensure Prettier errors are flagged
+      "no-console": ["warn", { allow: ["warn", "error"] }],
+      "@typescript-eslint/consistent-type-imports": [
+        "error",
+        {
+          prefer: "type-imports",
+        },
+      ],
+      "@typescript-eslint/no-explicit-any": "error",
       "@typescript-eslint/no-unused-vars": "warn",
+      "@typescript-eslint/no-non-null-assertion": "error",
+      "@typescript-eslint/explicit-module-boundary-types": "off",
+      "@typescript-eslint/no-inferrable-types": "error",
+      "@typescript-eslint/consistent-type-definitions": ["error", "type"],
     },
   },
 ];

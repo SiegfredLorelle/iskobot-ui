@@ -5,9 +5,9 @@ import React, {
   useReducer,
   useState,
 } from "react";
-import { Mode } from "../types/Mode";
-import { ChatContextType } from "../types/ChatContextType";
-import { ChatMessage } from "../types/ChatMessageType";
+import type { Mode } from "../types/Mode";
+import type { ChatContextType } from "../types/ChatContextType";
+import type { ChatMessage } from "../types/ChatMessageType";
 import { chatReducer } from "../reducers/chatReducer";
 import { useFetchBotResponse } from "../hooks/useFetchBotResponse";
 
