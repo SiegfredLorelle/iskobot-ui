@@ -11,9 +11,7 @@ export default function SampleInquiry(props: { text: string }) {
       onClick={updateUserInput}
     >
       <div className="flex items-center justify-center h-full p-6 shadow-md">
-        <p className="text-center text-text-clr text-lg">
-          {props.text}
-        </p>
+        <p className="text-center text-text-clr text-lg">{props.text}</p>
       </div>
     </button>
   );
