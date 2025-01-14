@@ -48,7 +48,7 @@ export default function InputControls() {
         setAudioStream(stream);
 
         const recorder = new MediaRecorder(stream);
-        const chunks = [];
+        const chunks: BlobPart[] = [];
 
         recorder.ondataavailable = (event) => {
           chunks.push(event.data);
