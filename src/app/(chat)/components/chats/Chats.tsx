@@ -5,7 +5,7 @@ export default function Chats() {
   const { messages, mode } = useChat();
 
   return (
-    <div className="max-w-2xl w-full mx-auto flex flex-col gap-8 pb-24">
+    <div className="w-full mx-auto flex flex-col gap-4 pb-28">
       {messages.map((message, index) => (
         <ChatBox key={index} isUser={message.isUser} text={message.text} />
       ))}

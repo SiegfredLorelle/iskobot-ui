@@ -57,10 +57,10 @@ export default function SettingsMode() {
       {/* Content */}
       <div
         ref={controlsRef}
-        className="fixed inset-x-4 bottom-4 z-[2] bg-primary flex items-center justify-around rounded-3xl px-4 py-4 shadow-lg"
+        className="fixed inset-x-4 bottom-4 z-2 bg-primary-clr flex items-center justify-around rounded-3xl px-4 py-4 shadow-lg shadow-text-clr/30"
       >
         <button
-          className="py-2 text-text hover:text-hover-clr disabled:opacity-50 disabled:cursor-not-allowed"
+          className="py-2 text-text-clr hover:text-hover-clr disabled:opacity-50 disabled:cursor-not-allowed"
           onClick={handleRegenerate}
           disabled={isMessagesEmpty}
         >
@@ -69,7 +69,7 @@ export default function SettingsMode() {
         </button>
 
         <button
-          className="py-2 text-text hover:text-hover-clr disabled:opacity-50 disabled:cursor-not-allowed"
+          className="py-2 text-text-clr hover:text-hover-clr disabled:opacity-50 disabled:cursor-not-allowed"
           aria-label="Delete last chat"
           onClick={handleDeleteLastMessage}
           disabled={isMessagesEmpty}
@@ -79,7 +79,7 @@ export default function SettingsMode() {
         </button>
 
         <button
-          className="py-2 text-text hover:text-hover-clr disabled:opacity-50 disabled:cursor-not-allowed"
+          className="py-2 text-text-clr hover:text-hover-clr disabled:opacity-50 disabled:cursor-not-allowed"
           aria-label="Delete all chats"
           onClick={handleDeleteAllMessage}
           disabled={isMessagesEmpty}

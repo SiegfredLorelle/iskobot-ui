@@ -10,7 +10,7 @@ export default function ChatBox({
     <div className={`flex ${isUser ? "flex-row-reverse ml-auto" : "flex-row"}`}>
       <ChatBubble />
       <div
-        className={`p-3 bg-primary text-text rounded-md ${wide ? "p-5 w-full text-2xl font-bold" : "p-4 max-w-md"} `}
+        className={`p-3 bg-primary-clr shadow-md text-text-clr rounded-md ${isUser ? "me-2" : "ms-2"} ${wide ? "p-5 w-full text-2xl font-bold" : "p-4 max-w-md"} `}
       >
         <p>{text}</p>
       </div>
