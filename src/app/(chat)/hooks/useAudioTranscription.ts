@@ -27,7 +27,8 @@ export function useAudioTranscription() {
       console.log("Transcription result:", result);
     } catch (error) {
       console.error("Error sending audio to server:", error);
-      const errorMessage = error instanceof Error ? error.message : "An unexpected error occurred";
+      const errorMessage =
+        error instanceof Error ? error.message : "An unexpected error occurred";
 
       setError(errorMessage || "Unknown error occurred");
     } finally {

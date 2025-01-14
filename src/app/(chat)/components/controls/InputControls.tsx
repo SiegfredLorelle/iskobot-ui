@@ -22,7 +22,8 @@ export default function InputControls() {
   const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(
     null,
   );
-  const { transcribeAudio, isLoading, error, transcriptionResult } = useAudioTranscription();
+  const { transcribeAudio, isLoading, error, transcriptionResult } =
+    useAudioTranscription();
 
   const handleSend = async () => {
     const trimmedMessage = userInput.trim();
@@ -63,7 +64,7 @@ export default function InputControls() {
             formData.append(
               "audio_file",
               audioBlob,
-              `recording-${new Date().toISOString()}.wav`
+              `recording-${new Date().toISOString()}.wav`,
             );
 
             // Use the custom hook to transcribe audio
