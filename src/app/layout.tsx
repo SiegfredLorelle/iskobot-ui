@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import Header from "@/components/layout/Header";
 import { Providers } from "@/app/providers";
+import TriangleBlurEffect from "@/components/ui/TriangleBlurEffect";
 
 export const metadata: Metadata = {
   title: "Iskobot",
@@ -24,8 +25,10 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body className="antialiased">
         <Providers>
-          <Header />
-          {children}
+          <TriangleBlurEffect>
+            <Header />
+            {children}
+          </TriangleBlurEffect>
         </Providers>
       </body>
     </html>
