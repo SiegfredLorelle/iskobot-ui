@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   IconSend,
   IconMicrophoneFilled,
@@ -24,6 +24,13 @@ export default function InputControls() {
   );
   const { transcribeAudio, isLoading, error, transcriptionResult } =
     useAudioTranscription();
+
+  // Add useEffect to update userInput when transcription is complete
+  useEffect(() => {
+    if (transcriptionResult && !isLoading) {
+      setUserInput(transcriptionResult);
+    }
+  }, [transcriptionResult, isLoading, setUserInput]);
 
   const handleSend = async () => {
     const trimmedMessage = userInput.trim();
@@ -106,7 +113,7 @@ export default function InputControls() {
       )}
       <textarea
         autoFocus
-        placeholder="Type your message..."
+        placeholder={isLoading ? "Transcribing..." : "Type your message..."}
         value={userInput}
         onChange={(e) => setUserInput(e.target.value)}
         onKeyDown={handleKeyDown}
