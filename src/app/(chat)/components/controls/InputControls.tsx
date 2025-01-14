@@ -95,7 +95,7 @@ export default function InputControls() {
   };
 
   return (
-    <div className="h-full w-full bg-primary-clr flex items-center rounded-3xl px-4 py-4 shadow-lg shadow-text-clr/30 mb-4">
+    <div className="fixed inset-x-4 bottom-4 bg-primary-clr flex items-center rounded-3xl px-4 py-4 shadow-lg shadow-text-clr/30">
       {!userInput && !isRecording && (
         <button
           onClick={handleSettings}
