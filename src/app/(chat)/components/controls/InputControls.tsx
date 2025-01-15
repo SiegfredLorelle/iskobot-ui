@@ -13,28 +13,26 @@ export default function InputControls() {
   const { userInput, setUserInput, setModeToSettings, sendMessageToBot } =
     useChat();
 
-    const { transcribeAudio, isTranscribing, transcriptionError } =
-      useAudioTranscription();
+  const { transcribeAudio, isTranscribing, transcriptionError } =
+    useAudioTranscription();
 
-    const [isRecording, setIsRecording] = useState(false);
-    const [audioStream, setAudioStream] = useState<MediaStream | null>(null);
-    const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(
-      null,
-    );
-    const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+  const [isRecording, setIsRecording] = useState(false);
+  const [audioStream, setAudioStream] = useState<MediaStream | null>(null);
+  const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(
+    null,
+  );
+  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
-    useEffect(() => {
-      if (textareaRef.current) {
-        textareaRef.current.style.height = "auto";
-        textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
-      }
-    }, [userInput]);
+  useEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = "auto";
+      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+    }
+  }, [userInput]);
 
-
-
-    const handleSettings = () => {
-      setModeToSettings();
-    };
+  const handleSettings = () => {
+    setModeToSettings();
+  };
   const handleSend = async () => {
     const trimmedMessage = userInput.trim();
     if (!trimmedMessage) return;
@@ -117,7 +115,9 @@ export default function InputControls() {
       )}
       <textarea
         autoFocus
-        placeholder={isTranscribing ? "Transcribing..." : "Type your message..."}
+        placeholder={
+          isTranscribing ? "Transcribing..." : "Type your message..."
+        }
         value={userInput}
         onChange={(e) => setUserInput(e.target.value)}
         onKeyDown={handleKeyDown}
