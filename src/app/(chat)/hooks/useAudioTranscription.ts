@@ -5,8 +5,8 @@ export function useAudioTranscription() {
   const [transcriptionError, setTranscriptionError] = useState<string | null>(
     null,
   );
-  const endpoint = process.env.NEXT_PUBLIC_CHATBOT_ENDPOINT;
 
+  const endpoint = process.env.NEXT_PUBLIC_CHATBOT_ENDPOINT;
   if (!endpoint) {
     throw new Error("Endpoint not initialized");
   }
