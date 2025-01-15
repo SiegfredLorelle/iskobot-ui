@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   IconSend,
   IconMicrophoneFilled,
@@ -13,18 +13,26 @@ export default function InputControls() {
   const { userInput, setUserInput, setModeToSettings, sendMessageToBot } =
     useChat();
 
-  const handleSettings = () => {
-    setModeToSettings();
-  };
+  const { transcribeAudio, isTranscribing, transcriptionError } =
+    useAudioTranscription();
 
   const [isRecording, setIsRecording] = useState(false);
   const [audioStream, setAudioStream] = useState<MediaStream | null>(null);
   const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(
     null,
   );
-  const { transcribeAudio, isLoading, error, transcriptionResult } =
-    useAudioTranscription();
+  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
+  useEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = "auto";
+      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+    }
+  }, [userInput]);
+
+  const handleSettings = () => {
+    setModeToSettings();
+  };
   const handleSend = async () => {
     const trimmedMessage = userInput.trim();
     if (!trimmedMessage) return;
@@ -68,7 +76,8 @@ export default function InputControls() {
             );
 
             // Use the custom hook to transcribe audio
-            await transcribeAudio(formData);
+            const transcription = await transcribeAudio(formData);
+            setUserInput(transcription || "");
           }
         };
 
@@ -106,17 +115,15 @@ export default function InputControls() {
       )}
       <textarea
         autoFocus
-        placeholder="Type your message..."
+        placeholder={
+          isTranscribing ? "Transcribing..." : "Type your message..."
+        }
         value={userInput}
         onChange={(e) => setUserInput(e.target.value)}
         onKeyDown={handleKeyDown}
-        onInput={(e) => {
-          const textarea = e.target as HTMLTextAreaElement;
-          textarea.style.height = "auto";
-          textarea.style.height = `${textarea.scrollHeight}px`;
-        }}
         className="w-full bg-primary-clr text-text-clr max-h-[45vh] text-center flex items-center placeholder-text-clr focus:outline-hidden resize-none px-3 leading-relaxed"
         rows={1}
+        ref={textareaRef}
       />
       <button
         onClick={userInput ? handleSend : handleRecording}

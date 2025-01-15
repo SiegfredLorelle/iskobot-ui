@@ -1,14 +1,18 @@
 import { useState } from "react";
 
 export function useFetchBotResponse() {
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [isBotFetching, setIsBotFetching] = useState(false);
+  const [botFetchingError, setBotFetchingError] = useState<string | null>(null);
 
   const fetchBotResponse = async (message: string): Promise<string> => {
-    setIsLoading(true);
-    setError(null);
+    setIsBotFetching(true);
+    setBotFetchingError(null);
 
-    const endpoint = process.env.NEXT_PUBLIC_CHATBOT_ENDPOINT || "";
+    const endpoint = process.env.NEXT_PUBLIC_CHATBOT_ENDPOINT;
+    if (!endpoint) {
+      throw new Error("Endpoint not initialized");
+    }
+
     try {
       const response = await fetch(`${endpoint}/query`, {
         method: "POST",
@@ -35,12 +39,12 @@ export function useFetchBotResponse() {
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : "An unexpected error occurred";
-      setError(errorMessage);
+      setBotFetchingError(errorMessage);
       throw err;
     } finally {
-      setIsLoading(false);
+      setIsBotFetching(false);
     }
   };
 
-  return { fetchBotResponse, isLoading, error };
+  return { fetchBotResponse, isBotFetching, botFetchingError };
 }
