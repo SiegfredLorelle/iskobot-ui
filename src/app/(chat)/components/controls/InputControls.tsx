@@ -22,15 +22,15 @@ export default function InputControls() {
   const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(
     null,
   );
-  const { transcribeAudio, isLoading, error, transcriptionResult } =
+  const { transcribeAudio, isTranscribing, transcriptionError, transcriptionResult } =
     useAudioTranscription();
 
   // Add useEffect to update userInput when transcription is complete
   useEffect(() => {
-    if (transcriptionResult && !isLoading) {
+    if (transcriptionResult && !isTranscribing) {
       setUserInput(transcriptionResult);
     }
-  }, [transcriptionResult, isLoading, setUserInput]);
+  }, [transcriptionResult, isTranscribing, setUserInput]);
 
   const handleSend = async () => {
     const trimmedMessage = userInput.trim();
@@ -113,7 +113,7 @@ export default function InputControls() {
       )}
       <textarea
         autoFocus
-        placeholder={isLoading ? "Transcribing..." : "Type your message..."}
+        placeholder={isTranscribing ? "Transcribing..." : "Type your message..."}
         value={userInput}
         onChange={(e) => setUserInput(e.target.value)}
         onKeyDown={handleKeyDown}

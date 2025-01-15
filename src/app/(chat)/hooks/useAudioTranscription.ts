@@ -1,8 +1,8 @@
 import { useState, useCallback } from "react";
 
 export function useAudioTranscription() {
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [isTranscribing, setIsTranscribing] = useState(false);
+  const [transcriptionError, setTranscriptionError] = useState<string | null>(null);
   const [transcriptionResult, setTranscriptionResult] = useState<string | null>(
     null
   );
@@ -10,8 +10,8 @@ export function useAudioTranscription() {
   const transcribeAudio = useCallback(async (formData: FormData) => {
     const endpoint = process.env.NEXT_PUBLIC_CHATBOT_ENDPOINT || "";
 
-    setIsLoading(true);
-    setError(null);
+    setIsTranscribing(true);
+    setTranscriptionError(null);
     setTranscriptionResult(null);
 
     try {
@@ -43,11 +43,11 @@ export function useAudioTranscription() {
       const errorMessage =
         error instanceof Error ? error.message : "An unexpected error occurred";
 
-      setError(errorMessage || "Unknown error occurred");
+      setTranscriptionError(errorMessage || "Unknown error occurred");
     } finally {
-      setIsLoading(false);
+      setIsTranscribing(false);
     }
   }, []);
 
-  return { transcribeAudio, isLoading, error, transcriptionResult };
+  return { transcribeAudio, isTranscribing, transcriptionError, transcriptionResult };
 }
