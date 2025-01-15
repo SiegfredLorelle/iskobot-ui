@@ -22,15 +22,15 @@ export default function InputControls() {
   const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(
     null,
   );
-  const { transcribeAudio, isTranscribing, transcriptionError, transcriptionResult } =
+  const { transcribeAudio, isTranscribing, transcriptionError } =
     useAudioTranscription();
 
-  // Add useEffect to update userInput when transcription is complete
-  useEffect(() => {
-    if (transcriptionResult && !isTranscribing) {
-      setUserInput(transcriptionResult);
-    }
-  }, [transcriptionResult, isTranscribing, setUserInput]);
+  // // Add useEffect to update userInput when transcription is complete
+  // useEffect(() => {
+  //   if (transcriptionResult && !isTranscribing) {
+  //     setUserInput(transcriptionResult);
+  //   }
+  // }, [transcriptionResult, isTranscribing, setUserInput]);
 
   const handleSend = async () => {
     const trimmedMessage = userInput.trim();
@@ -39,7 +39,7 @@ export default function InputControls() {
     setUserInput("");
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>): Promise<string> => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleSend();
@@ -75,7 +75,8 @@ export default function InputControls() {
             );
 
             // Use the custom hook to transcribe audio
-            await transcribeAudio(formData);
+            const transcription = await transcribeAudio(formData);
+            setUserInput(transcription || "");
           }
         };
 

@@ -3,16 +3,15 @@ import { useState, useCallback } from "react";
 export function useAudioTranscription() {
   const [isTranscribing, setIsTranscribing] = useState(false);
   const [transcriptionError, setTranscriptionError] = useState<string | null>(null);
-  const [transcriptionResult, setTranscriptionResult] = useState<string | null>(
-    null
-  );
+  const endpoint = process.env.NEXT_PUBLIC_CHATBOT_ENDPOINT || "";
+
+  if (!endpoint) {
+    throw new Error("Endpoint not initialized");
+  }
 
   const transcribeAudio = useCallback(async (formData: FormData) => {
-    const endpoint = process.env.NEXT_PUBLIC_CHATBOT_ENDPOINT || "";
-
     setIsTranscribing(true);
     setTranscriptionError(null);
-    setTranscriptionResult(null);
 
     try {
       const response = await fetch(`${endpoint}/transcribe`, {
@@ -21,33 +20,28 @@ export function useAudioTranscription() {
       });
 
       if (!response.ok) {
-        throw new Error("Failed to send audio to server");
+        const errorData = await response.text();
+        throw new Error(
+          `HTTP error! status: ${response.status}, message: ${errorData}`,
+        );
       }
 
-      const result = await response.json();
+      const data = await response.json();
 
-      // Extract the transcription text from the result
-      let transcriptionText: string;
-
-      if (typeof result === "string") {
-        transcriptionText = result;
-      } else if (typeof result === "object" && result !== null) {
-        transcriptionText = result.transcription;
-      } else {
-        transcriptionText = String(result);
+      if (!data.transcription) {
+        throw new Error("Response data is missing expected format");
       }
+      return String(data.transcription);
 
-      setTranscriptionResult(transcriptionText);
     } catch (error) {
       console.error("Error sending audio to server:", error);
       const errorMessage =
         error instanceof Error ? error.message : "An unexpected error occurred";
-
       setTranscriptionError(errorMessage || "Unknown error occurred");
     } finally {
       setIsTranscribing(false);
     }
-  }, []);
+  }, [endpoint]);
 
-  return { transcribeAudio, isTranscribing, transcriptionError, transcriptionResult };
+  return { transcribeAudio, isTranscribing, transcriptionError };
 }
