@@ -6,6 +6,11 @@ export default function Chats() {
   const { messages, mode } = useChat();
   const lastMessageRef = useRef("");
 
+  const endpoint = process.env.NEXT_PUBLIC_CHATBOT_ENDPOINT;
+  if (!endpoint) {
+    throw new Error("Endpoint not initialized");
+  }
+
   useEffect(() => {
     if (messages.length > 0) {
       const lastMessage = messages[messages.length - 1];
@@ -14,7 +19,7 @@ export default function Chats() {
         lastMessageRef.current = lastMessage.text;
   
         // Send last message text for speech synthesis
-        fetch("http://localhost:8080/speech", {
+        fetch(`${endpoint}/speech`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
