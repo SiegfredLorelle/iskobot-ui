@@ -9,31 +9,45 @@ export default function Chats() {
   useEffect(() => {
     if (messages.length > 0) {
       const lastMessage = messages[messages.length - 1];
-
-      // Only generate speech for non-user messages (e.g., system responses)
+  
       if (!lastMessage.isUser && lastMessage.text !== lastMessageRef.current) {
         lastMessageRef.current = lastMessage.text;
-
+  
         // Send last message text for speech synthesis
         fetch("http://localhost:8080/speech", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({
-            text: lastMessage.text,
-          }),
+          body: JSON.stringify({ text: lastMessage.text }),
         })
-          .then((response) => response.json())
-          .then((data) => {
-            console.log("Speech generated successfully", data);
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error(`Failed to generate speech: ${response.status}`);
+            }
+            return response.blob();
+          })
+          .then((audioBlob) => {
+            if (audioBlob.size === 0) {
+              throw new Error("Received empty audio blob");
+            }
+  
+            // Play the audio directly
+            const audioBlobUrl = URL.createObjectURL(audioBlob);
+            const audio = new Audio(audioBlobUrl);
+  
+            audio.onload = () => {
+              URL.revokeObjectURL(audioBlobUrl);
+            };
+  
+            return audio.play();
           })
           .catch((error) => {
-            console.error("Error generating speech:", error);
+            console.error("Error generating or playing speech:", error);
           });
       }
     }
-  }, [messages]);
+  }, [messages]);  
 
   return (
     <div className="w-full mx-auto flex flex-col gap-4 pb-28">
