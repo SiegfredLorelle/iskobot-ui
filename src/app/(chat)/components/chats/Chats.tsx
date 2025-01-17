@@ -14,7 +14,7 @@ export default function Chats() {
   useEffect(() => {
     if (messages.length > 0) {
       const lastMessage = messages[messages.length - 1];
-  
+
       if (!lastMessage.isUser && lastMessage.text !== lastMessageRef.current) {
         lastMessageRef.current = lastMessage.text;
 
@@ -41,11 +41,11 @@ export default function Chats() {
               // Handle 204 case or null blob
               return;
             }
-            
+
             if (audioBlob.size === 0) {
               throw new Error("Received empty audio blob");
             }
-  
+
             // Play the audio directly
             const audioBlobUrl = URL.createObjectURL(audioBlob);
             const audio = new Audio(audioBlobUrl);
@@ -53,7 +53,7 @@ export default function Chats() {
             audio.onload = () => {
               URL.revokeObjectURL(audioBlobUrl);
             };
-  
+
             return audio.play();
           })
           .catch((error) => {
@@ -61,7 +61,7 @@ export default function Chats() {
           });
       }
     }
-  }, [messages]);  
+  }, [messages]);
 
   return (
     <div className="w-full mx-auto flex flex-col gap-4 pb-28">
