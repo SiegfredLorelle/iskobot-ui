@@ -14,14 +14,14 @@ export default function Header() {
 const Logo = () => {
   return (
     <h1 className="inline-block">
-      <Link href="/" className="flex items-center gap-2">
+      <Link href="/" className=" flex items-center gap-2">
         <Image
           src="/assets/icons/vercel.svg"
           alt="Iskobot Logo"
           width={16}
           height={16}
         />
-        <span className="text-lg hover:text-hover-clr">Iskobot</span>
+        <span className=" font-[oxygen] font-bold text-lg hover:text-hover-clr">Iskobot</span>
       </Link>
     </h1>
   );

@@ -1,5 +1,19 @@
 @import 'tailwindcss';
 
+@font-face {
+  font-family: 'Google Sans';
+  src: url('/fonts/GoogleSans-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Oxygen';
+  src: url('/fonts/Oxygen-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
 @variant dark (&:is(.dark *));
 
 @theme {
@@ -9,6 +23,8 @@
   --color-secondary-clr: var(--secondary-clr);
   --color-text-clr: var(--text-clr);
   --color-hover-clr: var(--hover-clr);
+  --font-family-google-sans: "Google Sans", Arial, Helvetica, sans-serif;
+  --font-family-oxygen: "Oxygen", Arial, Helvetica, sans-serif;
 }
 
 /*
@@ -58,5 +74,5 @@ body {
   color: var(--foreground-clr);
   background: var(--background-clr);
   text: var(--text-clr);
-  font-family: "Google Sans", Arial, Helvetica, sans-serif;
+  font-family: var(--font-family-google-sans);
 }
