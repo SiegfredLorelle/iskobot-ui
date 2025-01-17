@@ -8,29 +8,22 @@ export default function UploadPage() {
         <h2 className="absolute left-5 text-base text-gray-700">
           Upload your File:
         </h2>
-        
+
         <div className="mt-8 h-96 border-2 border-dashed border-blue-200 rounded-lg bg-blue-50 flex flex-col items-center justify-center">
-          <IconPhoto 
-            size={50} 
-            className="text-blue-600 mb-3" 
-          />
-          
-          <p className="text-base font-bold text-gray-700 mb-1">
-            Drag & Drop
-          </p>
-          
+          <IconPhoto size={50} className="text-blue-600 mb-3" />
+
+          <p className="text-base font-bold text-gray-700 mb-1">Drag & Drop</p>
+
           <p className="text-sm text-gray-700 mb-1">
             or{" "}
             <span className="text-blue-600 underline cursor-pointer">
               browse
             </span>
           </p>
-          
-          <p className="text-xs text-gray-500">
-            Supports: JPEG, JPG, PNG
-          </p>
+
+          <p className="text-xs text-gray-500">Supports: JPEG, JPG, PNG</p>
         </div>
       </div>
     </div>
   );
-};
+}
