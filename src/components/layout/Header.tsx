@@ -16,10 +16,10 @@ const Logo = () => {
     <h1 className="inline-block">
       <Link href="/" className=" flex items-center gap-2">
         <Image
-          src="/assets/icons/vercel.svg"
+          src="/assets/icons/iskobot-logo.png"
           alt="Iskobot Logo"
-          width={16}
-          height={16}
+          width={44}
+          height={44}
         />
         <span className=" font-[oxygen] font-bold text-lg hover:text-hover-clr">Iskobot</span>
       </Link>
