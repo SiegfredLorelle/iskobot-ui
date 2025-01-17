@@ -18,7 +18,6 @@ export default function Chats() {
       if (!lastMessage.isUser && lastMessage.text !== lastMessageRef.current) {
         lastMessageRef.current = lastMessage.text;
 
-        // Send last message text for speech synthesis
         fetch(`${endpoint}/speech`, {
           method: "POST",
           headers: {
@@ -27,12 +26,21 @@ export default function Chats() {
           body: JSON.stringify({ text: lastMessage.text }),
         })
           .then((response) => {
+            if (response.status === 204) {
+              // No content returned, skip processing
+              return null;
+            }
             if (!response.ok) {
               throw new Error(`Failed to generate speech: ${response.status}`);
             }
             return response.blob();
           })
           .then((audioBlob) => {
+            if (!audioBlob) {
+              // Handle 204 case or null blob
+              return;
+            }
+            
             if (audioBlob.size === 0) {
               throw new Error("Received empty audio blob");
             }
@@ -41,7 +49,7 @@ export default function Chats() {
             const audioBlobUrl = URL.createObjectURL(audioBlob);
             const audio = new Audio(audioBlobUrl);
 
-            audio.onload = () => {
+            audio.onloadeddata = () => {
               URL.revokeObjectURL(audioBlobUrl);
             };
 
