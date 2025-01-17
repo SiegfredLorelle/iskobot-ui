@@ -1,82 +1,36 @@
 import React from "react";
 import { IconPhoto } from "@tabler/icons-react";
 
-const UploadPage: React.FC = () => {
+export default function UploadPage() {
   return (
-    <div style={styles.container}>
-      <div style={styles.uploadBox}>
-        <h2 style={styles.title}>Upload your File:</h2>
-        <div style={styles.dropZone}>
-          <IconPhoto
-            size={50}
-            color="#007bff"
-            style={{ marginBottom: "10px" }}
+    <div className="flex justify-center items-center h-screen">
+      <div className="relative text-center p-5 w-full max-w-2xl bg-white shadow-md rounded-lg mx-4">
+        <h2 className="absolute left-5 text-base text-gray-700">
+          Upload your File:
+        </h2>
+        
+        <div className="mt-8 h-96 border-2 border-dashed border-blue-200 rounded-lg bg-blue-50 flex flex-col items-center justify-center">
+          <IconPhoto 
+            size={50} 
+            className="text-blue-600 mb-3" 
           />
-          <p style={styles.text}>Drag & Drop</p>
-          <p style={styles.browseText}>
-            or <span style={styles.browseLink}>browse</span>
+          
+          <p className="text-base font-bold text-gray-700 mb-1">
+            Drag & Drop
           </p>
-          <p style={styles.supportText}>Supports: JPEG, JPG, PNG</p>
+          
+          <p className="text-sm text-gray-700 mb-1">
+            or{" "}
+            <span className="text-blue-600 underline cursor-pointer">
+              browse
+            </span>
+          </p>
+          
+          <p className="text-xs text-gray-500">
+            Supports: JPEG, JPG, PNG
+          </p>
         </div>
       </div>
     </div>
   );
 };
-
-const styles = {
-  container: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    height: "100vh",
-    backgroundColor: "#1a1a1a",
-  },
-  uploadBox: {
-    position: "relative" as const,
-    textAlign: "center" as const,
-    padding: "20px",
-    width: "600px",
-    backgroundColor: "#ffffff",
-    boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-    borderRadius: "10px",
-  },
-  title: {
-    position: "absolute" as const,
-    left: "20px",
-    fontSize: "16px",
-    color: "#333333",
-  },
-  dropZone: {
-    marginTop: "30px",
-    height: "350px",
-    border: "2px dashed #aac4e8",
-    borderRadius: "10px",
-    backgroundColor: "#f9fbff",
-    display: "flex",
-    flexDirection: "column" as const,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  text: {
-    fontSize: "16px",
-    fontWeight: "bold" as const,
-    color: "#333333",
-    marginBottom: "5px",
-  },
-  browseText: {
-    fontSize: "14px",
-    color: "#333333",
-    marginBottom: "5px",
-  },
-  browseLink: {
-    color: "#007bff",
-    textDecoration: "underline",
-    cursor: "pointer",
-  },
-  supportText: {
-    fontSize: "12px",
-    color: "#666666",
-  },
-};
-
-export default UploadPage;
