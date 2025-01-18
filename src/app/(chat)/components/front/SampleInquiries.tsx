@@ -2,9 +2,9 @@ import SampleInquiry from "./SampleInquiry";
 
 export default function SampleInquiries() {
   const sampleInquiries: string[] = [
-    "When is the application for school year 2025-2026?",
-    "Give me some recommended learning materials on Operating Systems.",
-    "Who should I contact for more information?",
+    "Ano ang pinakalatest na balita sa PUP ngayon?",
+    "Are there any PhD or master's programs at PUP-OUS?",
+    "PUP Open University System 是什么?",
   ];
 
   return (
