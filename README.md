@@ -1,3 +1,23 @@
+# Iskobot Chatbot UI
+>  Chatbot designed to assist computer engineering students
+---
+
+### Software Requirements
+- Node
+- npm
+
+### Prerequisites
+- Endpoint for Iskobot Backend
+
+## Create .env file
+- Create a `.env` file in your project root directory.
+```
+NEXT_PUBLIC_CHATBOT_ENDPOINT=https://your-iskobot-api-endpoint.app
+```
+
+
+--- 
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
