@@ -18,7 +18,8 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({
 }: {
   children: React.ReactNode;
 }) => {
-  const { fetchBotResponse } = useFetchBotResponse();
+  const { fetchBotResponse, cancelFetch, isBotFetching } =
+    useFetchBotResponse();
   /* Chat messages */
   const [messages, dispatch] = useReducer(chatReducer, []);
   const [mode, setMode] = useState<Mode>("input");
@@ -50,10 +51,23 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({
       const response = await fetchBotResponse(message);
       addBotMessage(response);
     } catch (err) {
-      console.error("Failed to send message:", err);
+      // Only log non-cancellation errors
+      if (!(err instanceof Error && err.message === "Request cancelled")) {
+        console.error("Failed to send message:", err);
+        addBotMessage("Sorry, I couldn't process your request.");
+      } else {
+        // Just log a info message for cancellations
+        addBotMessage("Message generation was cancelled.");
+        console.info("Message generation was cancelled by user");
+      }
     } finally {
       setModeToInput();
     }
+  };
+
+  const stopGenerating = () => {
+    cancelFetch();
+    setModeToInput();
   };
 
   /* Controls Mode */
@@ -75,6 +89,8 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({
       setModeToInput,
       userInput,
       setUserInput,
+      isBotFetching,
+      stopGenerating,
     }),
     [messages, mode, userInput],
   );

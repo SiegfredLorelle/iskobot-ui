@@ -14,4 +14,6 @@ export type ChatContextType = {
   setModeToInput: () => void;
   userInput: string;
   setUserInput: (userInput: string) => void;
+  isBotFetching: boolean;
+  stopGenerating: () => void;
 };
