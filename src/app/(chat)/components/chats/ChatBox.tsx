@@ -1,7 +1,8 @@
 import ChatBubble from "@/app/(chat)/components/chats/ChatBubble";
 import type { ChatBoxProps } from "@/app/(chat)/types/ChatBoxProps";
-import ReactMarkdown from 'react-markdown';
-import rehypeSanitize from 'rehype-sanitize';
+import ReactMarkdown from "react-markdown";
+import rehypeSanitize from "rehype-sanitize";
+import remarkGfm from "remark-gfm";
 
 export default function ChatBox({
   text,
@@ -21,7 +22,8 @@ export default function ChatBox({
           // For bot messages, render as Markdown
           <div className="markdown-content">
             <ReactMarkdown
-              rehypePlugins={[rehypeSanitize]} // Still keep sanitization for security
+              rehypePlugins={[rehypeSanitize]} // Sanitize HTML to prevent XSS
+              remarkPlugins={[remarkGfm]} // Support GitHub Flavored Markdown
             >
               {text}
             </ReactMarkdown>
