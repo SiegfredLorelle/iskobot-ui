@@ -76,3 +76,114 @@ body {
   text: var(--text-clr);
   font-family: var(--font-family-google-sans);
 }
+
+
+/* Markdown Styles */
+.markdown-content {
+  line-height: 1.6;
+}
+
+/* Make bold text actually bold */
+.markdown-content strong {
+  font-weight: 800;
+}
+
+/* Make italic text actually italic */
+.markdown-content em {
+  font-style: italic;
+}
+
+/* Style for code */
+.markdown-content code {
+  background-color: rgba(0, 0, 0, 0.1);
+  padding: 0.2em 0.4em;
+  border-radius: 3px;
+  font-family: monospace;
+}
+
+/* Style for code blocks */
+.markdown-content pre {
+  background-color: rgba(0, 0, 0, 0.1);
+  padding: 1em;
+  border-radius: 4px;
+  overflow-x: auto;
+  margin: 0.5em 0;
+}
+
+.markdown-content pre code {
+  background-color: transparent;
+  padding: 0;
+}
+
+/* Style for lists */
+.markdown-content ul {
+  list-style-type: disc;
+  padding-left: 2em;
+  margin: 0.5em 0;
+}
+
+.markdown-content ol {
+  list-style-type: decimal;
+  padding-left: 2em;
+  margin: 0.5em 0;
+}
+
+/* Style for links */
+.markdown-content a {
+  color: #0066cc;
+  text-decoration: underline;
+}
+
+/* Style for blockquotes */
+.markdown-content blockquote {
+  border-left: 4px solid rgba(0, 0, 0, 0.2);
+  padding-left: 1em;
+  margin-left: 0;
+  font-style: italic;
+}
+
+/* Style for headings */
+.markdown-content h1,
+.markdown-content h2,
+.markdown-content h3,
+.markdown-content h4,
+.markdown-content h5,
+.markdown-content h6 {
+  font-weight: bold;
+  margin-top: 1em;
+  margin-bottom: 0.5em;
+}
+
+.markdown-content h1 { font-size: 1.5em; }
+.markdown-content h2 { font-size: 1.4em; }
+.markdown-content h3 { font-size: 1.3em; }
+.markdown-content h4 { font-size: 1.2em; }
+.markdown-content h5 { font-size: 1.1em; }
+.markdown-content h6 { font-size: 1em; }
+
+/* Style for tables */
+.markdown-content table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1em 0;
+}
+
+.markdown-content th,
+.markdown-content td {
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  padding: 0.5em;
+}
+
+.markdown-content th {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+/* Fix paragraph margins */
+.markdown-content p {
+  margin: 0.5em 0;
+}
+
+/* Fix for nested paragraphs in lists */
+.markdown-content li > p {
+  margin: 0;
+}
