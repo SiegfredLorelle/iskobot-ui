@@ -18,20 +18,28 @@ export default function UploadPage() {
       alert(`Maximum ${MAX_FILES} files allowed.`);
       return;
     }
-    const validFiles = newFiles.filter(f => VALID_TYPES.includes(f.type));
+    const validFiles = newFiles.filter((f) => VALID_TYPES.includes(f.type));
     if (validFiles.length !== newFiles.length) {
       alert("Only JPEG, JPG, PNG, PDF files are supported.");
       return;
     }
     const uniqueFiles = validFiles.filter(
-      nf => !files.some(f => f.name === nf.name && f.size === nf.size && f.type === nf.type)
+      (nf) =>
+        !files.some(
+          (f) => f.name === nf.name && f.size === nf.size && f.type === nf.type,
+        ),
     );
     if (uniqueFiles.length !== validFiles.length) {
       alert("Duplicate files are not allowed.");
       return;
     }
     setFiles([...files, ...uniqueFiles]);
-    setPreviews([...previews, ...uniqueFiles.filter(f => IMAGE_TYPES.includes(f.type)).map(URL.createObjectURL)]);
+    setPreviews([
+      ...previews,
+      ...uniqueFiles
+        .filter((f) => IMAGE_TYPES.includes(f.type))
+        .map(URL.createObjectURL),
+    ]);
   };
 
   const handleUpload = async () => {
@@ -39,7 +47,10 @@ export default function UploadPage() {
     const formData = new FormData();
     files.forEach((f, i) => formData.append(`file${i}`, f));
     try {
-      const response = await fetch("/api/upload", { method: "POST", body: formData });
+      const response = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
       alert(response.ok ? "Files uploaded successfully!" : "Upload failed.");
     } catch (error) {
       console.error("Upload error:", error);
@@ -70,11 +81,15 @@ export default function UploadPage() {
   return (
     <div className="flex justify-center items-center h-screen">
       <div className="relative text-center p-5 w-full max-w-2xl bg-white shadow-md rounded-lg mx-4">
-        <h2 className="absolute left-5 text-base text-gray-700">Upload your Files:</h2>
+        <h2 className="absolute left-5 text-base text-gray-700">
+          Upload your Files:
+        </h2>
         <div
           className="mt-8 h-96 border-2 border-dashed border-blue-200 rounded-lg bg-blue-50 flex flex-col items-center justify-center"
-          onDrop={e => (e.preventDefault(), addFiles([...e.dataTransfer.files]))}
-          onDragOver={e => e.preventDefault()}
+          onDrop={(e) => (
+            e.preventDefault(), addFiles([...e.dataTransfer.files])
+          )}
+          onDragOver={(e) => e.preventDefault()}
         >
           <IconPhoto size={50} className="text-blue-600 mb-3" />
           <p className="text-base font-bold text-gray-700 mb-1">Drag & Drop</p>
@@ -91,7 +106,7 @@ export default function UploadPage() {
           <input
             type="file"
             ref={fileInput}
-            onChange={e => addFiles([...(e.target.files || [])])}
+            onChange={(e) => addFiles([...(e.target.files || [])])}
             accept={VALID_TYPES.join(",")}
             multiple
             className="hidden"
@@ -120,7 +135,11 @@ export default function UploadPage() {
           {preview && (
             <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
               <div className="bg-white p-4 rounded-lg">
-                <img src={preview} alt="Preview" className="max-w-full max-h-96" />
+                <img
+                  src={preview}
+                  alt="Preview"
+                  className="max-w-full max-h-96"
+                />
                 <button
                   onClick={() => setPreview(null)}
                   className="mt-2 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
