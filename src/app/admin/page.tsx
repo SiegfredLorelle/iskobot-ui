@@ -71,9 +71,11 @@ export default function UploadPage() {
   };
 
   const handlePreview = (file: File, index: number) => {
-    IMAGE_TYPES.includes(file.type)
-      ? setPreview(previews[index])
-      : window.open(URL.createObjectURL(file), "_blank");
+    if (IMAGE_TYPES.includes(file.type)) {
+      setPreview(previews[index]);
+    } else {
+      window.open(URL.createObjectURL(file), "_blank");
+    }
   };
 
   useEffect(() => () => previews.forEach(URL.revokeObjectURL), [previews]);
@@ -86,9 +88,10 @@ export default function UploadPage() {
         </h2>
         <div
           className="mt-8 h-96 border-2 border-dashed border-blue-200 rounded-lg bg-blue-50 flex flex-col items-center justify-center"
-          onDrop={(e) => (
-            e.preventDefault(), addFiles([...e.dataTransfer.files])
-          )}
+          onDrop={(e) => {
+            e.preventDefault();
+            addFiles([...e.dataTransfer.files]);
+          }}
           onDragOver={(e) => e.preventDefault()}
         >
           <IconPhoto size={50} className="text-blue-600 mb-3" />
