@@ -17,6 +17,7 @@ export default function InputControls() {
     useAudioTranscription();
 
   const [isRecording, setIsRecording] = useState(false);
+  const [isTextFieldDisabled, setIsTextFieldDisabled] = useState(false); // New state
   const [audioStream, setAudioStream] = useState<MediaStream | null>(null);
   const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(
     null,
@@ -33,6 +34,7 @@ export default function InputControls() {
   const handleSettings = () => {
     setModeToSettings();
   };
+
   const handleSend = async () => {
     const trimmedMessage = userInput.trim();
     if (!trimmedMessage) return;
@@ -67,7 +69,6 @@ export default function InputControls() {
           if (chunks.length > 0) {
             const audioBlob = new Blob(chunks, { type: "audio/wav" });
 
-            // Create FormData to send audio file to the server
             const formData = new FormData();
             formData.append(
               "audio_file",
@@ -75,7 +76,6 @@ export default function InputControls() {
               `recording-${new Date().toISOString()}.wav`,
             );
 
-            // Use the custom hook to transcribe audio
             const transcription = await transcribeAudio(formData);
             setUserInput(transcription || "");
           }
@@ -84,22 +84,25 @@ export default function InputControls() {
         recorder.start();
         setMediaRecorder(recorder);
         setIsRecording(true);
+        setIsTextFieldDisabled(true); // Disable text field
       } else {
         // Stop recording
         if (mediaRecorder) {
           mediaRecorder.stop();
 
-          // Stop all tracks
           if (audioStream) {
             audioStream.getTracks().forEach((track) => track.stop());
             setAudioStream(null);
           }
         }
         setIsRecording(false);
+        setIsTextFieldDisabled(false); // Re-enable text field
       }
     } catch (err) {
       console.error("Error handling recording:", err);
       alert("Microphone access denied or other error.");
+      setIsRecording(false);
+      setIsTextFieldDisabled(false); // Ensure text field is re-enabled on error
     }
   };
 
@@ -116,7 +119,11 @@ export default function InputControls() {
       <textarea
         autoFocus
         placeholder={
-          isTranscribing ? "Transcribing..." : "Type your message..."
+          isRecording
+            ? "Listening..." // Show "Listening..." when recording
+            : isTranscribing
+            ? "Transcribing..."
+            : "Type your message..."
         }
         value={userInput}
         onChange={(e) => setUserInput(e.target.value)}
@@ -124,6 +131,7 @@ export default function InputControls() {
         className="w-full bg-primary-clr text-text-clr max-h-[45vh] text-center flex items-center placeholder-text-clr focus:outline-hidden resize-none px-3 leading-relaxed"
         rows={1}
         ref={textareaRef}
+        disabled={isTextFieldDisabled} // Disable textarea when recording
       />
       <button
         onClick={userInput ? handleSend : handleRecording}
@@ -131,8 +139,8 @@ export default function InputControls() {
           userInput
             ? "Send message"
             : isRecording
-              ? "Stop and download recording"
-              : "Start recording"
+            ? "Stop and download recording"
+            : "Start recording"
         }
         className="ml-2 mt-auto py-2 text-text-clr hover:text-hover-clr"
       >
