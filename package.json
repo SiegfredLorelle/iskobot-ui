@@ -16,7 +16,9 @@
     "pdfjs-dist": "^5.2.133",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "react-pdf": "^9.2.1"
+    "react-pdf": "^9.2.1",
+    "react-markdown": "^10.1.0",
+    "rehype-sanitize": "^6.0.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
