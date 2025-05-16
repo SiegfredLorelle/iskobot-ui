@@ -131,7 +131,7 @@ export default function InputControls() {
         className="w-full bg-primary-clr text-text-clr max-h-[45vh] text-center flex items-center placeholder-text-clr focus:outline-hidden resize-none px-3 leading-relaxed"
         rows={1}
         ref={textareaRef}
-        disabled={isTextFieldDisabled} // Disable textarea when recording
+        disabled={isTextFieldDisabled || isTranscribing} // Disable textarea when recording
       />
       <button
         onClick={userInput ? handleSend : handleRecording}
