@@ -122,8 +122,8 @@ export default function InputControls() {
           isRecording
             ? "Listening..." // Show "Listening..." when recording
             : isTranscribing
-            ? "Transcribing..."
-            : "Type your message..."
+              ? "Transcribing..."
+              : "Type your message..."
         }
         value={userInput}
         onChange={(e) => setUserInput(e.target.value)}
@@ -139,8 +139,8 @@ export default function InputControls() {
           userInput
             ? "Send message"
             : isRecording
-            ? "Stop and download recording"
-            : "Start recording"
+              ? "Stop and download recording"
+              : "Start recording"
         }
         className="ml-2 mt-auto py-2 text-text-clr hover:text-hover-clr"
       >
