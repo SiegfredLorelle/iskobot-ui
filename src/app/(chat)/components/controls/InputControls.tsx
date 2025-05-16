@@ -108,7 +108,7 @@ export default function InputControls() {
 
   return (
     <div className="fixed inset-x-4 bottom-4 bg-primary-clr flex items-center rounded-3xl px-4 py-4 shadow-lg shadow-text-clr/30">
-      {!userInput && !isRecording && (
+      {!userInput && !isRecording && !isTranscribing && (
         <button
           onClick={handleSettings}
           className="ml-2 mt-auto py-2 text-text-clr hover:text-hover-clr"
