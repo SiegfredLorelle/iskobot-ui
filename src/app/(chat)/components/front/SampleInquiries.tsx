@@ -3,8 +3,10 @@ import SampleInquiry from "./SampleInquiry";
 export default function SampleInquiries() {
   const sampleInquiries: string[] = [
     "Ano ang pinakalatest na balita sa PUP ngayon?",
-    "Are there any PhD or master's programs at PUP-OUS?",
-    "PUP Open University System 是什么?",
+    "Explain the difference between 2 state machines.",
+    "Pillars of OOP?",
+    // "Are there any PhD or master's programs at PUP-OUS?",
+    // "PUP Open University System 是什么?",
   ];
 
   return (
