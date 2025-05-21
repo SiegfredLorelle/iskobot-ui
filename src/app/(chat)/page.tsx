@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+// import Link from "next/link";
 import Controls from "@/app/(chat)/components/controls/Controls";
 import { ChatProvider, useChat } from "./contexts/ChatContext";
 import Chats from "./components/chats/Chats";
@@ -17,7 +17,7 @@ export default function ChatPage() {
       <div className="my-9 px-3 flex w-full justify-center">
         <main className="lg:max-w-4xl w-full mx-auto flex flex-col gap-8 z-1">
           <ChatContent />
-          <Link href="/admin">Go Admin</Link>
+          {/* <Link href="/admin">Go Admin</Link> */}
         </main>
         <footer className="flex items-center justify-center">
           <Controls />
