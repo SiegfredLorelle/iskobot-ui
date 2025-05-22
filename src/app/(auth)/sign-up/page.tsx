@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { useAuth } from "@/app/(auth)/hooks/useAuth";
+import { IconEye, IconEyeOff } from '@tabler/icons-react';
+import Link from "next/link";
 
 export default function SignUpForm() {
   const [formData, setFormData] = useState({
@@ -14,6 +16,8 @@ export default function SignUpForm() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const { signUp } = useAuth();
 
@@ -30,7 +34,6 @@ export default function SignUpForm() {
     setSuccess(null);
     setIsLoading(true);
 
-    // Validate passwords match
     if (formData.password !== formData.confirmPassword) {
       setError("Passwords do not match");
       setIsLoading(false);
@@ -54,125 +57,175 @@ export default function SignUpForm() {
     }
   };
 
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
+  const toggleConfirmPasswordVisibility = () => {
+    setShowConfirmPassword(!showConfirmPassword);
+  };
+
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <div>
-        <label
-          htmlFor="email"
-          className="block text-sm font-medium text-gray-700"
-        >
-          Email
-        </label>
-        <input
-          id="email"
-          name="email"
-          type="email"
-          value={formData.email}
-          onChange={handleChange}
-          required
-          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-          placeholder="Enter your email"
-        />
-      </div>
-
-      <div>
-        <label
-          htmlFor="full_name"
-          className="block text-sm font-medium text-gray-700"
-        >
-          Full Name
-        </label>
-        <input
-          id="full_name"
-          name="full_name"
-          type="text"
-          value={formData.full_name}
-          onChange={handleChange}
-          required
-          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-          placeholder="Enter your full name"
-        />
-      </div>
-
-      <div>
-        <label
-          htmlFor="display_name"
-          className="block text-sm font-medium text-gray-700"
-        >
-          Display Name (Optional)
-        </label>
-        <input
-          id="display_name"
-          name="display_name"
-          type="text"
-          value={formData.display_name}
-          onChange={handleChange}
-          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-          placeholder="Enter display name"
-        />
-      </div>
-
-      <div>
-        <label
-          htmlFor="password"
-          className="block text-sm font-medium text-gray-700"
-        >
-          Password
-        </label>
-        <input
-          id="password"
-          name="password"
-          type="password"
-          value={formData.password}
-          onChange={handleChange}
-          required
-          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-          placeholder="Enter your password"
-        />
-        <p className="mt-1 text-xs text-gray-500">
-          Password must be at least 8 characters with uppercase, lowercase, and
-          number
-        </p>
-      </div>
-
-      <div>
-        <label
-          htmlFor="confirmPassword"
-          className="block text-sm font-medium text-gray-700"
-        >
-          Confirm Password
-        </label>
-        <input
-          id="confirmPassword"
-          name="confirmPassword"
-          type="password"
-          value={formData.confirmPassword}
-          onChange={handleChange}
-          required
-          className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-          placeholder="Confirm your password"
-        />
-      </div>
-
-      {error && (
-        <div className="text-red-600 text-sm bg-red-50 p-3 rounded-md">
-          {error}
-        </div>
-      )}
-
-      {success && (
-        <div className="text-green-600 text-sm bg-green-50 p-3 rounded-md">
-          {success}
-        </div>
-      )}
-
-      <button
-        type="submit"
-        disabled={isLoading}
-        className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+    <div className="my-9 px-3 flex w-full justify-center">
+      <form
+        onSubmit={handleSubmit}
+        className="w-full max-w-md mx-auto flex flex-col gap-6 bg-primary-clr p-6 rounded-lg shadow-md"
       >
-        {isLoading ? "Creating account..." : "Sign Up"}
-      </button>
-    </form>
+        <h2 className="text-2xl font-bold text-text-clr text-center">
+          Sign Up
+        </h2>
+
+        <div>
+          <label
+            htmlFor="email"
+            className="block text-sm font-medium text-text-clr mb-1"
+          >
+            Email
+          </label>
+          <input
+            id="email"
+            name="email"
+            type="email"
+            value={formData.email}
+            onChange={handleChange}
+            required
+            className="w-full px-4 py-2 bg-gray-100 text-text-clr border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:bg-background-clr/80 transition duration-200"
+            placeholder="Enter your email"
+          />
+        </div>
+
+        <div>
+          <label
+            htmlFor="full_name"
+            className="block text-sm font-medium text-text-clr mb-1"
+          >
+            Full Name
+          </label>
+          <input
+            id="full_name"
+            name="full_name"
+            type="text"
+            value={formData.full_name}
+            onChange={handleChange}
+            required
+            className="w-full px-4 py-2 bg-gray-100 text-text-clr border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:bg-background-clr/80 transition duration-200"
+            placeholder="Enter your full name"
+          />
+        </div>
+
+        <div>
+          <label
+            htmlFor="display_name"
+            className="block text-sm font-medium text-text-clr mb-1"
+          >
+            Display Name (Optional)
+          </label>
+          <input
+            id="display_name"
+            name="display_name"
+            type="text"
+            value={formData.display_name}
+            onChange={handleChange}
+            className="w-full px-4 py-2 bg-gray-100 text-text-clr border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:bg-background-clr/80 transition duration-200"
+            placeholder="Enter display name"
+          />
+        </div>
+
+        <div>
+          <label
+            htmlFor="password"
+            className="block text-sm font-medium text-text-clr mb-1"
+          >
+            Password
+          </label>
+          <div className="relative">
+            <input
+              id="password"
+              name="password"
+              type={showPassword ? "text" : "password"}
+              value={formData.password}
+              onChange={handleChange}
+              required
+              className="w-full px-4 py-2 bg-gray-100 text-text-clr border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:bg-background-clr/80 transition duration-200 pr-10"
+              placeholder="Enter your password"
+            />
+            <button
+              type="button"
+              onClick={togglePasswordVisibility}
+              className="absolute inset-y-0 right-0 px-3 flex items-center text-gray-500 focus:outline-none hover:text-gray-700 focus:ring-2 focus:ring-gray-700"
+              aria-label={showPassword ? "Hide password" : "Show password"}
+            >
+              {showPassword ? (
+                <IconEyeOff className="h-5 w-5" />
+              ) : (
+                <IconEye className="h-5 w-5" />
+              )}
+            </button>
+          </div>
+          <p className="mt-1 text-xs text-gray-500">
+            Password must be at least 8 characters with uppercase, lowercase, and number
+          </p>
+        </div>
+
+        <div>
+          <label
+            htmlFor="confirmPassword"
+            className="block text-sm font-medium text-text-clr mb-1"
+          >
+            Confirm Password
+          </label>
+          <div className="relative">
+            <input
+              id="confirmPassword"
+              name="confirmPassword"
+              type={showConfirmPassword ? "text" : "password"}
+              value={formData.confirmPassword}
+              onChange={handleChange}
+              required
+              className="w-full px-4 py-2 bg-gray-100 text-text-clr border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:bg-background-clr/80 transition duration-200 pr-10"
+              placeholder="Confirm your password"
+            />
+            <button
+              type="button"
+              onClick={toggleConfirmPasswordVisibility}
+              className="absolute inset-y-0 right-0 px-3 flex items-center text-gray-500 focus:outline-none hover:text-gray-700 focus:ring-2 focus:ring-gray-700"
+              aria-label={showConfirmPassword ? "Hide confirm password" : "Show confirm password"}
+            >
+              {showConfirmPassword ? (
+                <IconEyeOff className="h-5 w-5" />
+              ) : (
+                <IconEye className="h-5 w-5" />
+              )}
+            </button>
+          </div>
+        </div>
+
+        {error && (
+          <div className="text-red-600 text-sm p-3 rounded-md text-start">
+            {error}
+          </div>
+        )}
+
+        {success && (
+          <div className="text-green-600 text-sm p-3 rounded-md text-start">
+            {success}
+          </div>
+        )}
+
+        <button
+          type="submit"
+          disabled={isLoading}
+          className="w-full py-2 px-4 bg-background-clr text-text-clr font-medium rounded-md shadow-md hover:bg-background-clr/80 focus:outline-none focus:ring-2 focus:ring-text-clr/80 disabled:opacity-50 disabled:cursor-not-allowed transition duration-200"
+        >
+          {isLoading ? "Creating account..." : "Sign Up"}
+        </button>
+
+        <div className="text-center text-text-clr text-sm mt-1">
+          <Link href="/sign-in" className="text-text-clr hover:underline">
+            Already have an account? Sign In
+          </Link>
+        </div>
+      </form>
+    </div>
   );
 }
