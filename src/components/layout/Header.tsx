@@ -1,12 +1,14 @@
+"use client";
+
 import Image from "next/image";
-import ThemeToggle from "@/components/theme/Toggle";
 import Link from "next/link";
+import UserDropdown from "@/components/ui/HeaderDropdown";
 
 export default function Header() {
   return (
     <header className="flex mx-4 my-3">
       <Logo />
-      <ThemeToggle />
+      <UserDropdown />
     </header>
   );
 }
