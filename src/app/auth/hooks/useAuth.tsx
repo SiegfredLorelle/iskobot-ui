@@ -69,8 +69,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             isAuthenticated: true,
           });
 
-          // Verify token is still valid
-          verifyToken(token);
         } else {
           setAuthState((prev) => ({ ...prev, isLoading: false }));
         }
@@ -82,30 +80,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     loadAuthState();
   }, []);
-
-  // Verify token validity
-  const verifyToken = useCallback(
-    async (token: string) => {
-      try {
-        const response = await fetch(`${endpoint}/auth/me`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        if (!response.ok) {
-          throw new Error("Token verification failed");
-        }
-
-        const user = await response.json();
-        setAuthState((prev) => ({ ...prev, user }));
-      } catch (error) {
-        console.error("Token verification failed:", error);
-        clearAuthState();
-      }
-    },
-    [endpoint],
-  );
 
   // Clear auth state
   const clearAuthState = useCallback(() => {
