@@ -2,7 +2,7 @@
 
 import React, { useRef, useState, useEffect } from "react";
 import { IconPhoto, IconX } from "@tabler/icons-react";
-import ProtectedRoute from "@/app/admin/components/ProtectedRoute";
+import AdminProtectedRoute from "@/app/admin/components/AdminProtectedRoute";
 
 const VALID_TYPES = ["image/jpeg", "image/jpg", "image/png", "application/pdf"];
 const IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png"];
@@ -82,7 +82,7 @@ export default function UploadPage() {
   useEffect(() => () => previews.forEach(URL.revokeObjectURL), [previews]);
 
   return (
-    <ProtectedRoute>
+    <AdminProtectedRoute>
     <div className="flex justify-center items-center h-screen">
       <div className="relative text-center p-5 w-full max-w-2xl bg-white shadow-md rounded-lg mx-4">
         <h2 className="absolute left-5 text-base text-gray-700">
@@ -163,6 +163,6 @@ export default function UploadPage() {
         </button>
       </div>
     </div>
-    </ProtectedRoute>
+    </AdminProtectedRoute>
   );
 }
