@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useAuth } from "@/app/(auth)/hooks/useAuth";
 import { IconEye, IconEyeOff } from '@tabler/icons-react';
 import Link from "next/link";
+import AuthProtectedRoute from "../components/AuthProtectedRoute";
 
 export default function SignUpForm() {
   const [formData, setFormData] = useState({
@@ -66,11 +67,13 @@ export default function SignUpForm() {
   };
 
   return (
+    <AuthProtectedRoute>
+    
     <div className="my-9 px-3 flex w-full justify-center">
       <form
         onSubmit={handleSubmit}
         className="w-full max-w-md mx-auto flex flex-col gap-6 bg-primary-clr p-6 rounded-lg shadow-md"
-      >
+        >
         <h2 className="text-2xl font-bold text-text-clr text-center">
           Sign Up
         </h2>
@@ -91,7 +94,7 @@ export default function SignUpForm() {
             required
             className="w-full px-4 py-2 bg-gray-100 text-text-clr border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:bg-background-clr/80 transition duration-200"
             placeholder="Enter your email"
-          />
+            />
         </div>
 
         <div>
@@ -110,7 +113,7 @@ export default function SignUpForm() {
             required
             className="w-full px-4 py-2 bg-gray-100 text-text-clr border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:bg-background-clr/80 transition duration-200"
             placeholder="Enter your full name"
-          />
+            />
         </div>
 
         <div>
@@ -135,7 +138,7 @@ export default function SignUpForm() {
           <label
             htmlFor="password"
             className="block text-sm font-medium text-text-clr mb-1"
-          >
+            >
             Password
           </label>
           <div className="relative">
@@ -148,13 +151,13 @@ export default function SignUpForm() {
               required
               className="w-full px-4 py-2 bg-gray-100 text-text-clr border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:bg-background-clr/80 transition duration-200 pr-10"
               placeholder="Enter your password"
-            />
+              />
             <button
               type="button"
               onClick={togglePasswordVisibility}
               className="absolute inset-y-0 right-0 px-3 flex items-center text-gray-500 focus:outline-none hover:text-gray-700 focus:ring-2 focus:ring-gray-700"
               aria-label={showPassword ? "Hide password" : "Show password"}
-            >
+              >
               {showPassword ? (
                 <IconEyeOff className="h-5 w-5" />
               ) : (
@@ -184,13 +187,13 @@ export default function SignUpForm() {
               required
               className="w-full px-4 py-2 bg-gray-100 text-text-clr border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:bg-background-clr/80 transition duration-200 pr-10"
               placeholder="Confirm your password"
-            />
+              />
             <button
               type="button"
               onClick={toggleConfirmPasswordVisibility}
               className="absolute inset-y-0 right-0 px-3 flex items-center text-gray-500 focus:outline-none hover:text-gray-700 focus:ring-2 focus:ring-gray-700"
               aria-label={showConfirmPassword ? "Hide confirm password" : "Show confirm password"}
-            >
+              >
               {showConfirmPassword ? (
                 <IconEyeOff className="h-5 w-5" />
               ) : (
@@ -227,5 +230,6 @@ export default function SignUpForm() {
         </div>
       </form>
     </div>
+    </AuthProtectedRoute>
   );
 }

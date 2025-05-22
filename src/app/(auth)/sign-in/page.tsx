@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/app/(auth)/hooks/useAuth";
 import { IconEye, IconEyeOff } from '@tabler/icons-react';
 import Link from "next/link";
+import AuthProtectedRoute from "../components/AuthProtectedRoute";
 
 export default function SignInForm() {
   const [email, setEmail] = useState("");
@@ -36,6 +37,7 @@ export default function SignInForm() {
   };
 
   return (
+    <AuthProtectedRoute>
     <div className="my-9 px-3 flex w-full justify-center">
       <form
         onSubmit={handleSubmit}
@@ -49,7 +51,7 @@ export default function SignInForm() {
           <label
             htmlFor="email"
             className="block text-sm font-medium text-text-clr mb-1"
-          >
+            >
             Email
           </label>
           <input
@@ -79,7 +81,7 @@ export default function SignInForm() {
               required
               className="w-full px-4 py-2 bg-gray-100 text-text-clr border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:bg-background-clr/80 transition duration-200 pr-10"
               placeholder="Enter your password"
-            />
+              />
             <button
               type="button"
               onClick={togglePasswordVisibility}
@@ -105,7 +107,7 @@ export default function SignInForm() {
           type="submit"
           disabled={isLoading}
           className="w-full py-2 px-4 bg-background-clr text-text-clr font-medium rounded-md shadow-md hover:bg-background-clr/80 focus:outline-none focus:ring-2 focus:ring-text-clr/80 disabled:opacity-50 disabled:cursor-not-allowed transition duration-200"
-        >
+          >
           {isLoading ? "Signing in..." : "Sign In"}
         </button>
         
@@ -116,5 +118,6 @@ export default function SignInForm() {
         </div>
       </form>
     </div>
+    </AuthProtectedRoute>
   );
 }
