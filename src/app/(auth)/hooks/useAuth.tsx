@@ -68,7 +68,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             isLoading: false,
             isAuthenticated: true,
           });
-
         } else {
           setAuthState((prev) => ({ ...prev, isLoading: false }));
         }

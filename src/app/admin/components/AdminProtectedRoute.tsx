@@ -4,16 +4,16 @@ import { useAuth } from "@/app/(auth)/hooks/useAuth";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
-interface AdminProtectedRouteProps {
+type AdminProtectedRouteProps = {
   children: React.ReactNode;
   fallback?: React.ReactNode;
   redirectTo?: string;
-}
+};
 
-export default function AdminProtectedRoute({ 
-  children, 
+export default function AdminProtectedRoute({
+  children,
   fallback = <div>Loading...</div>,
-  redirectTo = "/" 
+  redirectTo = "/",
 }: AdminProtectedRouteProps) {
   const { isAuthenticated, isLoading } = useAuth();
   const router = useRouter();

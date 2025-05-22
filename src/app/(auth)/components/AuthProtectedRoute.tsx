@@ -4,16 +4,16 @@ import { useAuth } from "@/app/(auth)/hooks/useAuth";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
-interface AuthProtectedRouteProps {
+type AuthProtectedRouteProps = {
   children: React.ReactNode;
   fallback?: React.ReactNode;
   redirectTo?: string;
-}
+};
 
-export default function AuthProtectedRoute({ 
-  children, 
+export default function AuthProtectedRoute({
+  children,
   fallback = <div>Loading...</div>,
-  redirectTo = "/" 
+  redirectTo = "/",
 }: AuthProtectedRouteProps) {
   const { isAuthenticated, isLoading } = useAuth();
   const router = useRouter();

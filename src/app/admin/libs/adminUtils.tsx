@@ -64,10 +64,10 @@
 //     // Implement your permission logic here
 //     // This is a basic example - you might check user roles, permissions array, etc.
 //     if (!user) return false;
-    
+
 //     // Example: Check if user email domain is admin
 //     const isAdmin = user.email?.endsWith('@admin.com') || false;
-    
+
 //     switch (permission) {
 //       case 'admin':
 //         return isAdmin;
@@ -103,10 +103,10 @@
 //   children: React.ReactNode;
 // }
 
-// export function ConditionalRender({ 
-//   permission, 
-//   fallback = null, 
-//   children 
+// export function ConditionalRender({
+//   permission,
+//   fallback = null,
+//   children
 // }: ConditionalRenderProps) {
 //   const { hasPermission } = usePermissions();
 //   const { isAuthenticated } = useAuth();

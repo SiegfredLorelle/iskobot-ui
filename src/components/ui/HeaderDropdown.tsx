@@ -1,5 +1,10 @@
 import { useState, useRef, useEffect } from "react";
-import { IconMenu2, IconUser, IconLogout, IconLogin } from "@tabler/icons-react";
+import {
+  IconMenu2,
+  IconUser,
+  IconLogout,
+  IconLogin,
+} from "@tabler/icons-react";
 import ThemeToggle from "@/components/theme/Toggle";
 import Link from "next/link";
 import { useAuth } from "@/app/(auth)/hooks/useAuth";
@@ -11,7 +16,10 @@ export default function UserDropdown() {
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
         setIsOpen(false);
       }
     };
@@ -51,12 +59,10 @@ export default function UserDropdown() {
         <div className="absolute right-0 mt-2 w-48 bg-primary-clr rounded-md shadow-md z-10">
           <div className="p-2 flex flex-col gap-1">
             <ThemeToggle />
-            
+
             {isLoading ? (
               // Show loading state
-              <div className="px-3 py-2 text-text-clr text-sm">
-                Loading...
-              </div>
+              <div className="px-3 py-2 text-text-clr text-sm">Loading...</div>
             ) : isAuthenticated && user ? (
               // Show authenticated user options
               <>
@@ -73,7 +79,7 @@ export default function UserDropdown() {
                     </div>
                   </div>
                 </div>
-                
+
                 <Link
                   href="/admin"
                   className="flex items-center gap-2 px-3 py-2 text-text-clr text-sm hover:bg-background-clr/80 rounded-md transition duration-200"
@@ -82,7 +88,7 @@ export default function UserDropdown() {
                   <IconUser className="h-4 w-4" />
                   Admin
                 </Link>
-                
+
                 <button
                   onClick={handleSignOut}
                   className="flex items-center gap-2 w-full px-3 py-2 text-text-clr text-sm hover:bg-background-clr/80 rounded-md transition duration-200 text-left"
@@ -117,4 +123,4 @@ export default function UserDropdown() {
       )}
     </div>
   );
-};
+}
