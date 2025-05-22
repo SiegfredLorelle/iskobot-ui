@@ -130,7 +130,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
         if (!response.ok) {
           const errorData = await response.json();
-          throw new Error(errorData.detail || "Sign in failed");
+          if (Array.isArray(errorData.detail) && errorData.detail.length > 0) {
+            // Extract the 'msg' from the first error object in the array
+            throw new Error(errorData.detail[0].msg || "Sign in failed");
+          } else {
+            throw new Error(errorData.detail || "Sign in failed");
+          }
         }
 
         const data = await response.json();
@@ -174,7 +179,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
         if (!response.ok) {
           const errorData = await response.json();
-          throw new Error(errorData.detail || "Sign up failed");
+          if (Array.isArray(errorData.detail) && errorData.detail.length > 0) {
+            // Extract the 'msg' from the first error object in the array
+            throw new Error(errorData.detail[0].msg || "Sign up failed");
+          } else {
+            throw new Error(errorData.detail || "Sign up failed");
+          }
         }
 
         const data = await response.json();
