@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useAuth } from "@/app/auth/hooks/useAuth";
+import { useAuth } from "@/app/(auth)/hooks/useAuth";
 
 export default function SignUpForm() {
   const [formData, setFormData] = useState({

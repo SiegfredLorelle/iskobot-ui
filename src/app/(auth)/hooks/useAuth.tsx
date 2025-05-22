@@ -7,8 +7,8 @@ import {
   createContext,
   useContext,
 } from "react";
-import type { AuthStateType } from "@/app/auth/types/AuthStateType";
-import type { UserType } from "@/app/auth/types/UserType";
+import type { AuthStateType } from "@/app/(auth)/types/AuthStateType";
+import type { UserType } from "@/app/(auth)/types/UserType";
 
 type AuthContextType = {
   signIn: (email: string, password: string) => Promise<void>;
