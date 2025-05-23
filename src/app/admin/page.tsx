@@ -55,12 +55,9 @@ export default function RAGAdminUI(): JSX.Element {
     error,
     uploadFiles,
     deleteFile,
-    toggleFileVectorization,
     fetchFiles,
     addWebsite: addWebsiteHook,
-    scrapeWebsite,
     deleteWebsite: deleteWebsiteHook,
-    toggleWebsiteVectorization,
     fetchWebsites,
     refreshAll,
   } = useRAG();
@@ -168,13 +165,6 @@ export default function RAGAdminUI(): JSX.Element {
     }
   };
 
-  const handleToggleFileVectorization = async (
-    fileId: string,
-    currentVectorized: boolean,
-  ): Promise<void> => {
-    await toggleFileVectorization(fileId, !currentVectorized);
-  };
-
   const handleAddWebsite = async (): Promise<void> => {
     if (!newWebsite.trim()) return;
 
@@ -191,15 +181,6 @@ export default function RAGAdminUI(): JSX.Element {
     }
   };
 
-  const handleScrapeWebsite = async (websiteId: string): Promise<void> => {
-    const success = await scrapeWebsite(websiteId);
-    if (success) {
-      alert("Website scraped successfully!");
-    } else {
-      alert("Error scraping website");
-    }
-  };
-
   const handleDeleteWebsite = async (websiteId: string): Promise<void> => {
     if (!confirm("Are you sure you want to remove this website?")) return;
 
@@ -207,13 +188,6 @@ export default function RAGAdminUI(): JSX.Element {
     if (!success) {
       alert("Error deleting website");
     }
-  };
-
-  const handleToggleWebsiteVectorization = async (
-    websiteId: string,
-    currentVectorized: boolean,
-  ): Promise<void> => {
-    await toggleWebsiteVectorization(websiteId, !currentVectorized);
   };
 
   const handleDrop = (e: React.DragEvent<HTMLDivElement>): void => {
@@ -416,28 +390,6 @@ export default function RAGAdminUI(): JSX.Element {
                                   <span className="text-xs text-text-clr/80">
                                     Vectorized:
                                   </span>
-                                  <button
-                                    onClick={() =>
-                                      handleToggleFileVectorization(
-                                        file.id,
-                                        file.vectorized,
-                                      )
-                                    }
-                                    disabled={loading}
-                                    className={`relative inline-flex h-4 w-8 items-center rounded-full transition-colors ${
-                                      file.vectorized
-                                        ? "bg-text-clr"
-                                        : "bg-foreground-clr/30"
-                                    }`}
-                                  >
-                                    <span
-                                      className={`inline-block h-3 w-3 transform rounded-full bg-primary-clr transition-transform ${
-                                        file.vectorized
-                                          ? "translate-x-4"
-                                          : "translate-x-0.5"
-                                      }`}
-                                    />
-                                  </button>
                                 </div>
                                 <button
                                   onClick={() =>
@@ -524,44 +476,10 @@ export default function RAGAdminUI(): JSX.Element {
                                 </div>
                               </div>
                               <div className="flex items-center space-x-4">
-                                <button
-                                  onClick={() =>
-                                    handleScrapeWebsite(website.id)
-                                  }
-                                  disabled={
-                                    loading || website.status === "pending"
-                                  }
-                                  className="text-blue-500 hover:text-blue-700 disabled:opacity-50"
-                                  title="Scrape website"
-                                >
-                                  {/* <IconRefresh size={16} /> */}
-                                </button>
                                 <div className="flex items-center space-x-2">
                                   <span className="text-xs text-text-clr/80">
                                     Vectorized:
                                   </span>
-                                  <button
-                                    onClick={() =>
-                                      handleToggleWebsiteVectorization(
-                                        website.id,
-                                        website.vectorized,
-                                      )
-                                    }
-                                    disabled={loading}
-                                    className={`relative inline-flex h-4 w-8 items-center rounded-full transition-colors ${
-                                      website.vectorized
-                                        ? "bg-text-clr"
-                                        : "bg-foreground-clr/30"
-                                    }`}
-                                  >
-                                    <span
-                                      className={`inline-block h-3 w-3 transform rounded-full bg-primary-clr transition-transform ${
-                                        website.vectorized
-                                          ? "translate-x-4"
-                                          : "translate-x-0.5"
-                                      }`}
-                                    />
-                                  </button>
                                 </div>
                                 <button
                                   onClick={() =>

@@ -172,53 +172,6 @@ export function useFileManagement() {
     [token, endpoint],
   );
 
-  // Toggle vectorization
-  const toggleFileVectorization = useCallback(
-    async (fileId: string, vectorized: boolean): Promise<boolean> => {
-      if (!token) return false;
-
-      setLoading(true);
-      setError(null);
-
-      try {
-        const response = await fetch(
-          `${endpoint}/rag/files/${fileId}/vectorization`,
-          {
-            method: "PATCH",
-            headers: {
-              ...getAuthHeaders(),
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ vectorized }),
-          },
-        );
-
-        if (!response.ok) {
-          const errorData: ApiError = await response.json();
-          throw new Error(handleApiError(errorData));
-        }
-
-        // Update local state
-        setFiles((prev) =>
-          prev.map((file) =>
-            file.id === fileId ? { ...file, vectorized } : file,
-          ),
-        );
-
-        return true;
-      } catch (err) {
-        const errorMessage =
-          err instanceof Error ? err.message : "An unexpected error occurred";
-        setError(errorMessage);
-        console.error("Error toggling vectorization:", err);
-        return false;
-      } finally {
-        setLoading(false);
-      }
-    },
-    [token, endpoint],
-  );
-
   return {
     files,
     loading,
@@ -226,7 +179,6 @@ export function useFileManagement() {
     fetchFiles,
     uploadFiles,
     deleteFile,
-    toggleFileVectorization,
   };
 }
 
@@ -323,79 +275,6 @@ export function useWebsiteManagement() {
     [token, endpoint],
   );
 
-  // Scrape website
-  const scrapeWebsite = useCallback(
-    async (websiteId: string): Promise<boolean> => {
-      if (!token) return false;
-
-      setLoading(true);
-      setError(null);
-
-      try {
-        // Update local state to pending immediately
-        setWebsites((prev) =>
-          prev.map((site) =>
-            site.id === websiteId
-              ? { ...site, status: "pending" as const }
-              : site,
-          ),
-        );
-
-        const response = await fetch(
-          `${endpoint}/rag/websites/${websiteId}/scrape`,
-          {
-            method: "POST",
-            headers: getAuthHeaders(),
-          },
-        );
-
-        if (!response.ok) {
-          const errorData: ApiError = await response.json();
-
-          // Update local state to error
-          setWebsites((prev) =>
-            prev.map((site) =>
-              site.id === websiteId
-                ? {
-                    ...site,
-                    status: "error" as const,
-                    error_message: handleApiError(errorData),
-                  }
-                : site,
-            ),
-          );
-
-          throw new Error(handleApiError(errorData));
-        }
-
-        // Update local state to success
-        setWebsites((prev) =>
-          prev.map((site) =>
-            site.id === websiteId
-              ? {
-                  ...site,
-                  status: "success" as const,
-                  last_scraped: new Date().toISOString(),
-                  error_message: undefined,
-                }
-              : site,
-          ),
-        );
-
-        return true;
-      } catch (err) {
-        const errorMessage =
-          err instanceof Error ? err.message : "An unexpected error occurred";
-        setError(errorMessage);
-        console.error("Error scraping website:", err);
-        return false;
-      } finally {
-        setLoading(false);
-      }
-    },
-    [token, endpoint],
-  );
-
   // Delete website
   const deleteWebsite = useCallback(
     async (websiteId: string): Promise<boolean> => {
@@ -431,59 +310,13 @@ export function useWebsiteManagement() {
     [token, endpoint],
   );
 
-  // Toggle website vectorization
-  const toggleWebsiteVectorization = useCallback(
-    async (websiteId: string, vectorized: boolean): Promise<boolean> => {
-      if (!token) return false;
-
-      setLoading(true);
-      setError(null);
-
-      try {
-        const response = await fetch(
-          `${endpoint}/rag/websites/${websiteId}/vectorization`,
-          {
-            method: "PATCH",
-            headers: getAuthHeaders(),
-            body: JSON.stringify({ vectorized }),
-          },
-        );
-
-        if (!response.ok) {
-          const errorData: ApiError = await response.json();
-          throw new Error(handleApiError(errorData));
-        }
-
-        // Update local state
-        setWebsites((prev) =>
-          prev.map((site) =>
-            site.id === websiteId ? { ...site, vectorized } : site,
-          ),
-        );
-
-        return true;
-      } catch (err) {
-        const errorMessage =
-          err instanceof Error ? err.message : "An unexpected error occurred";
-        setError(errorMessage);
-        console.error("Error toggling website vectorization:", err);
-        return false;
-      } finally {
-        setLoading(false);
-      }
-    },
-    [token, endpoint],
-  );
-
   return {
     websites,
     loading,
     error,
     fetchWebsites,
     addWebsite,
-    scrapeWebsite,
     deleteWebsite,
-    toggleWebsiteVectorization,
   };
 }
 
@@ -511,15 +344,12 @@ export function useRAG() {
     files: fileManagement.files,
     uploadFiles: fileManagement.uploadFiles,
     deleteFile: fileManagement.deleteFile,
-    toggleFileVectorization: fileManagement.toggleFileVectorization,
     fetchFiles: fileManagement.fetchFiles,
 
     // Website management
     websites: websiteManagement.websites,
     addWebsite: websiteManagement.addWebsite,
-    scrapeWebsite: websiteManagement.scrapeWebsite,
     deleteWebsite: websiteManagement.deleteWebsite,
-    toggleWebsiteVectorization: websiteManagement.toggleWebsiteVectorization,
     fetchWebsites: websiteManagement.fetchWebsites,
 
     // Combined states
