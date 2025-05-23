@@ -156,7 +156,6 @@ export function useFileManagement() {
           throw new Error(handleApiError(errorData));
         }
 
-        // Update local state
         setFiles((prev) => prev.filter((file) => file.id !== fileId));
         return true;
       } catch (err) {

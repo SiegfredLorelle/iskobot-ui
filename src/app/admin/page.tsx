@@ -26,7 +26,6 @@ const VALID_TYPES = [
   "application/pdf",
 ] as const;
 const IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png"] as const;
-const MAX_FILES = 10;
 
 type ValidFileType = (typeof VALID_TYPES)[number];
 type ImageFileType = (typeof IMAGE_TYPES)[number];
@@ -85,10 +84,6 @@ export default function RAGAdminUI(): JSX.Element {
   };
 
   const addFiles = (newFiles: File[]): void => {
-    if (newFiles.length + files.length > MAX_FILES) {
-      alert(`Maximum ${MAX_FILES} files allowed.`);
-      return;
-    }
     const validFiles = newFiles.filter((f) =>
       VALID_TYPES.includes(f.type as ValidFileType),
     );
@@ -158,9 +153,7 @@ export default function RAGAdminUI(): JSX.Element {
     if (!confirm("Are you sure you want to delete this file?")) return;
 
     const success = await deleteFile(fileId);
-    if (success) {
-      alert("File deleted successfully!");
-    } else {
+    if (!success) {
       alert("Error deleting file");
     }
   };
