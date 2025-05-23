@@ -32,7 +32,7 @@ const IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png"] as const;
 type ValidFileType = (typeof VALID_TYPES)[number];
 type ImageFileType = (typeof IMAGE_TYPES)[number];
 
-type TabType = "upload" | "storage" | "websites";
+type TabType = "files" | "websites";
 
 type TabConfig = {
   id: TabType;
@@ -40,24 +40,21 @@ type TabConfig = {
   icon: React.ComponentType<{ size?: number }>;
 };
 
+// Move IngestButton outside to prevent re-creation
 function IngestButton() {
-  const { handleIngest, ingestStats, ingesting, error, completedAt } =
-    useIngestion();
+  const { handleIngest, ingestStats, ingesting, error } = useIngestion();
 
-  // Use completedAt timestamp to ensure toast triggers on each completion
   useEffect(() => {
-    if (completedAt) {
-      console.log("Ingestion completed, showing success toast"); // Debug log
+    if (ingestStats) {
       toast.dismiss();
       toast.success("Ingestion complete! 🎉");
     }
-  }, [completedAt, ingestStats]);
+  }, [ingestStats]);
 
   useEffect(() => {
     if (error) {
-      console.log("Ingestion error, showing error toast:", error); // Debug log
       toast.dismiss();
-      toast.error(`Ingestion failed: ${error}`);
+      toast.error(`Ingestion failed!`);
     }
   }, [error]);
 
@@ -77,17 +74,8 @@ Do you want to continue?`,
 
     if (!confirmed) return;
 
-    console.log("Starting ingestion process..."); // Debug log
-    const loadingToast = toast.loading("Ingestion started...");
-
-    try {
-      await handleIngest();
-      // Don't dismiss here - let the useEffect handle success/error toasts
-    } catch (err) {
-      console.error("Error in runWithToast:", err);
-      toast.dismiss(loadingToast);
-      toast.error("Failed to start ingestion");
-    }
+    toast.loading("Ingestion started...");
+    await handleIngest();
   };
 
   return (
@@ -95,7 +83,7 @@ Do you want to continue?`,
       <button
         onClick={runWithToast}
         disabled={ingesting}
-        className="mt-4 w-full py-3 px-6 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-accent-clr to-foreground-clr hover:from-foreground-clr hover:to-accent-clr transition-all duration-300 ease-in-out shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+        className="mt-6 w-full py-3 px-6 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-accent-clr to-foreground-clr hover:from-foreground-clr hover:to-accent-clr transition-all duration-300 ease-in-out shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {ingesting
           ? "Ingesting..."
@@ -106,7 +94,7 @@ Do you want to continue?`,
 }
 
 export default function RAGAdminUI(): JSX.Element {
-  const [activeTab, setActiveTab] = useState<TabType>("upload");
+  const [activeTab, setActiveTab] = useState<TabType>("files");
   const [files, setFiles] = useState<File[]>([]);
   const [previews, setPreviews] = useState<string[]>([]);
   const [preview, setPreview] = useState<string | null>(null);
@@ -155,7 +143,7 @@ export default function RAGAdminUI(): JSX.Element {
       VALID_TYPES.includes(f.type as ValidFileType),
     );
     if (validFiles.length !== newFiles.length) {
-      alert("Only JPEG, JPG, PNG, PDF files are supported.");
+      alert("Only PDF, DOCX, or PPTX files are supported.");
       return;
     }
     const uniqueFiles = validFiles.filter(
@@ -272,8 +260,7 @@ export default function RAGAdminUI(): JSX.Element {
   }, [previews]);
 
   const tabs: TabConfig[] = [
-    { id: "upload", name: "Upload Files", icon: IconUpload },
-    { id: "storage", name: "Storage Files", icon: IconFile },
+    { id: "files", name: "Files", icon: IconFile },
     { id: "websites", name: "Websites", icon: IconGlobe },
   ];
 
@@ -302,151 +289,152 @@ export default function RAGAdminUI(): JSX.Element {
             </div>
 
             <div className="p-6">
-              {activeTab === "upload" && (
-                <div className="max-w-2xl mx-auto">
-                  <h2 className="text-xl font-bold text-text-clr mb-4">
-                    Upload New Files
-                  </h2>
-                  <div
-                    className="h-64 border-2 border-dashed border-gray-500 rounded-lg bg-foreground-clr/10 flex flex-col items-center justify-center hover:border-gray-600 transition-colors"
-                    onDrop={handleDrop}
-                    onDragOver={handleDragOver}
-                  >
-                    <IconPhoto size={48} className="text-text-clr mb-3" />
-                    <p className="text-base font-medium text-text-clr mb-1">
-                      Drag & Drop Files
-                    </p>
-                    <p className="text-sm text-text-clr mb-1">
-                      or{" "}
-                      <span
-                        className="text-text-clr underline cursor-pointer hover:text-accent-clr"
-                        onClick={() => fileInput.current?.click()}
-                      >
-                        browse
-                      </span>
-                    </p>
-                    <p className="text-xs text-text-clr">
-                      Supports: JPEG, JPG, PNG, PDF
-                    </p>
-                    <input
-                      type="file"
-                      ref={fileInput}
-                      onChange={handleFileInputChange}
-                      accept={VALID_TYPES.join(",")}
-                      multiple
-                      className="hidden"
-                    />
+              {activeTab === "files" && (
+                <div>
+                  {/* Upload Section */}
+                  <div className="max-w-2xl mx-auto mb-8">
+                    <h2 className="text-xl font-bold text-text-clr mb-4">
+                      Upload New Files
+                    </h2>
+                    <div
+                      className="h-64 border-2 border-dashed border-gray-500 rounded-lg bg-foreground-clr/10 flex flex-col items-center justify-center hover:border-gray-600 transition-colors"
+                      onDrop={handleDrop}
+                      onDragOver={handleDragOver}
+                    >
+                      <IconPhoto size={48} className="text-text-clr mb-3" />
+                      <p className="text-base font-medium text-text-clr mb-1">
+                        Drag & Drop Files
+                      </p>
+                      <p className="text-sm text-text-clr mb-1">
+                        or{" "}
+                        <span
+                          className="text-text-clr underline cursor-pointer hover:text-accent-clr"
+                          onClick={() => fileInput.current?.click()}
+                        >
+                          browse
+                        </span>
+                      </p>
+                      <p className="text-xs text-text-clr">
+                        Supports: PDF, DOCX, PPTX
+                      </p>
+                      <input
+                        type="file"
+                        ref={fileInput}
+                        onChange={handleFileInputChange}
+                        accept={VALID_TYPES.join(",")}
+                        multiple
+                        className="hidden"
+                      />
+                    </div>
+
+                    {files.length > 0 && (
+                      <div className="mt-4 space-y-2">
+                        <h3 className="text-sm font-medium text-text-clr">
+                          Selected Files:
+                        </h3>
+                        {files.map((file, index) => (
+                          <div
+                            key={index}
+                            className="flex items-center justify-between bg-background p-3 rounded-md border border-foreground-clr"
+                          >
+                            <div className="flex items-center space-x-2">
+                              <IconFile size={16} className="text-text-clr" />
+                              <span className="text-sm text-text-clr">
+                                {file.name}
+                              </span>
+                              <span className="text-xs text-text-clr/80">
+                                ({formatFileSize(file.size)})
+                              </span>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <button
+                                onClick={() => handlePreview(file, index)}
+                                className="text-text-clr"
+                                title="Preview"
+                              >
+                                <IconEye size={16} />
+                              </button>
+                              <button
+                                onClick={() => handleClear(index)}
+                                className="text-red-500 hover:text-red-700"
+                                title="Remove"
+                              >
+                                <IconX size={16} />
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                        <button
+                          onClick={handleUpload}
+                          disabled={loading}
+                          className="w-full mt-4 px-4 py-2 border border-foreground-clr/30 rounded-md text-sm text-text-clr hover:bg-foreground-clr/10 disabled:opacity-50 transition duration-200"
+                        >
+                          {loading ? "Uploading..." : "Upload Files"}
+                        </button>
+                      </div>
+                    )}
                   </div>
 
-                  {files.length > 0 && (
-                    <div className="mt-4 space-y-2">
-                      <h3 className="text-sm font-medium text-text-clr">
-                        Selected Files:
-                      </h3>
-                      {files.map((file, index) => (
-                        <div
-                          key={index}
-                          className="flex items-center justify-between bg-background p-3 rounded-md border border-foreground-clr"
-                        >
-                          <div className="flex items-center space-x-2">
-                            <IconFile size={16} className="text-text-clr" />
-                            <span className="text-sm text-text-clr">
-                              {file.name}
-                            </span>
-                            <span className="text-xs text-text-clr/80">
-                              ({formatFileSize(file.size)})
-                            </span>
-                          </div>
-                          <div className="flex items-center space-x-2">
-                            <button
-                              onClick={() => handlePreview(file, index)}
-                              className="text-text-clr"
-                              title="Preview"
-                            >
-                              <IconEye size={16} />
-                            </button>
-                            <button
-                              onClick={() => handleClear(index)}
-                              className="text-red-500 hover:text-red-700"
-                              title="Remove"
-                            >
-                              <IconX size={16} />
-                            </button>
-                          </div>
-                        </div>
-                      ))}
+                  {/* Storage Files Section */}
+                  <div>
+                    <div className="flex justify-between items-center mb-6">
+                      <h2 className="text-xl font-bold text-text-clr">
+                        Uploaded Files
+                      </h2>
                       <button
-                        onClick={handleUpload}
+                        onClick={fetchFiles}
                         disabled={loading}
-                        className="w-full mt-4 px-4 py-2 border border-foreground-clr/30 rounded-md text-sm text-text-clr hover:bg-foreground-clr/10 disabled:opacity-50 transition duration-200"
+                        className="flex items-center space-x-2 px-3 py-2 border border-foreground-clr/30 rounded-md text-sm text-text-clr hover:bg-foreground-clr/10 disabled:opacity-50 transition duration-200"
                       >
-                        {loading ? "Uploading..." : "Upload Files"}
+                        <IconRefresh size={16} />
+                        <span>Refresh</span>
                       </button>
                     </div>
-                  )}
-                </div>
-              )}
 
-              {activeTab === "storage" && (
-                <div>
-                  <div className="flex justify-between items-center mb-6">
-                    <h2 className="text-xl font-bold text-text-clr">
-                      Storage Files
-                    </h2>
-                    <button
-                      onClick={fetchFiles}
-                      disabled={loading}
-                      className="flex items-center space-x-2 px-3 py-2 border border-foreground-clr/30 rounded-md text-sm text-text-clr hover:bg-foreground-clr/10 disabled:opacity-50 transition duration-200"
-                    >
-                      <IconRefresh size={16} />
-                      <span>Refresh</span>
-                    </button>
-                  </div>
-
-                  <div className="bg-primary-clr/10 border border-gray-200/20 shadow-md overflow-hidden rounded-md">
-                    {storageFiles.length === 0 ? (
-                      <div className="px-6 py-8 text-center text-text-clr/60">
-                        No files uploaded yet.
-                      </div>
-                    ) : (
-                      <ul className="divide-y divide-foreground-clr/20">
-                        {storageFiles.map((file) => (
-                          <li key={file.id} className="px-6 py-4">
-                            <div className="flex items-center justify-between">
-                              <div className="flex items-center space-x-3">
-                                <IconFile size={20} className="text-text-clr" />
-                                <div>
-                                  <p className="text-sm font-medium text-text-clr">
-                                    {file.name}
-                                  </p>
-                                  <p className="text-xs text-text-clr/80">
-                                    {formatFileSize(file.size)} • Uploaded{" "}
-                                    {formatDate(file.uploaded_at)}
-                                  </p>
+                    <div className="bg-primary-clr/10 border border-gray-200/20 shadow-md overflow-hidden rounded-md">
+                      {storageFiles.length === 0 ? (
+                        <div className="px-6 py-8 text-center text-text-clr/60">
+                          No files uploaded yet.
+                        </div>
+                      ) : (
+                        <ul className="divide-y divide-foreground-clr/20">
+                          {storageFiles.map((file) => (
+                            <li key={file.id} className="px-6 py-4">
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center space-x-3">
+                                  <IconFile
+                                    size={20}
+                                    className="text-text-clr"
+                                  />
+                                  <div>
+                                    <p className="text-sm font-medium text-text-clr">
+                                      {file.name}
+                                    </p>
+                                    <p className="text-xs text-text-clr/80">
+                                      {formatFileSize(file.size)} • Uploaded{" "}
+                                      {formatDate(file.uploaded_at)}
+                                    </p>
+                                  </div>
+                                </div>
+                                <div className="flex items-center space-x-4">
+                                  <div className="flex items-center space-x-2"></div>
+                                  <button
+                                    onClick={() =>
+                                      handleDeleteStorageFile(file.id)
+                                    }
+                                    className="text-red-500 hover:text-red-700"
+                                    title="Delete file"
+                                    disabled={loading}
+                                  >
+                                    <IconTrash size={16} />
+                                  </button>
                                 </div>
                               </div>
-                              <div className="flex items-center space-x-4">
-                                <div className="flex items-center space-x-2">
-                                  <span className="text-xs text-text-clr/80">
-                                    Vectorized:
-                                  </span>
-                                </div>
-                                <button
-                                  onClick={() =>
-                                    handleDeleteStorageFile(file.id)
-                                  }
-                                  className="text-red-500 hover:text-red-700"
-                                  title="Delete file"
-                                  disabled={loading}
-                                >
-                                  <IconTrash size={16} />
-                                </button>
-                              </div>
-                            </div>
-                          </li>
-                        ))}
-                      </ul>
-                    )}
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </div>
                   </div>
                 </div>
               )}
@@ -513,11 +501,7 @@ export default function RAGAdminUI(): JSX.Element {
                                 </div>
                               </div>
                               <div className="flex items-center space-x-4">
-                                <div className="flex items-center space-x-2">
-                                  <span className="text-xs text-text-clr/80">
-                                    Vectorized:
-                                  </span>
-                                </div>
+                                <div className="flex items-center space-x-2"></div>
                                 <button
                                   onClick={() =>
                                     handleDeleteWebsite(website.id)
