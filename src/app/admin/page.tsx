@@ -19,6 +19,7 @@ import {
 import { useRAG } from "@/app/admin/hooks/useRAG";
 import AdminProtectedRoute from "./components/AdminProtectedRoute";
 import { useIngestion } from "@/app/admin/hooks/useIngestor";
+import { toast } from "react-hot-toast";
 
 const VALID_TYPES = [
   "image/jpeg",
@@ -38,6 +39,71 @@ type TabConfig = {
   name: string;
   icon: React.ComponentType<{ size?: number }>;
 };
+
+function IngestButton() {
+  const { handleIngest, ingestStats, ingesting, error, completedAt } =
+    useIngestion();
+
+  // Use completedAt timestamp to ensure toast triggers on each completion
+  useEffect(() => {
+    if (completedAt) {
+      console.log("Ingestion completed, showing success toast"); // Debug log
+      toast.dismiss();
+      toast.success("Ingestion complete! 🎉");
+    }
+  }, [completedAt, ingestStats]);
+
+  useEffect(() => {
+    if (error) {
+      console.log("Ingestion error, showing error toast:", error); // Debug log
+      toast.dismiss();
+      toast.error(`Ingestion failed: ${error}`);
+    }
+  }, [error]);
+
+  const runWithToast = async () => {
+    // Show confirmation dialog with warning
+    const confirmed = window.confirm(
+      `⚠️ Ingestion and vectorization may take several hours, depending on the number of files and websites. During this process, Iskobot will be temporarily unavailable for answering questions. 😔
+
+This process will:
+• Extract content from all uploaded files
+• Scrape all listed websites
+• Generate vector embeddings for search
+• Cannot be paused or stopped once started
+
+Do you want to continue?`,
+    );
+
+    if (!confirmed) return;
+
+    console.log("Starting ingestion process..."); // Debug log
+    const loadingToast = toast.loading("Ingestion started...");
+
+    try {
+      await handleIngest();
+      // Don't dismiss here - let the useEffect handle success/error toasts
+    } catch (err) {
+      console.error("Error in runWithToast:", err);
+      toast.dismiss(loadingToast);
+      toast.error("Failed to start ingestion");
+    }
+  };
+
+  return (
+    <div>
+      <button
+        onClick={runWithToast}
+        disabled={ingesting}
+        className="mt-4 w-full py-3 px-6 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-accent-clr to-foreground-clr hover:from-foreground-clr hover:to-accent-clr transition-all duration-300 ease-in-out shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        {ingesting
+          ? "Ingesting..."
+          : "Ingest and Vectorize All Files and Websites for Iskobot's Knowledge"}
+      </button>
+    </div>
+  );
+}
 
 export default function RAGAdminUI(): JSX.Element {
   const [activeTab, setActiveTab] = useState<TabType>("upload");
@@ -210,35 +276,6 @@ export default function RAGAdminUI(): JSX.Element {
     { id: "storage", name: "Storage Files", icon: IconFile },
     { id: "websites", name: "Websites", icon: IconGlobe },
   ];
-
-  function IngestButton() {
-    const { handleIngest, ingestStats, ingesting, error } = useIngestion();
-
-    return (
-      <div className="space-y-3">
-        <button
-          onClick={handleIngest}
-          disabled={ingesting}
-          className="mt-6 w-full py-3 px-6 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-accent-clr to-foreground-clr hover:from-foreground-clr hover:to-accent-clr transition-all duration-300 ease-in-out shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {ingesting ? "Ingesting..." : "Ingest and Vectorize All Files and Websites for Iskobot's Knowledge"}
-        </button>
-
-        {error && <p className="text-red-500">⚠️ {error}</p>}
-
-        {ingestStats && (
-          <div className="text-sm text-gray-700 border rounded p-3 bg-gray-50">
-            <p>✅ <strong>Ingestion Complete</strong></p>
-            <ul className="mt-1 list-disc list-inside">
-              <li>Total Chunks: {ingestStats.total_chunks}</li>
-              <li>Batches Saved: {ingestStats.batches_saved}</li>
-              <li>Avg Chunk Size: {ingestStats.avg_chunk_size} characters</li>
-            </ul>
-          </div>
-        )}
-      </div>
-    );
-  }
 
   return (
     <AdminProtectedRoute>
