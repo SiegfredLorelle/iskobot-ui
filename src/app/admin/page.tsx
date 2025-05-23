@@ -18,6 +18,7 @@ import {
 } from "@tabler/icons-react";
 import { useRAG } from "@/app/admin/hooks/useRAG";
 import AdminProtectedRoute from "./components/AdminProtectedRoute";
+import { useIngestion } from "@/app/admin/hooks/useIngestor";
 
 const VALID_TYPES = [
   "image/jpeg",
@@ -210,30 +211,39 @@ export default function RAGAdminUI(): JSX.Element {
     { id: "websites", name: "Websites", icon: IconGlobe },
   ];
 
-  const getStatusColor = (status: "success" | "pending" | "error"): string => {
-    switch (status) {
-      case "success":
-        return "bg-green-600 text-white";
-      case "pending":
-        return "bg-yellow-500 text-white";
-      case "error":
-        return "bg-red-600 text-white";
-      default:
-        return "bg-gray-400 text-white";
-    }
-  };
+  function IngestButton() {
+    const { handleIngest, ingestStats, ingesting, error } = useIngestion();
+
+    return (
+      <div className="space-y-3">
+        <button
+          onClick={handleIngest}
+          disabled={ingesting}
+          className="mt-6 w-full py-3 px-6 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-accent-clr to-foreground-clr hover:from-foreground-clr hover:to-accent-clr transition-all duration-300 ease-in-out shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {ingesting ? "Ingesting..." : "Ingest and Vectorize All Files and Websites for Iskobot's Knowledge"}
+        </button>
+
+        {error && <p className="text-red-500">⚠️ {error}</p>}
+
+        {ingestStats && (
+          <div className="text-sm text-gray-700 border rounded p-3 bg-gray-50">
+            <p>✅ <strong>Ingestion Complete</strong></p>
+            <ul className="mt-1 list-disc list-inside">
+              <li>Total Chunks: {ingestStats.total_chunks}</li>
+              <li>Batches Saved: {ingestStats.batches_saved}</li>
+              <li>Avg Chunk Size: {ingestStats.avg_chunk_size} characters</li>
+            </ul>
+          </div>
+        )}
+      </div>
+    );
+  }
 
   return (
     <AdminProtectedRoute>
       <div className="min-h-screen py-8 text-text-clr">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Display global error if any */}
-          {/* {error && (
-          <div className="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded-md">
-            <p className="text-sm">{error}</p>
-          </div>
-        )} */}
-
           <div className="bg-primary-clr/10 backdrop-blur-lg backdrop-grayscale border border-gray-500/20 shadow-md rounded-xl">
             <div className="">
               <nav className="-mb-px flex space-x-8 px-6">
@@ -454,9 +464,6 @@ export default function RAGAdminUI(): JSX.Element {
                                       Last scraped:{" "}
                                       {formatDate(website.last_scraped)}
                                     </span>
-                                    {/* <span className={`px-2 py-1 rounded-full ${getStatusColor(website.status)}`}>
-                                    {website.status}
-                                  </span> */}
                                     {website.error_message && (
                                       <span
                                         className="text-red-500"
@@ -495,6 +502,8 @@ export default function RAGAdminUI(): JSX.Element {
               )}
             </div>
           </div>
+
+          <IngestButton />
 
           {preview && (
             <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
