@@ -56,7 +56,9 @@ export function useFileManagement() {
       if (Array.isArray(error.detail) && error.detail.length > 0) {
         return error.detail[0].msg || "An error occurred";
       }
-      return error.detail;
+      return typeof error.detail === "string"
+        ? error.detail
+        : JSON.stringify(error.detail);
     }
     return error.message || "An unexpected error occurred";
   };
@@ -247,11 +249,12 @@ export function useWebsiteManagement() {
       if (Array.isArray(error.detail) && error.detail.length > 0) {
         return error.detail[0].msg || "An error occurred";
       }
-      return error.detail;
+      return typeof error.detail === "string"
+        ? error.detail
+        : JSON.stringify(error.detail);
     }
     return error.message || "An unexpected error occurred";
   };
-
   // Fetch all websites
   const fetchWebsites = useCallback(async () => {
     if (!token) return;
