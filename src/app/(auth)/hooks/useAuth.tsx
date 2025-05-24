@@ -22,6 +22,7 @@ type AuthContextType = {
   refreshAccessToken: () => Promise<void>;
   forgotPassword: (email: string) => Promise<void>;
   updateProfile: (data: Partial<UserType>) => Promise<void>;
+  hasRole: (requiredRoles: string[]) => boolean;
 } & AuthStateType;
 
 // Auth Context
@@ -51,7 +52,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     throw new Error("Endpoint not initialized");
   }
 
-  // Load auth state from localStorage on mount
+  // Add role checking function to context
+  const hasRole = useCallback(
+    (requiredRoles: string[]) => {
+      if (!authState.user?.role) return false;
+      return requiredRoles.includes(authState.user.role);
+    },
+    [authState.user?.role],
+  );
+
+  // Update the loadAuthState effect to handle roles
   useEffect(() => {
     const loadAuthState = () => {
       try {
@@ -61,8 +71,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
         if (token && userStr) {
           const user = JSON.parse(userStr);
+          // Add role fallback for existing users
+          const userWithRole = {
+            ...user,
+            role: user.role || "user",
+          };
+
           setAuthState({
-            user,
+            user: userWithRole,
             token,
             refreshToken,
             isLoading: false,
@@ -97,14 +113,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // Save auth state to localStorage
   const saveAuthState = useCallback(
     (token: string, refreshToken: string | null, user: UserType) => {
+      // Ensure role exists, default to 'user'
+      const userWithRole = {
+        ...user,
+        role: user.role || "user",
+      };
+
       localStorage.setItem("auth_token", token);
       if (refreshToken) {
         localStorage.setItem("refresh_token", refreshToken);
       }
-      localStorage.setItem("user", JSON.stringify(user));
+      localStorage.setItem("user", JSON.stringify(userWithRole));
 
       setAuthState({
-        user,
+        user: userWithRole,
         token,
         refreshToken,
         isLoading: false,
@@ -246,13 +268,33 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const data = await response.json();
 
       if (data.access_token) {
+        // Fetch fresh user data after token refresh
+        const userResponse = await fetch(`${endpoint}/auth/me`, {
+          headers: {
+            Authorization: `Bearer ${data.access_token}`,
+          },
+        });
+
+        if (!userResponse.ok) {
+          throw new Error("Failed to fetch user data");
+        }
+
+        const userData = await userResponse.json();
+
         const updatedAuthState = {
-          ...authState,
+          user: {
+            ...authState.user,
+            ...userData,
+            role: userData.role || "user",
+          },
           token: data.access_token,
           refreshToken: data.refresh_token || authState.refreshToken,
+          isLoading: false,
+          isAuthenticated: true,
         };
 
         localStorage.setItem("auth_token", data.access_token);
+        localStorage.setItem("user", JSON.stringify(updatedAuthState.user));
         if (data.refresh_token) {
           localStorage.setItem("refresh_token", data.refresh_token);
         }
@@ -310,9 +352,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     refreshAccessToken,
     forgotPassword,
     updateProfile,
+    hasRole,
   };
 
-  // This was missing in your original code!
   return (
     <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>
   );

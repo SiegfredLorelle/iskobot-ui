@@ -4,36 +4,41 @@ import { useAuth } from "@/app/(auth)/hooks/useAuth";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
-type AdminProtectedRouteProps = {
+type RoleProtectedRouteProps = {
   children: React.ReactNode;
+  allowedRoles: string[];
   fallback?: React.ReactNode;
   redirectTo?: string;
 };
 
-export default function AdminProtectedRoute({
+export default function RoleProtectedRoute({
   children,
+  allowedRoles,
   fallback = <div>Loading...</div>,
   redirectTo = "/",
-}: AdminProtectedRouteProps) {
-  const { isAuthenticated, isLoading } = useAuth();
+}: RoleProtectedRouteProps) {
+  const { user, isAuthenticated, isLoading } = useAuth();
   const router = useRouter();
 
+  const hasRequiredRole = user?.role && allowedRoles.includes(user.role);
+
   useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
-      router.push(redirectTo);
+    if (!isLoading) {
+      if (!isAuthenticated) {
+        router.push(redirectTo);
+      } else if (!hasRequiredRole) {
+        router.push("/");
+      }
     }
-  }, [isAuthenticated, isLoading, router, redirectTo]);
+  }, [isAuthenticated, isLoading, hasRequiredRole, router, redirectTo]);
 
-  // Show loading state while checking authentication
-  if (isLoading) {
+  if (isLoading || !user) {
     return <>{fallback}</>;
   }
 
-  // If not authenticated, don't render children while redirecting
-  if (!isAuthenticated) {
+  if (!isAuthenticated || !hasRequiredRole) {
     return <>{fallback}</>;
   }
 
-  // User is authenticated, render the protected content
   return <>{children}</>;
 }

@@ -1,9 +1,12 @@
 import { useState, useRef, useEffect } from "react";
 import {
   IconMenu2,
-  IconUser,
   IconLogout,
   IconLogin,
+  IconUser,
+  IconHistory,
+  IconBrain,
+  IconSettings,
 } from "@tabler/icons-react";
 import ThemeToggle from "@/components/theme/Toggle";
 import Link from "next/link";
@@ -61,11 +64,10 @@ export default function UserDropdown() {
             <ThemeToggle />
 
             {isLoading ? (
-              // Show loading state
               <div className="px-3 py-2 text-text-clr text-sm">Loading...</div>
             ) : isAuthenticated && user ? (
-              // Show authenticated user options
               <>
+                {/* User Info Section - Restored */}
                 <div className="px-3 py-2 border-b border-background-clr/20 mb-1">
                   <div className="flex items-center gap-2">
                     <IconUser className="h-4 w-4 text-text-clr" />
@@ -80,15 +82,41 @@ export default function UserDropdown() {
                   </div>
                 </div>
 
+                {/* History Link */}
                 <Link
-                  href="/admin"
+                  href="/history"
                   className="flex items-center gap-2 px-3 py-2 text-text-clr text-sm hover:bg-background-clr/80 rounded-md transition duration-200"
                   onClick={closeDropdown}
                 >
-                  <IconUser className="h-4 w-4" />
-                  Admin
+                  <IconHistory className="h-4 w-4" />
+                  History
                 </Link>
 
+                {/* Knowledge Link */}
+                {(user.role === "admin" || user.role === "super_admin") && (
+                  <Link
+                    href="/admin"
+                    className="flex items-center gap-2 px-3 py-2 text-text-clr text-sm hover:bg-background-clr/80 rounded-md transition duration-200"
+                    onClick={closeDropdown}
+                  >
+                    <IconBrain className="h-4 w-4" />
+                    Knowledge
+                  </Link>
+                )}
+
+                {/* Account Management Link */}
+                {user.role === "super_admin" && (
+                  <Link
+                    href="/admin/accounts"
+                    className="flex items-center gap-2 px-3 py-2 text-text-clr text-sm hover:bg-background-clr/80 rounded-md transition duration-200"
+                    onClick={closeDropdown}
+                  >
+                    <IconSettings className="h-4 w-4" />
+                    Account Management
+                  </Link>
+                )}
+
+                {/* Sign Out Button */}
                 <button
                   onClick={handleSignOut}
                   className="flex items-center gap-2 w-full px-3 py-2 text-text-clr text-sm hover:bg-background-clr/80 rounded-md transition duration-200 text-left"
@@ -98,7 +126,7 @@ export default function UserDropdown() {
                 </button>
               </>
             ) : (
-              // Show unauthenticated user options
+              // Unauthenticated User Options
               <>
                 <Link
                   href="/sign-in"
