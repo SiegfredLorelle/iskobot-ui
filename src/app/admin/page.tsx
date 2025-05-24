@@ -18,6 +18,8 @@ import {
 } from "@tabler/icons-react";
 import { useRAG } from "@/app/admin/hooks/useRAG";
 import AdminProtectedRoute from "./components/AdminProtectedRoute";
+import { useIngestion } from "@/app/admin/hooks/useIngestor";
+import { toast } from "react-hot-toast";
 
 const VALID_TYPES = [
   "image/jpeg",
@@ -26,12 +28,11 @@ const VALID_TYPES = [
   "application/pdf",
 ] as const;
 const IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png"] as const;
-const MAX_FILES = 10;
 
 type ValidFileType = (typeof VALID_TYPES)[number];
 type ImageFileType = (typeof IMAGE_TYPES)[number];
 
-type TabType = "upload" | "storage" | "websites";
+type TabType = "files" | "websites";
 
 type TabConfig = {
   id: TabType;
@@ -39,8 +40,61 @@ type TabConfig = {
   icon: React.ComponentType<{ size?: number }>;
 };
 
+// Move IngestButton outside to prevent re-creation
+function IngestButton() {
+  const { handleIngest, ingestStats, ingesting, error } = useIngestion();
+
+  useEffect(() => {
+    if (ingestStats) {
+      toast.dismiss();
+      toast.success("Ingestion complete! 🎉");
+    }
+  }, [ingestStats]);
+
+  useEffect(() => {
+    if (error) {
+      toast.dismiss();
+      toast.error(`Ingestion failed!`);
+    }
+  }, [error]);
+
+  const runWithToast = async () => {
+    // Show confirmation dialog with warning
+    const confirmed = window.confirm(
+      `⚠️ Ingestion and vectorization may take several hours, depending on the number of files and websites. During this process, Iskobot will be temporarily unavailable for answering questions. 😔
+
+This process will:
+• Extract content from all uploaded files
+• Scrape all listed websites
+• Generate vector embeddings for search
+• Cannot be paused or stopped once started
+
+Do you want to continue?`,
+    );
+
+    if (!confirmed) return;
+
+    toast.loading("Ingestion started...");
+    await handleIngest();
+  };
+
+  return (
+    <div>
+      <button
+        onClick={runWithToast}
+        disabled={ingesting}
+        className="mt-6 w-full py-3 px-6 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-accent-clr to-foreground-clr hover:from-foreground-clr hover:to-accent-clr transition-all duration-300 ease-in-out shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        {ingesting
+          ? "Ingesting..."
+          : "Ingest and Vectorize All Files and Websites for Iskobot's Knowledge"}
+      </button>
+    </div>
+  );
+}
+
 export default function RAGAdminUI(): JSX.Element {
-  const [activeTab, setActiveTab] = useState<TabType>("upload");
+  const [activeTab, setActiveTab] = useState<TabType>("files");
   const [files, setFiles] = useState<File[]>([]);
   const [previews, setPreviews] = useState<string[]>([]);
   const [preview, setPreview] = useState<string | null>(null);
@@ -55,12 +109,9 @@ export default function RAGAdminUI(): JSX.Element {
     error,
     uploadFiles,
     deleteFile,
-    toggleFileVectorization,
     fetchFiles,
     addWebsite: addWebsiteHook,
-    scrapeWebsite,
     deleteWebsite: deleteWebsiteHook,
-    toggleWebsiteVectorization,
     fetchWebsites,
     refreshAll,
   } = useRAG();
@@ -88,15 +139,11 @@ export default function RAGAdminUI(): JSX.Element {
   };
 
   const addFiles = (newFiles: File[]): void => {
-    if (newFiles.length + files.length > MAX_FILES) {
-      alert(`Maximum ${MAX_FILES} files allowed.`);
-      return;
-    }
     const validFiles = newFiles.filter((f) =>
       VALID_TYPES.includes(f.type as ValidFileType),
     );
     if (validFiles.length !== newFiles.length) {
-      alert("Only JPEG, JPG, PNG, PDF files are supported.");
+      alert("Only PDF, DOCX, or PPTX files are supported.");
       return;
     }
     const uniqueFiles = validFiles.filter(
@@ -161,18 +208,9 @@ export default function RAGAdminUI(): JSX.Element {
     if (!confirm("Are you sure you want to delete this file?")) return;
 
     const success = await deleteFile(fileId);
-    if (success) {
-      alert("File deleted successfully!");
-    } else {
+    if (!success) {
       alert("Error deleting file");
     }
-  };
-
-  const handleToggleFileVectorization = async (
-    fileId: string,
-    currentVectorized: boolean,
-  ): Promise<void> => {
-    await toggleFileVectorization(fileId, !currentVectorized);
   };
 
   const handleAddWebsite = async (): Promise<void> => {
@@ -191,15 +229,6 @@ export default function RAGAdminUI(): JSX.Element {
     }
   };
 
-  const handleScrapeWebsite = async (websiteId: string): Promise<void> => {
-    const success = await scrapeWebsite(websiteId);
-    if (success) {
-      alert("Website scraped successfully!");
-    } else {
-      alert("Error scraping website");
-    }
-  };
-
   const handleDeleteWebsite = async (websiteId: string): Promise<void> => {
     if (!confirm("Are you sure you want to remove this website?")) return;
 
@@ -207,13 +236,6 @@ export default function RAGAdminUI(): JSX.Element {
     if (!success) {
       alert("Error deleting website");
     }
-  };
-
-  const handleToggleWebsiteVectorization = async (
-    websiteId: string,
-    currentVectorized: boolean,
-  ): Promise<void> => {
-    await toggleWebsiteVectorization(websiteId, !currentVectorized);
   };
 
   const handleDrop = (e: React.DragEvent<HTMLDivElement>): void => {
@@ -238,35 +260,14 @@ export default function RAGAdminUI(): JSX.Element {
   }, [previews]);
 
   const tabs: TabConfig[] = [
-    { id: "upload", name: "Upload Files", icon: IconUpload },
-    { id: "storage", name: "Storage Files", icon: IconFile },
+    { id: "files", name: "Files", icon: IconFile },
     { id: "websites", name: "Websites", icon: IconGlobe },
   ];
-
-  const getStatusColor = (status: "success" | "pending" | "error"): string => {
-    switch (status) {
-      case "success":
-        return "bg-green-600 text-white";
-      case "pending":
-        return "bg-yellow-500 text-white";
-      case "error":
-        return "bg-red-600 text-white";
-      default:
-        return "bg-gray-400 text-white";
-    }
-  };
 
   return (
     <AdminProtectedRoute>
       <div className="min-h-screen py-8 text-text-clr">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Display global error if any */}
-          {/* {error && (
-          <div className="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded-md">
-            <p className="text-sm">{error}</p>
-          </div>
-        )} */}
-
           <div className="bg-primary-clr/10 backdrop-blur-lg backdrop-grayscale border border-gray-500/20 shadow-md rounded-xl">
             <div className="">
               <nav className="-mb-px flex space-x-8 px-6">
@@ -288,173 +289,152 @@ export default function RAGAdminUI(): JSX.Element {
             </div>
 
             <div className="p-6">
-              {activeTab === "upload" && (
-                <div className="max-w-2xl mx-auto">
-                  <h2 className="text-xl font-bold text-text-clr mb-4">
-                    Upload New Files
-                  </h2>
-                  <div
-                    className="h-64 border-2 border-dashed border-gray-500 rounded-lg bg-foreground-clr/10 flex flex-col items-center justify-center hover:border-gray-600 transition-colors"
-                    onDrop={handleDrop}
-                    onDragOver={handleDragOver}
-                  >
-                    <IconPhoto size={48} className="text-text-clr mb-3" />
-                    <p className="text-base font-medium text-text-clr mb-1">
-                      Drag & Drop Files
-                    </p>
-                    <p className="text-sm text-text-clr mb-1">
-                      or{" "}
-                      <span
-                        className="text-text-clr underline cursor-pointer hover:text-accent-clr"
-                        onClick={() => fileInput.current?.click()}
-                      >
-                        browse
-                      </span>
-                    </p>
-                    <p className="text-xs text-text-clr">
-                      Supports: JPEG, JPG, PNG, PDF
-                    </p>
-                    <input
-                      type="file"
-                      ref={fileInput}
-                      onChange={handleFileInputChange}
-                      accept={VALID_TYPES.join(",")}
-                      multiple
-                      className="hidden"
-                    />
+              {activeTab === "files" && (
+                <div>
+                  {/* Upload Section */}
+                  <div className="max-w-2xl mx-auto mb-8">
+                    <h2 className="text-xl font-bold text-text-clr mb-4">
+                      Upload New Files
+                    </h2>
+                    <div
+                      className="h-64 border-2 border-dashed border-gray-500 rounded-lg bg-foreground-clr/10 flex flex-col items-center justify-center hover:border-gray-600 transition-colors"
+                      onDrop={handleDrop}
+                      onDragOver={handleDragOver}
+                    >
+                      <IconPhoto size={48} className="text-text-clr mb-3" />
+                      <p className="text-base font-medium text-text-clr mb-1">
+                        Drag & Drop Files
+                      </p>
+                      <p className="text-sm text-text-clr mb-1">
+                        or{" "}
+                        <span
+                          className="text-text-clr underline cursor-pointer hover:text-accent-clr"
+                          onClick={() => fileInput.current?.click()}
+                        >
+                          browse
+                        </span>
+                      </p>
+                      <p className="text-xs text-text-clr">
+                        Supports: PDF, DOCX, PPTX
+                      </p>
+                      <input
+                        type="file"
+                        ref={fileInput}
+                        onChange={handleFileInputChange}
+                        accept={VALID_TYPES.join(",")}
+                        multiple
+                        className="hidden"
+                      />
+                    </div>
+
+                    {files.length > 0 && (
+                      <div className="mt-4 space-y-2">
+                        <h3 className="text-sm font-medium text-text-clr">
+                          Selected Files:
+                        </h3>
+                        {files.map((file, index) => (
+                          <div
+                            key={index}
+                            className="flex items-center justify-between bg-background p-3 rounded-md border border-foreground-clr"
+                          >
+                            <div className="flex items-center space-x-2">
+                              <IconFile size={16} className="text-text-clr" />
+                              <span className="text-sm text-text-clr">
+                                {file.name}
+                              </span>
+                              <span className="text-xs text-text-clr/80">
+                                ({formatFileSize(file.size)})
+                              </span>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <button
+                                onClick={() => handlePreview(file, index)}
+                                className="text-text-clr"
+                                title="Preview"
+                              >
+                                <IconEye size={16} />
+                              </button>
+                              <button
+                                onClick={() => handleClear(index)}
+                                className="text-red-500 hover:text-red-700"
+                                title="Remove"
+                              >
+                                <IconX size={16} />
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                        <button
+                          onClick={handleUpload}
+                          disabled={loading}
+                          className="w-full mt-4 px-4 py-2 border border-foreground-clr/30 rounded-md text-sm text-text-clr hover:bg-foreground-clr/10 disabled:opacity-50 transition duration-200"
+                        >
+                          {loading ? "Uploading..." : "Upload Files"}
+                        </button>
+                      </div>
+                    )}
                   </div>
 
-                  {files.length > 0 && (
-                    <div className="mt-4 space-y-2">
-                      <h3 className="text-sm font-medium text-text-clr">
-                        Selected Files:
-                      </h3>
-                      {files.map((file, index) => (
-                        <div
-                          key={index}
-                          className="flex items-center justify-between bg-background p-3 rounded-md border border-foreground-clr"
-                        >
-                          <div className="flex items-center space-x-2">
-                            <IconFile size={16} className="text-text-clr" />
-                            <span className="text-sm text-text-clr">
-                              {file.name}
-                            </span>
-                            <span className="text-xs text-text-clr/80">
-                              ({formatFileSize(file.size)})
-                            </span>
-                          </div>
-                          <div className="flex items-center space-x-2">
-                            <button
-                              onClick={() => handlePreview(file, index)}
-                              className="text-text-clr"
-                              title="Preview"
-                            >
-                              <IconEye size={16} />
-                            </button>
-                            <button
-                              onClick={() => handleClear(index)}
-                              className="text-red-500 hover:text-red-700"
-                              title="Remove"
-                            >
-                              <IconX size={16} />
-                            </button>
-                          </div>
-                        </div>
-                      ))}
+                  {/* Storage Files Section */}
+                  <div>
+                    <div className="flex justify-between items-center mb-6">
+                      <h2 className="text-xl font-bold text-text-clr">
+                        Uploaded Files
+                      </h2>
                       <button
-                        onClick={handleUpload}
+                        onClick={fetchFiles}
                         disabled={loading}
-                        className="w-full mt-4 px-4 py-2 border border-foreground-clr/30 rounded-md text-sm text-text-clr hover:bg-foreground-clr/10 disabled:opacity-50 transition duration-200"
+                        className="flex items-center space-x-2 px-3 py-2 border border-foreground-clr/30 rounded-md text-sm text-text-clr hover:bg-foreground-clr/10 disabled:opacity-50 transition duration-200"
                       >
-                        {loading ? "Uploading..." : "Upload Files"}
+                        <IconRefresh size={16} />
+                        <span>Refresh</span>
                       </button>
                     </div>
-                  )}
-                </div>
-              )}
 
-              {activeTab === "storage" && (
-                <div>
-                  <div className="flex justify-between items-center mb-6">
-                    <h2 className="text-xl font-bold text-text-clr">
-                      Storage Files
-                    </h2>
-                    <button
-                      onClick={fetchFiles}
-                      disabled={loading}
-                      className="flex items-center space-x-2 px-3 py-2 border border-foreground-clr/30 rounded-md text-sm text-text-clr hover:bg-foreground-clr/10 disabled:opacity-50 transition duration-200"
-                    >
-                      <IconRefresh size={16} />
-                      <span>Refresh</span>
-                    </button>
-                  </div>
-
-                  <div className="bg-primary-clr/10 border border-gray-200/20 shadow-md overflow-hidden rounded-md">
-                    {storageFiles.length === 0 ? (
-                      <div className="px-6 py-8 text-center text-text-clr/60">
-                        No files uploaded yet.
-                      </div>
-                    ) : (
-                      <ul className="divide-y divide-foreground-clr/20">
-                        {storageFiles.map((file) => (
-                          <li key={file.id} className="px-6 py-4">
-                            <div className="flex items-center justify-between">
-                              <div className="flex items-center space-x-3">
-                                <IconFile size={20} className="text-text-clr" />
-                                <div>
-                                  <p className="text-sm font-medium text-text-clr">
-                                    {file.name}
-                                  </p>
-                                  <p className="text-xs text-text-clr/80">
-                                    {formatFileSize(file.size)} • Uploaded{" "}
-                                    {formatDate(file.uploaded_at)}
-                                  </p>
+                    <div className="bg-primary-clr/10 border border-gray-200/20 shadow-md overflow-hidden rounded-md">
+                      {storageFiles.length === 0 ? (
+                        <div className="px-6 py-8 text-center text-text-clr/60">
+                          No files uploaded yet.
+                        </div>
+                      ) : (
+                        <ul className="divide-y divide-foreground-clr/20">
+                          {storageFiles.map((file) => (
+                            <li key={file.id} className="px-6 py-4">
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center space-x-3">
+                                  <IconFile
+                                    size={20}
+                                    className="text-text-clr"
+                                  />
+                                  <div>
+                                    <p className="text-sm font-medium text-text-clr">
+                                      {file.name}
+                                    </p>
+                                    <p className="text-xs text-text-clr/80">
+                                      {formatFileSize(file.size)} • Uploaded{" "}
+                                      {formatDate(file.uploaded_at)}
+                                    </p>
+                                  </div>
                                 </div>
-                              </div>
-                              <div className="flex items-center space-x-4">
-                                <div className="flex items-center space-x-2">
-                                  <span className="text-xs text-text-clr/80">
-                                    Vectorized:
-                                  </span>
+                                <div className="flex items-center space-x-4">
+                                  <div className="flex items-center space-x-2"></div>
                                   <button
                                     onClick={() =>
-                                      handleToggleFileVectorization(
-                                        file.id,
-                                        file.vectorized,
-                                      )
+                                      handleDeleteStorageFile(file.id)
                                     }
+                                    className="text-red-500 hover:text-red-700"
+                                    title="Delete file"
                                     disabled={loading}
-                                    className={`relative inline-flex h-4 w-8 items-center rounded-full transition-colors ${
-                                      file.vectorized
-                                        ? "bg-text-clr"
-                                        : "bg-foreground-clr/30"
-                                    }`}
                                   >
-                                    <span
-                                      className={`inline-block h-3 w-3 transform rounded-full bg-primary-clr transition-transform ${
-                                        file.vectorized
-                                          ? "translate-x-4"
-                                          : "translate-x-0.5"
-                                      }`}
-                                    />
+                                    <IconTrash size={16} />
                                   </button>
                                 </div>
-                                <button
-                                  onClick={() =>
-                                    handleDeleteStorageFile(file.id)
-                                  }
-                                  className="text-red-500 hover:text-red-700"
-                                  title="Delete file"
-                                  disabled={loading}
-                                >
-                                  <IconTrash size={16} />
-                                </button>
                               </div>
-                            </div>
-                          </li>
-                        ))}
-                      </ul>
-                    )}
+                            </li>
+                          ))}
+                        </ul>
+                      )}
+                    </div>
                   </div>
                 </div>
               )}
@@ -509,9 +489,6 @@ export default function RAGAdminUI(): JSX.Element {
                                       Last scraped:{" "}
                                       {formatDate(website.last_scraped)}
                                     </span>
-                                    {/* <span className={`px-2 py-1 rounded-full ${getStatusColor(website.status)}`}>
-                                    {website.status}
-                                  </span> */}
                                     {website.error_message && (
                                       <span
                                         className="text-red-500"
@@ -524,45 +501,7 @@ export default function RAGAdminUI(): JSX.Element {
                                 </div>
                               </div>
                               <div className="flex items-center space-x-4">
-                                <button
-                                  onClick={() =>
-                                    handleScrapeWebsite(website.id)
-                                  }
-                                  disabled={
-                                    loading || website.status === "pending"
-                                  }
-                                  className="text-blue-500 hover:text-blue-700 disabled:opacity-50"
-                                  title="Scrape website"
-                                >
-                                  {/* <IconRefresh size={16} /> */}
-                                </button>
-                                <div className="flex items-center space-x-2">
-                                  <span className="text-xs text-text-clr/80">
-                                    Vectorized:
-                                  </span>
-                                  <button
-                                    onClick={() =>
-                                      handleToggleWebsiteVectorization(
-                                        website.id,
-                                        website.vectorized,
-                                      )
-                                    }
-                                    disabled={loading}
-                                    className={`relative inline-flex h-4 w-8 items-center rounded-full transition-colors ${
-                                      website.vectorized
-                                        ? "bg-text-clr"
-                                        : "bg-foreground-clr/30"
-                                    }`}
-                                  >
-                                    <span
-                                      className={`inline-block h-3 w-3 transform rounded-full bg-primary-clr transition-transform ${
-                                        website.vectorized
-                                          ? "translate-x-4"
-                                          : "translate-x-0.5"
-                                      }`}
-                                    />
-                                  </button>
-                                </div>
+                                <div className="flex items-center space-x-2"></div>
                                 <button
                                   onClick={() =>
                                     handleDeleteWebsite(website.id)
@@ -584,6 +523,8 @@ export default function RAGAdminUI(): JSX.Element {
               )}
             </div>
           </div>
+
+          <IngestButton />
 
           {preview && (
             <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">

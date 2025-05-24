@@ -3,6 +3,7 @@ import "./globals.css";
 import Header from "@/components/layout/Header";
 import { Providers } from "@/app/providers";
 import TriangleBlurEffect from "@/components/ui/TriangleBlurEffect";
+import { Toaster } from "react-hot-toast";
 
 export const metadata: Metadata = {
   title: "Iskobot",
@@ -28,6 +29,16 @@ export default function RootLayout({
           <TriangleBlurEffect>
             <Header />
             {children}
+            <Toaster
+              position="top-right"
+              toastOptions={{
+                duration: 4000,
+                style: {
+                  background: "#363636",
+                  color: "#fff",
+                },
+              }}
+            />
           </TriangleBlurEffect>
         </Providers>
       </body>
