@@ -15,7 +15,7 @@ export default function ThemeToggle() {
 
   return (
     <button
-      className="flex items-center gap-2 w-full px-3 py-2 text-text-clr text-sm hover:bg-background-clr/80 rounded-md focus:outline-none focus:ring-2 focus:ring-text-clr/80 transition duration-200"
+      className="flex items-center gap-2 px-3 py-2 text-text-clr text-sm hover:bg-[var(--hover-clr)] rounded-md transition duration-200"
       onClick={() => setTheme(resolvedTheme === "light" ? "dark" : "light")}
       aria-label={buttonLabel}
       title={buttonLabel}

@@ -60,7 +60,7 @@ export default function SignInForm() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="w-full px-4 py-2 bg-gray-100 text-text-clr border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:bg-background-clr/80 transition duration-200"
+              className="w-full px-4 py-2 bg-gray-100 text-form-clr border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:bg-background-clr/80 transition duration-200"
               placeholder="Enter your email"
             />
           </div>
@@ -79,7 +79,7 @@ export default function SignInForm() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="w-full px-4 py-2 bg-gray-100 text-text-clr border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:bg-background-clr/80 transition duration-200 pr-10"
+                className="w-full px-4 py-2 bg-gray-100 text-form-clr border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:bg-background-clr/80 transition duration-200 pr-10"
                 placeholder="Enter your password"
               />
               <button
@@ -106,7 +106,7 @@ export default function SignInForm() {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full py-2 px-4 bg-background-clr text-text-clr font-medium rounded-md shadow-md hover:bg-background-clr/80 focus:outline-none focus:ring-2 focus:ring-text-clr/80 disabled:opacity-50 disabled:cursor-not-allowed transition duration-200"
+            className="w-full py-2 px-4 bg-background-clr text-form-clr font-medium rounded-md shadow-md hover:bg-background-clr/80 focus:outline-none focus:ring-2 focus:ring-text-clr/80 disabled:opacity-50 disabled:cursor-not-allowed transition duration-200"
           >
             {isLoading ? "Signing in..." : "Sign In"}
           </button>
