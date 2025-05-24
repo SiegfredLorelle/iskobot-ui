@@ -6,4 +6,5 @@ export type UserType = {
   display_name?: string;
   email_confirmed: boolean;
   created_at?: string;
+  role: string;
 };

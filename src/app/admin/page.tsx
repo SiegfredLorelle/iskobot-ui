@@ -265,7 +265,7 @@ export default function RAGAdminUI(): JSX.Element {
   ];
 
   return (
-    <AdminProtectedRoute>
+    <AdminProtectedRoute allowedRoles={["admin", "super_admin"]}>
       <div className="min-h-screen py-8 text-text-clr">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="bg-primary-clr/10 backdrop-blur-lg backdrop-grayscale border border-gray-500/20 shadow-md rounded-xl">
