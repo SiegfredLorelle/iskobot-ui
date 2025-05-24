@@ -53,6 +53,22 @@
   }
 }
 
+/* OLD CLR THEME
+:root {
+  --background-clr: #f8f8f8;
+  --foreground-clr: #4d4d4d;
+  --primary-clr: #f1f1f1;
+  --text-clr: #4D4D4D;
+  --hover-clr:#000000;
+}
+
+:root.dark {
+  --background-clr: #1c1c1c;
+  --foreground-clr: #b3b3b3;
+  --primary-clr: #393939;
+  --text-clr: #B3B3B3;
+  --hover-clr: #FFFFFF;
+} */
 
 :root {
   --background-clr: #f8f8f8;
