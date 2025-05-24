@@ -48,7 +48,7 @@ export default function UserDropdown() {
     <div className="ml-auto relative" ref={dropdownRef}>
       <button
         onClick={toggleDropdown}
-        className="flex items-center p-2 text-text-clr rounded-md shadow-md hover:bg-background-clr/80 focus:outline-none focus:ring-2 focus:ring-text-clr/80 transition duration-200"
+        className="flex items-center p-2 text-text-clr rounded-md shadow-md bg-[var(--accent-clr)] hover:bg-[var(--accent-clr)]/80 focus:outline-none focus:ring-2 focus:ring-text-clr/80 transition duration-200"
         aria-expanded={isOpen}
         aria-label="User menu"
       >
@@ -102,15 +102,16 @@ export default function UserDropdown() {
               <>
                 <Link
                   href="/sign-in"
-                  className="flex items-center gap-2 px-3 py-2 text-text-clr text-sm hover:bg-background-clr/80 rounded-md transition duration-200"
+                  className="flex items-center gap-2 px-3 py-2 text-text-clr text-sm hover:bg-[var(--hover-clr)] rounded-md transition duration-200"
                   onClick={closeDropdown}
                 >
                   <IconLogin className="h-4 w-4" />
                   Sign In
                 </Link>
+
                 <Link
                   href="/sign-up"
-                  className="flex items-center gap-2 px-3 py-2 text-text-clr text-sm hover:bg-background-clr/80 rounded-md transition duration-200"
+                  className="flex items-center gap-2 px-3 py-2 text-text-clr text-sm hover:bg-[var(--hover-clr)] rounded-md transition duration-200"
                   onClick={closeDropdown}
                 >
                   <IconUser className="h-4 w-4" />

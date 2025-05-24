@@ -91,7 +91,7 @@ export default function SignUpForm() {
               value={formData.email}
               onChange={handleChange}
               required
-              className="w-full px-4 py-2 bg-gray-100 text-text-clr border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:bg-background-clr/80 transition duration-200"
+              className="w-full px-4 py-2 bg-gray-100 text-form-clr border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:bg-background-clr/80 transition duration-200"
               placeholder="Enter your email"
             />
           </div>
@@ -110,7 +110,7 @@ export default function SignUpForm() {
               value={formData.full_name}
               onChange={handleChange}
               required
-              className="w-full px-4 py-2 bg-gray-100 text-text-clr border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:bg-background-clr/80 transition duration-200"
+              className="w-full px-4 py-2 bg-gray-100 text-form-clr border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:bg-background-clr/80 transition duration-200"
               placeholder="Enter your full name"
             />
           </div>
@@ -128,7 +128,7 @@ export default function SignUpForm() {
               type="text"
               value={formData.display_name}
               onChange={handleChange}
-              className="w-full px-4 py-2 bg-gray-100 text-text-clr border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:bg-background-clr/80 transition duration-200"
+              className="w-full px-4 py-2 bg-gray-100 text-form-clr border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:bg-background-clr/80 transition duration-200"
               placeholder="Enter display name"
             />
           </div>
@@ -148,7 +148,7 @@ export default function SignUpForm() {
                 value={formData.password}
                 onChange={handleChange}
                 required
-                className="w-full px-4 py-2 bg-gray-100 text-text-clr border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:bg-background-clr/80 transition duration-200 pr-10"
+                className="w-full px-4 py-2 bg-gray-100 text-form-clr border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:bg-background-clr/80 transition duration-200 pr-10"
                 placeholder="Enter your password"
               />
               <button
@@ -164,7 +164,7 @@ export default function SignUpForm() {
                 )}
               </button>
             </div>
-            <p className="mt-1 text-xs text-gray-500">
+            <p className="mt-1 text-xs text-text-clr">
               Password must be at least 8 characters with uppercase, lowercase,
               and number
             </p>
@@ -185,7 +185,7 @@ export default function SignUpForm() {
                 value={formData.confirmPassword}
                 onChange={handleChange}
                 required
-                className="w-full px-4 py-2 bg-gray-100 text-text-clr border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:bg-background-clr/80 transition duration-200 pr-10"
+                className="w-full px-4 py-2 bg-gray-100 text-form-clr border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:bg-background-clr/80 transition duration-200 pr-10"
                 placeholder="Confirm your password"
               />
               <button
@@ -222,7 +222,7 @@ export default function SignUpForm() {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full py-2 px-4 bg-background-clr text-text-clr font-medium rounded-md shadow-md hover:bg-background-clr/80 focus:outline-none focus:ring-2 focus:ring-text-clr/80 disabled:opacity-50 disabled:cursor-not-allowed transition duration-200"
+            className="w-full py-2 px-4 bg-background-clr text-form-clr font-medium rounded-md shadow-md hover:bg-background-clr/80 focus:outline-none focus:ring-2 focus:ring-text-clr/80 disabled:opacity-50 disabled:cursor-not-allowed transition duration-200"
           >
             {isLoading ? "Creating account..." : "Sign Up"}
           </button>
