@@ -14,28 +14,28 @@ import type { ChatMessage } from "../types/ChatMessageType";
 import { chatReducer } from "../reducers/chatReducer";
 import type { Session } from "../types/ChatContextType";
 
-interface BackendMessage {
+type BackendMessage = {
   id: string;
   session_id: string;
-  role: 'USER' | 'ASSISTANT';
+  role: "USER" | "ASSISTANT";
   content: string;
   created_at: string;
-}
+};
 
-interface ChatResponse {
+type ChatResponse = {
   response: string;
   session_id: string;
   message_id: string;
-}
+};
 
 // Enhanced ChatContextType (you'll need to update your type definition)
-interface EnhancedChatContextType extends ChatContextType {
+type EnhancedChatContextType = {
   // Session management
   sessions: Session[];
   currentSession: Session | null;
   loadingSessions: boolean;
   sessionError: string | null;
-  
+
   // Session actions
   createSession: (title?: string) => Promise<void>;
   loadSessions: () => Promise<void>;
@@ -43,7 +43,7 @@ interface EnhancedChatContextType extends ChatContextType {
   deleteSession: (sessionId: string) => Promise<void>;
   updateSessionTitle: (sessionId: string, title: string) => Promise<void>;
   startNewSession: () => void;
-}
+} & ChatContextType;
 
 // Enhanced hook for backend communication
 const useEnhancedBotResponse = () => {
@@ -54,19 +54,21 @@ const useEnhancedBotResponse = () => {
   const endpoint = process.env.NEXT_PUBLIC_CHATBOT_ENDPOINT;
 
   const isAuthenticated = useCallback(() => {
-    return Boolean(localStorage.getItem('auth_token'));
+    return Boolean(localStorage.getItem("auth_token"));
   }, []);
 
   const getAuthHeaders = useCallback(() => {
-    const token = localStorage.getItem('auth_token');
+    const token = localStorage.getItem("auth_token");
     return {
       "Content-Type": "application/json",
-      ...(token && { Authorization: `Bearer ${token}` })
+      ...(token && { Authorization: `Bearer ${token}` }),
     };
   }, []);
 
-
-const fetchBotResponse = async (message: string, sessionId?: string): Promise<ChatResponse> => {
+  const fetchBotResponse = async (
+    message: string,
+    sessionId?: string,
+  ): Promise<ChatResponse> => {
     setIsBotFetching(true);
     setBotFetchingError(null);
 
@@ -81,8 +83,7 @@ const fetchBotResponse = async (message: string, sessionId?: string): Promise<Ch
     }
 
     try {
-      const body: Record<string, any> = { query: message };
-      
+      const body: { query: string; session_id?: string } = { query: message };
       // Only include session_id if authenticated
       if (isAuthenticated()) {
         body.session_id = sessionId;
@@ -155,15 +156,17 @@ const fetchBotResponse = async (message: string, sessionId?: string): Promise<Ch
       headers: getAuthHeaders(),
     });
 
-      if (!response.ok) {
-        const errorData = await response.text();
-        throw new Error(`Failed to get sessions: ${errorData}`);
-      }
+    if (!response.ok) {
+      const errorData = await response.text();
+      throw new Error(`Failed to get sessions: ${errorData}`);
+    }
 
-      return response.json();
-    }, [endpoint, getAuthHeaders, isAuthenticated]);
+    return response.json();
+  }, [endpoint, getAuthHeaders, isAuthenticated]);
 
-  const getSessionMessagesAPI = async (sessionId: string): Promise<BackendMessage[]> => {
+  const getSessionMessagesAPI = async (
+    sessionId: string,
+  ): Promise<BackendMessage[]> => {
     if (!endpoint) throw new Error("Endpoint not initialized");
 
     const response = await fetch(`${endpoint}/sessions/${sessionId}/messages`, {
@@ -193,7 +196,10 @@ const fetchBotResponse = async (message: string, sessionId?: string): Promise<Ch
     }
   };
 
-  const updateSessionTitleAPI = async (sessionId: string, title: string): Promise<void> => {
+  const updateSessionTitleAPI = async (
+    sessionId: string,
+    title: string,
+  ): Promise<void> => {
     if (!endpoint) throw new Error("Endpoint not initialized");
 
     const response = await fetch(`${endpoint}/sessions/${sessionId}/title`, {
@@ -249,14 +255,14 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({
   const [sessionError, setSessionError] = useState<string | null>(null);
 
   const isAuthenticated = useCallback(() => {
-    return Boolean(localStorage.getItem('auth_token'));
+    return Boolean(localStorage.getItem("auth_token"));
   }, []);
 
   // Helper function to convert backend messages to ChatMessage format
   const convertToLocalMessage = (backendMsg: BackendMessage): ChatMessage => ({
     id: backendMsg.id,
     text: backendMsg.content,
-    isUser: backendMsg.role === 'USER',
+    isUser: backendMsg.role === "USER",
     timestamp: new Date(backendMsg.created_at),
   });
 
@@ -289,29 +295,29 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({
     try {
       addUserMessage(message);
       setModeToLoading();
-      
-      const authStatus = Boolean(localStorage.getItem('auth_token'));
+
+      const authStatus = Boolean(localStorage.getItem("auth_token"));
 
       const response = await fetchBotResponse(
-        message, 
-        authStatus ? currentSession?.id : undefined
-      );      
+        message,
+        authStatus ? currentSession?.id : undefined,
+      );
       addBotMessage(response.response);
-      
+
       // Update current session if a new one was created
-      
-    if (authStatus) {
-      if (!currentSession && response.session_id) {
-        setCurrentSession({
-          id: response.session_id,
-          user_id: null,
-          title: "New Chat",
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-          is_active: true,
-        });
+
+      if (authStatus) {
+        if (!currentSession && response.session_id) {
+          setCurrentSession({
+            id: response.session_id,
+            user_id: null,
+            title: "New Chat",
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
+            is_active: true,
+          });
+        }
       }
-    }
     } catch (err) {
       if (!(err instanceof Error && err.message === "Request cancelled")) {
         console.error("Failed to send message:", err);
@@ -331,24 +337,29 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   // Session management functions
-  const createSession = useCallback(async (title?: string) => {
-    try {
-      if (!isAuthenticated()) {
-        throw new Error("Must be authenticated to create sessions");
+  const createSession = useCallback(
+    async (title?: string) => {
+      try {
+        if (!isAuthenticated()) {
+          throw new Error("Must be authenticated to create sessions");
+        }
+        setSessionError(null);
+        const sessionTitle =
+          title || `New Chat ${new Date().toLocaleTimeString()}`;
+        const newSession = await createSessionAPI(sessionTitle);
+
+        setSessions((prev) => [newSession, ...prev]);
+        setCurrentSession(newSession);
+        dispatch({ type: "DELETE_ALL" }); // Clear current messages
+      } catch (error) {
+        const errorMessage =
+          error instanceof Error ? error.message : "Failed to create session";
+        setSessionError(errorMessage);
+        console.error("Failed to create session:", error);
       }
-      setSessionError(null);
-      const sessionTitle = title || `New Chat ${new Date().toLocaleTimeString()}`;
-      const newSession = await createSessionAPI(sessionTitle);
-      
-      setSessions(prev => [newSession, ...prev]);
-      setCurrentSession(newSession);
-      dispatch({ type: "DELETE_ALL" }); // Clear current messages
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : "Failed to create session";
-      setSessionError(errorMessage);
-      console.error("Failed to create session:", error);
-    }
-  }, [createSessionAPI]);
+    },
+    [createSessionAPI],
+  );
 
   const loadSessions = useCallback(async () => {
     try {
@@ -357,7 +368,8 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({
       const sessionsList = await getSessionsAPI();
       setSessions(sessionsList);
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : "Failed to load sessions";
+      const errorMessage =
+        error instanceof Error ? error.message : "Failed to load sessions";
       setSessionError(errorMessage);
       console.error("Failed to load sessions:", error);
     } finally {
@@ -365,66 +377,77 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   }, [getSessionsAPI]);
 
-  const switchSession = useCallback(async (sessionId: string) => {
-    try {
-            const session = sessions.find(s => s.id === sessionId);
-      if (!session) throw new Error("Session not found");
-      setCurrentSession(session);
+  const switchSession = useCallback(
+    async (sessionId: string) => {
+      try {
+        const session = sessions.find((s) => s.id === sessionId);
+        if (!session) throw new Error("Session not found");
+        setCurrentSession(session);
 
-      // Fetch session messages
-      const sessionMessages = await getSessionMessagesAPI(sessionId);
-      const localMessages = sessionMessages.map(convertToLocalMessage);
-      
-      // Replace current messages
-      dispatch({ type: "DELETE_ALL" });
-      localMessages.forEach(msg => {
-        dispatch({ type: "ADD_MESSAGE", payload: msg });
-      });
+        // Fetch session messages
+        const sessionMessages = await getSessionMessagesAPI(sessionId);
+        const localMessages = sessionMessages.map(convertToLocalMessage);
 
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : "Failed to switch session";
-      setSessionError(errorMessage);
-      console.error("Failed to switch session:", error);
-    }
-  }, [sessions, getSessionMessagesAPI]);
-
-  const deleteSession = useCallback(async (sessionId: string) => {
-    try {
-      setSessionError(null);
-      await deleteSessionAPI(sessionId);
-      
-      setSessions(prev => prev.filter(s => s.id !== sessionId));
-      
-      // If deleting current session, start new one
-      if (currentSession?.id === sessionId) {
-        setCurrentSession(null);
+        // Replace current messages
         dispatch({ type: "DELETE_ALL" });
+        localMessages.forEach((msg) => {
+          dispatch({ type: "ADD_MESSAGE", payload: msg });
+        });
+      } catch (error) {
+        const errorMessage =
+          error instanceof Error ? error.message : "Failed to switch session";
+        setSessionError(errorMessage);
+        console.error("Failed to switch session:", error);
       }
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : "Failed to delete session";
-      setSessionError(errorMessage);
-      console.error("Failed to delete session:", error);
-    }
-  }, [deleteSessionAPI, currentSession]);
+    },
+    [sessions, getSessionMessagesAPI],
+  );
 
-  const updateSessionTitle = useCallback(async (sessionId: string, title: string) => {
-    try {
-      setSessionError(null);
-      await updateSessionTitleAPI(sessionId, title);
-      
-      setSessions(prev => 
-        prev.map(s => s.id === sessionId ? { ...s, title } : s)
-      );
-      
-      if (currentSession?.id === sessionId) {
-        setCurrentSession(prev => prev ? { ...prev, title } : null);
+  const deleteSession = useCallback(
+    async (sessionId: string) => {
+      try {
+        setSessionError(null);
+        await deleteSessionAPI(sessionId);
+
+        setSessions((prev) => prev.filter((s) => s.id !== sessionId));
+
+        // If deleting current session, start new one
+        if (currentSession?.id === sessionId) {
+          setCurrentSession(null);
+          dispatch({ type: "DELETE_ALL" });
+        }
+      } catch (error) {
+        const errorMessage =
+          error instanceof Error ? error.message : "Failed to delete session";
+        setSessionError(errorMessage);
+        console.error("Failed to delete session:", error);
       }
-    } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : "Failed to update title";
-      setSessionError(errorMessage);
-      console.error("Failed to update session title:", error);
-    }
-  }, [updateSessionTitleAPI, currentSession]);
+    },
+    [deleteSessionAPI, currentSession],
+  );
+
+  const updateSessionTitle = useCallback(
+    async (sessionId: string, title: string) => {
+      try {
+        setSessionError(null);
+        await updateSessionTitleAPI(sessionId, title);
+
+        setSessions((prev) =>
+          prev.map((s) => (s.id === sessionId ? { ...s, title } : s)),
+        );
+
+        if (currentSession?.id === sessionId) {
+          setCurrentSession((prev) => (prev ? { ...prev, title } : null));
+        }
+      } catch (error) {
+        const errorMessage =
+          error instanceof Error ? error.message : "Failed to update title";
+        setSessionError(errorMessage);
+        console.error("Failed to update session title:", error);
+      }
+    },
+    [updateSessionTitleAPI, currentSession],
+  );
 
   const startNewSession = useCallback(() => {
     setCurrentSession(null);
@@ -463,7 +486,7 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({
       setUserInput,
       isBotFetching,
       stopGenerating,
-      
+
       // New session management API
       sessions,
       currentSession,
@@ -491,7 +514,7 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({
       deleteSession,
       updateSessionTitle,
       startNewSession,
-    ]
+    ],
   );
 
   return <ChatContext.Provider value={value}>{children}</ChatContext.Provider>;

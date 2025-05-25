@@ -3,18 +3,18 @@ import type { Mode } from "./Mode";
 import type { ChatMessage } from "./ChatMessageType";
 
 // Session type
-export interface Session {
+export type Session = {
   id: string;
-  user_id: string | null;  // Allow null for anonymous sessions
+  user_id: string | null; // Allow null for anonymous sessions
   title: string;
   created_at: string;
   updated_at: string;
   is_active?: boolean;
   message_count?: number;
   last_message?: string | null;
-}
+};
 
-export interface ChatContextType {
+export type ChatContextType = {
   // Existing message management
   messages: ChatMessage[];
   addUserMessage: (text: string) => void;
@@ -22,27 +22,27 @@ export interface ChatContextType {
   deleteLastMessage: () => void;
   deleteAllMessage: () => void;
   sendMessageToBot: (message: string) => Promise<void>;
-  
+
   // Mode management
   mode: Mode;
   setModeToLoading: () => void;
   setModeToSettings: () => void;
   setModeToInput: () => void;
-  
+
   // User input
   userInput: string;
   setUserInput: (input: string) => void;
-  
+
   // Bot response state
   isBotFetching: boolean;
   stopGenerating: () => void;
-  
+
   // Session management
   sessions: Session[];
   currentSession: Session | null;
   loadingSessions: boolean;
   sessionError: string | null;
-  
+
   // Session actions
   createSession: (title?: string) => Promise<void>;
   loadSessions: () => Promise<void>;
@@ -50,4 +50,4 @@ export interface ChatContextType {
   deleteSession: (sessionId: string) => Promise<void>;
   updateSessionTitle: (sessionId: string, title: string) => Promise<void>;
   startNewSession: () => void;
-}
+};
