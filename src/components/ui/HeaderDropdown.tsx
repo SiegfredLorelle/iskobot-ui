@@ -1,3 +1,4 @@
+// components/UserDropdown.tsx
 import { useState, useRef, useEffect } from "react";
 import {
   IconMenu2,
@@ -7,10 +8,12 @@ import {
   IconHistory,
   IconBrain,
   IconSettings,
+  IconMicrophone
 } from "@tabler/icons-react";
-import ThemeToggle from "@/components/theme/Toggle";
+import ThemeToggle from "@/components/toggle/ThemeToggle";
 import Link from "next/link";
 import { useAuth } from "@/app/(auth)/hooks/useAuth";
+import VoiceToggle from "@/components/toggle/VoiceToggle";
 
 export default function UserDropdown() {
   const [isOpen, setIsOpen] = useState(false);
@@ -67,7 +70,7 @@ export default function UserDropdown() {
               <div className="px-3 py-2 text-text-clr text-sm">Loading...</div>
             ) : isAuthenticated && user ? (
               <>
-                {/* User Info Section - Restored */}
+                {/* User Info Section */}
                 <div className="px-3 py-2 border-b border-background-clr/20 mb-1">
                   <div className="flex items-center gap-2">
                     <IconUser className="h-4 w-4 text-text-clr" />
@@ -81,6 +84,9 @@ export default function UserDropdown() {
                     </div>
                   </div>
                 </div>
+
+                {/* Voice Toggle */}
+                <VoiceToggle onToggle={() => {}} />
 
                 {/* History Link */}
                 <Link
