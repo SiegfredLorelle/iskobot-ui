@@ -5,10 +5,13 @@ import type { ChatMessage } from "./ChatMessageType";
 // Session type
 export interface Session {
   id: string;
-  user_id: string;
+  user_id: string | null;  // Allow null for anonymous sessions
   title: string;
   created_at: string;
   updated_at: string;
+  is_active?: boolean;
+  message_count?: number;
+  last_message?: string | null;
 }
 
 export interface ChatContextType {

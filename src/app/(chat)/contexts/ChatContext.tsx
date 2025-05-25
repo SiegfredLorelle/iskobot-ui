@@ -1,3 +1,5 @@
+"use client";
+
 import React, {
   createContext,
   useContext,
@@ -10,15 +12,7 @@ import type { Mode } from "../types/Mode";
 import type { ChatContextType } from "../types/ChatContextType";
 import type { ChatMessage } from "../types/ChatMessageType";
 import { chatReducer } from "../reducers/chatReducer";
-
-// Enhanced types for session management
-interface Session {
-  id: string;
-  user_id: string;
-  title: string;
-  created_at: string;
-  updated_at: string;
-}
+import type { Session } from "../types/ChatContextType";
 
 interface BackendMessage {
   id: string;
@@ -310,10 +304,11 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({
       if (!currentSession && response.session_id) {
         setCurrentSession({
           id: response.session_id,
-          user_id: "temp",
+          user_id: null,
           title: "New Chat",
           created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
+          updated_at: new Date().toISOString(),
+          is_active: true,
         });
       }
     }
@@ -372,23 +367,20 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const switchSession = useCallback(async (sessionId: string) => {
     try {
-      setSessionError(null);
-      const session = sessions.find(s => s.id === sessionId);
-      if (!session) {
-        throw new Error("Session not found");
-      }
-
+            const session = sessions.find(s => s.id === sessionId);
+      if (!session) throw new Error("Session not found");
       setCurrentSession(session);
-      
-      // Load messages for this session
+
+      // Fetch session messages
       const sessionMessages = await getSessionMessagesAPI(sessionId);
       const localMessages = sessionMessages.map(convertToLocalMessage);
       
-      // Replace all messages with session messages
+      // Replace current messages
       dispatch({ type: "DELETE_ALL" });
       localMessages.forEach(msg => {
         dispatch({ type: "ADD_MESSAGE", payload: msg });
       });
+
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "Failed to switch session";
       setSessionError(errorMessage);
