@@ -13,7 +13,7 @@ import {
 import ThemeToggle from "@/components/toggle/ThemeToggle";
 import Link from "next/link";
 import { useAuth } from "@/app/(auth)/hooks/useAuth";
-import VoiceToggle from "@/components/toggle/VoiceToggle";
+// import VoiceToggle from "@/components/toggle/VoiceToggle";
 
 export default function UserDropdown() {
   const [isOpen, setIsOpen] = useState(false);
@@ -86,7 +86,7 @@ export default function UserDropdown() {
                 </div>
 
                 {/* Voice Toggle */}
-                <VoiceToggle onToggle={() => {}} />
+                {/* <VoiceToggle onToggle={() => {}} /> */}
 
                 {/* History Link */}
                 <Link
