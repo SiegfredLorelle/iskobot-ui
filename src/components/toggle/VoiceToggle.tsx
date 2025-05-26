@@ -2,9 +2,9 @@ import React, { useState } from "react";
 import { IconMicrophone, IconMicrophoneOff } from "@tabler/icons-react";
 
 // Define the props interface
-interface VoiceToggleProps {
+type VoiceToggleProps = {
   onToggle: (isEnabled: boolean) => void;
-}
+};
 
 const VoiceToggle: React.FC<VoiceToggleProps> = ({ onToggle }) => {
   const [isVoiceEnabled, setIsVoiceEnabled] = useState(false);

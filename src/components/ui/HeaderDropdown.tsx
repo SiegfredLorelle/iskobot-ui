@@ -8,7 +8,7 @@ import {
   IconHistory,
   IconBrain,
   IconSettings,
-  IconMicrophone
+  IconMicrophone,
 } from "@tabler/icons-react";
 import ThemeToggle from "@/components/toggle/ThemeToggle";
 import Link from "next/link";
