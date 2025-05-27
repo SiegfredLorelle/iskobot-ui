@@ -113,7 +113,9 @@ export default function RAGAdminUI(): JSX.Element {
     fetchFiles,
     addWebsite: addWebsiteHook,
     deleteWebsite: deleteWebsiteHook,
+    deleteAllFiles,
     fetchWebsites,
+    deleteAllFilesWithProgress,
     refreshAll,
   } = useRAG();
 
@@ -237,6 +239,101 @@ export default function RAGAdminUI(): JSX.Element {
       toast.success("File downloaded successfully!");
     } else {
       toast.error(`Failed to download file: ${result.error}`);
+    }
+  };
+
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteProgress, setDeleteProgress] = useState<{
+    current: number;
+    total: number;
+  } | null>(null);
+
+  const handleDeleteAll = async () => {
+    const fileCount = storageFiles.length;
+
+    if (fileCount === 0) {
+      toast.error("No files to delete");
+      return;
+    }
+
+    // Enhanced confirmation dialog
+    const confirmed = window.confirm(
+      `⚠️ DELETE ALL FILES WARNING ⚠️
+
+This will permanently delete ALL ${fileCount} uploaded files from both storage and the database.
+
+This action:
+• Cannot be undone
+• Will remove all files immediately
+• May affect the chatbot's knowledge base until re-ingestion
+
+Are you absolutely sure you want to continue?`,
+    );
+
+    if (!confirmed) return;
+
+    // Second confirmation for extra safety
+    const doubleConfirmed = window.confirm(
+      `Last chance! This will delete ${fileCount} files permanently. Type "DELETE" in the next prompt to confirm.`,
+    );
+
+    if (!doubleConfirmed) return;
+
+    const userInput = window.prompt(
+      "Type 'DELETE' (in capital letters) to confirm:",
+    );
+    if (userInput !== "DELETE") {
+      toast.error("Deletion cancelled - confirmation text didn't match");
+      return;
+    }
+
+    setIsDeleting(true);
+    toast.loading(`Deleting ${fileCount} files...`);
+
+    try {
+      // Use the enhanced version with progress tracking
+      const result = await deleteAllFilesWithProgress((progress) => {
+        setDeleteProgress(progress);
+        if (progress.fileName) {
+          toast.loading(
+            `Deleting ${progress.fileName}... (${progress.current}/${progress.total})`,
+          );
+        } else {
+          toast.loading(
+            `Deleting files... ${progress.current}/${progress.total}`,
+          );
+        }
+      });
+
+      toast.dismiss();
+
+      if (result.success) {
+        if (result.errors.length > 0) {
+          toast.success(
+            `Deleted ${result.deletedCount} files with ${result.errors.length} warnings`,
+          );
+          console.warn("Deletion warnings:", result.errors);
+        } else {
+          toast.success(
+            `Successfully deleted all ${result.deletedCount} files! 🗑️`,
+          );
+        }
+        await fetchFiles(); // Refresh the list
+      } else {
+        const errorMessage =
+          result.errors.length > 0
+            ? result.errors.slice(0, 2).join(", ") +
+              (result.errors.length > 2 ? "..." : "")
+            : "Unknown error occurred";
+        toast.error(`Failed to delete files. ${errorMessage}`);
+      }
+    } catch (error) {
+      toast.dismiss();
+      toast.error("An unexpected error occurred while deleting files");
+      console.error("Delete all files error:", error);
+    } finally {
+      setIsDeleting(false);
+      setDeleteProgress(null);
     }
   };
 
@@ -387,19 +484,47 @@ export default function RAGAdminUI(): JSX.Element {
                   </div>
 
                   {/* Storage Files Section */}
+                  {deleteProgress && (
+                    <div className="mt-2 text-xs text-admin-clr/60">
+                      Progress: {deleteProgress.current} of{" "}
+                      {deleteProgress.total} files deleted
+                    </div>
+                  )}
                   <div>
                     <div className="flex justify-between items-center mb-6">
                       <h2 className="text-xl font-bold text-admin-clr">
                         Uploaded Files
                       </h2>
-                      <button
-                        onClick={fetchFiles}
-                        disabled={loading}
-                        className="flex items-center space-x-2 px-3 py-2 border border-foreground-clr/30 rounded-md text-sm text-admin-clr hover:bg-foreground-clr/10 disabled:opacity-50 transition duration-200"
-                      >
-                        <IconRefresh size={16} />
-                        <span>Refresh</span>
-                      </button>
+                      <div className="flex gap-2">
+                        <button
+                          onClick={fetchFiles}
+                          disabled={loading}
+                          className="flex items-center space-x-2 px-3 py-2 border border-foreground-clr/30 rounded-md text-sm text-admin-clr hover:bg-foreground-clr/10 disabled:opacity-50 transition duration-200"
+                        >
+                          <IconRefresh size={16} />
+                          <span>Refresh</span>
+                        </button>
+                        <button
+                          onClick={handleDeleteAll}
+                          disabled={
+                            loading || isDeleting || storageFiles.length === 0
+                          }
+                          className={`flex items-center space-x-2 px-3 py-2 border rounded-md text-sm transition duration-200 ${
+                            storageFiles.length === 0
+                              ? "border-gray-500/30 text-gray-500/50 cursor-not-allowed"
+                              : "border-red-500/30 text-red-500 hover:bg-red-500/10 disabled:opacity-50"
+                          }`}
+                        >
+                          <IconTrash size={16} />
+                          <span>
+                            {isDeleting
+                              ? deleteProgress
+                                ? `Deleting... ${deleteProgress.current}/${deleteProgress.total}`
+                                : "Deleting..."
+                              : `Delete All (${storageFiles.length})`}
+                          </span>
+                        </button>
+                      </div>
                     </div>
 
                     <div className="bg-primary-clr/10 border border-gray-200/20 shadow-md overflow-hidden rounded-md">
