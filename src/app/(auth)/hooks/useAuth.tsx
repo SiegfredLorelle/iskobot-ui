@@ -9,6 +9,7 @@ import {
 } from "react";
 import type { AuthStateType } from "@/app/(auth)/types/AuthStateType";
 import type { UserType } from "@/app/(auth)/types/UserType";
+import { useRouter } from "next/navigation";
 
 type AuthContextType = {
   signIn: (email: string, password: string) => Promise<void>;
@@ -51,6 +52,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   if (!endpoint) {
     throw new Error("Endpoint not initialized");
   }
+
+  const router = useRouter();
 
   // Add role checking function to context
   const hasRole = useCallback(
@@ -230,21 +233,28 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // Sign out
   const signOut = useCallback(async () => {
+    let success = false;
     try {
       if (authState.token) {
-        await fetch(`${endpoint}/auth/signout`, {
+        const response = await fetch(`${endpoint}/auth/signout`, {
           method: "POST",
           headers: {
             Authorization: `Bearer ${authState.token}`,
           },
         });
+
+        if (!response.ok) throw new Error("Sign out failed");
+        success = true;
       }
     } catch (error) {
       console.error("Sign out error:", error);
     } finally {
       clearAuthState();
+      if (success) {
+        router.push("/"); // Redirect to home page
+      }
     }
-  }, [endpoint, authState.token, clearAuthState]);
+  }, [endpoint, authState.token, clearAuthState, router]);
 
   // Refresh access token
   const refreshAccessToken = useCallback(async () => {
