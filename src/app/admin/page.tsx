@@ -20,15 +20,11 @@ import { useIngestion } from "@/app/admin/hooks/useIngestor";
 import { toast } from "react-hot-toast";
 
 const VALID_TYPES = [
-  "image/jpeg",
-  "image/jpg",
-  "image/png",
   "application/pdf",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document", // DOCX
+  "application/vnd.openxmlformats-officedocument.presentationml.presentation" // PPTX
 ] as const;
-const IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png"] as const;
-
 type ValidFileType = (typeof VALID_TYPES)[number];
-type ImageFileType = (typeof IMAGE_TYPES)[number];
 
 const ITEMS_PER_PAGE = 10;
 
@@ -96,8 +92,6 @@ Do you want to continue?`,
 export default function RAGAdminUI(): JSX.Element {
   const [activeTab, setActiveTab] = useState<TabType>("files");
   const [files, setFiles] = useState<File[]>([]);
-  const [previews, setPreviews] = useState<string[]>([]);
-  const [preview, setPreview] = useState<string | null>(null);
   const [newWebsite, setNewWebsite] = useState<string>("");
   const fileInput = useRef<HTMLInputElement>(null);
   const [currentPage, setCurrentPage] = useState(1);
@@ -143,32 +137,31 @@ export default function RAGAdminUI(): JSX.Element {
     );
   };
 
-  const addFiles = (newFiles: File[]): void => {
-    const validFiles = newFiles.filter((f) =>
-      VALID_TYPES.includes(f.type as ValidFileType),
-    );
-    if (validFiles.length !== newFiles.length) {
-      alert("Only PDF, DOCX, or PPTX files are supported.");
-      return;
-    }
-    const uniqueFiles = validFiles.filter(
-      (nf) =>
-        !files.some(
-          (f) => f.name === nf.name && f.size === nf.size && f.type === nf.type,
-        ),
-    );
-    if (uniqueFiles.length !== validFiles.length) {
-      alert("Duplicate files are not allowed.");
-      return;
-    }
-    setFiles([...files, ...uniqueFiles]);
-    setPreviews([
-      ...previews,
-      ...uniqueFiles
-        .filter((f) => IMAGE_TYPES.includes(f.type as ImageFileType))
-        .map(URL.createObjectURL),
-    ]);
-  };
+const addFiles = (newFiles: File[]): void => {
+  const validFiles = newFiles.filter((f) =>
+    VALID_TYPES.includes(f.type as ValidFileType)
+  );
+  
+  if (validFiles.length !== newFiles.length) {
+    alert("Only PDF, DOCX, and PPTX files are supported.");
+    return;
+  }
+
+  const uniqueFiles = validFiles.filter((nf) =>
+    !files.some((f) => 
+      f.name === nf.name && 
+      f.size === nf.size && 
+      f.type === nf.type
+    )
+  );
+
+  if (uniqueFiles.length !== validFiles.length) {
+    alert("Duplicate files are not allowed.");
+    return;
+  }
+
+  setFiles([...files, ...uniqueFiles]);
+};
 
   const handleUpload = async (): Promise<void> => {
     if (!files.length) {
@@ -181,7 +174,6 @@ export default function RAGAdminUI(): JSX.Element {
     if (result.success) {
       alert("Files uploaded successfully!");
       setFiles([]);
-      setPreviews([]);
       // Clear file input
       if (fileInput.current) fileInput.current.value = "";
     } else {
@@ -190,23 +182,12 @@ export default function RAGAdminUI(): JSX.Element {
   };
 
   const handleClear = (index: number): void => {
-    const file = files[index];
     setFiles(files.filter((_, i) => i !== index));
-    if (IMAGE_TYPES.includes(file.type as ImageFileType)) {
-      const previewUrl = previews[index];
-      URL.revokeObjectURL(previewUrl);
-      setPreviews(previews.filter((_, i) => i !== index));
-    }
-    setPreview(null);
     if (fileInput.current) fileInput.current.value = "";
   };
 
-  const handlePreview = (file: File, index: number): void => {
-    if (IMAGE_TYPES.includes(file.type as ImageFileType)) {
-      setPreview(previews[index]);
-    } else {
-      window.open(URL.createObjectURL(file), "_blank");
-    }
+  const handlePreview = (file: File): void => {
+    window.open(URL.createObjectURL(file), "_blank");
   };
 
   const handleDeleteStorageFile = async (fileId: string): Promise<void> => {
@@ -363,12 +344,6 @@ Are you absolutely sure you want to continue?`,
     addFiles([...(e.target.files || [])]);
   };
 
-  useEffect(() => {
-    return () => {
-      previews.forEach(URL.revokeObjectURL);
-    };
-  }, [previews]);
-
   const tabs: TabConfig[] = [
     { id: "files", name: "Files", icon: IconFile },
     { id: "websites", name: "Websites", icon: IconGlobe },
@@ -455,7 +430,7 @@ Are you absolutely sure you want to continue?`,
                         type="file"
                         ref={fileInput}
                         onChange={handleFileInputChange}
-                        accept={VALID_TYPES.join(",")}
+                        accept=".pdf,.docx,.pptx,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.openxmlformats-officedocument.presentationml.presentation"
                         multiple
                         className="hidden"
                       />
@@ -480,7 +455,7 @@ Are you absolutely sure you want to continue?`,
                             </div>
                             <div className="flex items-center space-x-2">
                               <button
-                                onClick={() => handlePreview(file, index)}
+                                onClick={() => handlePreview(file)}
                                 className=""
                                 title="Preview"
                               >
@@ -694,24 +669,6 @@ Are you absolutely sure you want to continue?`,
           </div>
 
           <IngestButton />
-
-          {preview && (
-            <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
-              <div className="bg-primary-clr p-4 rounded-lg max-w-4xl max-h-full overflow-auto shadow-xl">
-                <img
-                  src={preview}
-                  alt="Preview"
-                  className="max-w-full max-h-96 object-contain"
-                />
-                <button
-                  onClick={() => setPreview(null)}
-                  className="mt-4 w-full px-4 py-2 bg-background-clr text-white rounded hover:bg-accent-clr transition duration-200"
-                >
-                  Close Preview
-                </button>
-              </div>
-            </div>
-          )}
         </div>
       </div>
     </AdminProtectedRoute>
