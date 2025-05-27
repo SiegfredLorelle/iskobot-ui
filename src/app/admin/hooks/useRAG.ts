@@ -33,6 +33,11 @@ type UploadResponse = {
   error?: string;
 };
 
+type DownloadResponse = {
+  success: boolean;
+  error?: string;
+};
+
 type ApiError = {
   detail: string | { msg: string }[];
   message?: string;
@@ -137,6 +142,80 @@ export function useFileManagement() {
     [token, endpoint],
   );
 
+  // Download file
+  const downloadFile = useCallback(
+    async (fileId: string, fileName: string): Promise<DownloadResponse> => {
+      if (!token) {
+        return { success: false, error: "Not authenticated" };
+      }
+
+      setLoading(true);
+      setError(null);
+
+      try {
+        const response = await fetch(
+          `${endpoint}/rag/files/${fileId}/download`,
+          {
+            method: "GET",
+            headers: getAuthHeaders(),
+          },
+        );
+
+        if (!response.ok) {
+          let errorMessage = `Download failed: ${response.status} ${response.statusText}`;
+          try {
+            const errorData: ApiError = await response.json();
+            errorMessage = handleApiError(errorData);
+          } catch {
+            // If we can't parse JSON, use the status text
+            const errorText = await response.text();
+            if (errorText) {
+              errorMessage += ` - ${errorText}`;
+            }
+          }
+          throw new Error(errorMessage);
+        }
+
+        // Get the blob from response
+        const blob = await response.blob();
+
+        if (blob.size === 0) {
+          throw new Error("Downloaded file is empty");
+        }
+
+        // Create download link
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = fileName;
+        link.style.display = "none";
+
+        // Trigger download
+        document.body.appendChild(link);
+        link.click();
+
+        // Cleanup after a short delay
+        setTimeout(() => {
+          if (document.body.contains(link)) {
+            document.body.removeChild(link);
+          }
+          window.URL.revokeObjectURL(url);
+        }, 100);
+
+        return { success: true };
+      } catch (err) {
+        const errorMessage =
+          err instanceof Error ? err.message : "An unexpected error occurred";
+        setError(errorMessage);
+        console.error("Error downloading file:", err);
+        return { success: false, error: errorMessage };
+      } finally {
+        setLoading(false);
+      }
+    },
+    [token, endpoint],
+  );
+
   // Delete file
   const deleteFile = useCallback(
     async (fileId: string): Promise<boolean> => {
@@ -177,6 +256,7 @@ export function useFileManagement() {
     error,
     fetchFiles,
     uploadFiles,
+    downloadFile,
     deleteFile,
   };
 }
@@ -342,6 +422,7 @@ export function useRAG() {
     // File management
     files: fileManagement.files,
     uploadFiles: fileManagement.uploadFiles,
+    downloadFile: fileManagement.downloadFile,
     deleteFile: fileManagement.deleteFile,
     fetchFiles: fileManagement.fetchFiles,
 

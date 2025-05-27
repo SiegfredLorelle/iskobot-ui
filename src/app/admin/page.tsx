@@ -108,6 +108,7 @@ export default function RAGAdminUI(): JSX.Element {
     loading,
     error,
     uploadFiles,
+    downloadFile,
     deleteFile,
     fetchFiles,
     addWebsite: addWebsiteHook,
@@ -226,6 +227,16 @@ export default function RAGAdminUI(): JSX.Element {
     const result = await addWebsiteHook(newWebsite.trim());
     if (result) {
       setNewWebsite("");
+    }
+  };
+
+  const handleDownloadFile = async (fileId: string, fileName: string) => {
+    const result = await downloadFile(fileId, fileName);
+
+    if (result.success) {
+      toast.success("File downloaded successfully!");
+    } else {
+      toast.error(`Failed to download file: ${result.error}`);
     }
   };
 
@@ -417,12 +428,21 @@ export default function RAGAdminUI(): JSX.Element {
                                   </div>
                                 </div>
                                 <div className="flex items-center space-x-4">
-                                  <div className="flex items-center space-x-2"></div>
+                                  <button
+                                    onClick={() =>
+                                      handleDownloadFile(file.id, file.name)
+                                    }
+                                    className="text-admin-clr hover:text-accent-clr transition-colors"
+                                    title="Download"
+                                    disabled={loading}
+                                  >
+                                    <IconDownload size={16} />
+                                  </button>
                                   <button
                                     onClick={() =>
                                       handleDeleteStorageFile(file.id)
                                     }
-                                    className="text-red-500 hover:text-red-700"
+                                    className="text-red-500 hover:text-red-700 transition-colors"
                                     title="Delete file"
                                     disabled={loading}
                                   >
