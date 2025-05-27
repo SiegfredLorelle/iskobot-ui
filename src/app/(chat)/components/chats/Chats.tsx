@@ -33,7 +33,8 @@ export default function Chats() {
         })
           .then((response) => {
             if (response.status === 204) return null;
-            if (!response.ok) throw new Error(`Failed to generate speech: ${response.status}`);
+            if (!response.ok)
+              throw new Error(`Failed to generate speech: ${response.status}`);
             return response.blob();
           })
           .then((audioBlob) => {
@@ -65,7 +66,9 @@ export default function Chats() {
           ) : (
             <IconMicrophoneOff className="h-4 w-4 text-orange-500" />
           )}
-          <span className="text-orange-500">{isVoiceEnabled ? "Voice On" : "Voice Off"}</span>
+          <span className="text-orange-500">
+            {isVoiceEnabled ? "Voice On" : "Voice Off"}
+          </span>
         </button>
       </div>
 
