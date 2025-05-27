@@ -84,17 +84,18 @@ export function useFileManagement() {
       const response = await fetch(`${endpoint}/rag/files`, {
         headers: getAuthHeaders(),
       });
-      
+
       if (!response.ok) {
         const errorData: ApiError = await response.json();
         throw new Error(handleApiError(errorData));
       }
 
       const data: StorageFile[] = await response.json();
-      
+
       // Sort files by uploaded_at in descending order
-      const sortedFiles = data.sort((a, b) => 
-        new Date(b.uploaded_at).getTime() - new Date(a.uploaded_at).getTime()
+      const sortedFiles = data.sort(
+        (a, b) =>
+          new Date(b.uploaded_at).getTime() - new Date(a.uploaded_at).getTime(),
       );
 
       setFiles(sortedFiles);

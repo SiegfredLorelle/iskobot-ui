@@ -30,6 +30,8 @@ const IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png"] as const;
 type ValidFileType = (typeof VALID_TYPES)[number];
 type ImageFileType = (typeof IMAGE_TYPES)[number];
 
+const ITEMS_PER_PAGE = 10;
+
 type TabType = "files" | "websites";
 
 type TabConfig = {
@@ -98,6 +100,8 @@ export default function RAGAdminUI(): JSX.Element {
   const [preview, setPreview] = useState<string | null>(null);
   const [newWebsite, setNewWebsite] = useState<string>("");
   const fileInput = useRef<HTMLInputElement>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(ITEMS_PER_PAGE);
 
   // Use the RAG hooks
   const {
@@ -370,6 +374,32 @@ Are you absolutely sure you want to continue?`,
     { id: "websites", name: "Websites", icon: IconGlobe },
   ];
 
+  const PaginationControls = () => {
+    const totalPages = Math.ceil(storageFiles.length / itemsPerPage);
+
+    return (
+      <div className="flex items-center justify-center my-4 gap-3">
+        <button
+          onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+          disabled={currentPage === 1}
+          className="px-3 py-1 border border-foreground-clr/30 rounded-md text-sm hover:bg-foreground-clr/10 disabled:opacity-50"
+        >
+          Previous
+        </button>
+        <span className="text-sm text-admin-clr">
+          {currentPage} of {totalPages}
+        </span>
+        <button
+          onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+          disabled={currentPage === totalPages}
+          className="px-3 py-1 border border-foreground-clr/30 rounded-md text-sm hover:bg-foreground-clr/10 disabled:opacity-50"
+        >
+          Next
+        </button>
+      </div>
+    );
+  };
+
   return (
     <AdminProtectedRoute allowedRoles={["admin", "super_admin"]}>
       <div className="min-h-screen py-8 ">
@@ -526,47 +556,55 @@ Are you absolutely sure you want to continue?`,
                         </div>
                       ) : (
                         <ul className="divide-y divide-foreground-clr/20">
-                          {storageFiles.map((file) => (
-                            <li key={file.id} className="px-6 py-4">
-                              <div className="flex items-center justify-between">
-                                <div className="flex items-center space-x-3">
-                                  <IconFile size={20} className="" />
-                                  <div>
-                                    <p className="text-sm font-medium ">
-                                      {file.name}
-                                    </p>
-                                    <p className="text-xs /80">
-                                      {formatFileSize(file.size)} • Uploaded{" "}
-                                      {formatDate(file.uploaded_at)}
-                                    </p>
+                          {storageFiles
+                            .slice(
+                              (currentPage - 1) * itemsPerPage,
+                              currentPage * itemsPerPage,
+                            )
+                            .map((file) => (
+                              <li key={file.id} className="px-6 py-4">
+                                <div className="flex items-center justify-between">
+                                  <div className="flex items-center space-x-3">
+                                    <IconFile size={20} className="" />
+                                    <div>
+                                      <p className="text-sm font-medium ">
+                                        {file.name}
+                                      </p>
+                                      <p className="text-xs /80">
+                                        {formatFileSize(file.size)} • Uploaded{" "}
+                                        {formatDate(file.uploaded_at)}
+                                      </p>
+                                    </div>
+                                  </div>
+                                  <div className="flex items-center space-x-4">
+                                    <button
+                                      onClick={() =>
+                                        handleDownloadFile(file.id, file.name)
+                                      }
+                                      className="text-admin-clr hover:text-accent-clr transition-colors"
+                                      title="Download"
+                                      disabled={loading}
+                                    >
+                                      <IconDownload size={16} />
+                                    </button>
+                                    <button
+                                      onClick={() =>
+                                        handleDeleteStorageFile(file.id)
+                                      }
+                                      className="text-red-500 hover:text-red-700 transition-colors"
+                                      title="Delete file"
+                                      disabled={loading}
+                                    >
+                                      <IconTrash size={16} />
+                                    </button>
                                   </div>
                                 </div>
-                                <div className="flex items-center space-x-4">
-                                  <button
-                                    onClick={() =>
-                                      handleDownloadFile(file.id, file.name)
-                                    }
-                                    className="text-admin-clr hover:text-accent-clr transition-colors"
-                                    title="Download"
-                                    disabled={loading}
-                                  >
-                                    <IconDownload size={16} />
-                                  </button>
-                                  <button
-                                    onClick={() =>
-                                      handleDeleteStorageFile(file.id)
-                                    }
-                                    className="text-red-500 hover:text-red-700 transition-colors"
-                                    title="Delete file"
-                                    disabled={loading}
-                                  >
-                                    <IconTrash size={16} />
-                                  </button>
-                                </div>
-                              </div>
-                            </li>
-                          ))}
+                              </li>
+                            ))}
                         </ul>
+                      )}
+                      {storageFiles.length > itemsPerPage && (
+                        <PaginationControls />
                       )}
                     </div>
                   </div>
