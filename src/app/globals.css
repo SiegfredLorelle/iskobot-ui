@@ -72,10 +72,9 @@
 
 :root {
   --background-clr: #f8f8f8;
-  --foreground-clr: #4d4d4d;
+  --foreground-clr: #f8f8f8;
   --primary-clr: #800000;
   --text-clr: #f8f8f8;
-  --admin-clr: #4D4D4D;
   --hover-clr:#000000;
   --accent-clr: #800000;
   --form-clr: #000000;
@@ -83,7 +82,7 @@
 
 :root.dark {
   --background-clr: #800000;
-  --foreground-clr: #b3b3b3;
+  --foreground-clr: #000000;
   --primary-clr: #f1f1f1;
   --text-clr: #000000;
   --hover-clr: #800000;
