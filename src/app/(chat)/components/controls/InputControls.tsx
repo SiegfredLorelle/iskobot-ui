@@ -128,7 +128,7 @@ export default function InputControls() {
         value={userInput}
         onChange={(e) => setUserInput(e.target.value)}
         onKeyDown={handleKeyDown}
-        className="w-full bg-primary-clr text-text-clr max-h-[45vh] text-center flex items-center placeholder-text-clr focus:outline-hidden resize-none px-3 leading-relaxed"
+        className={`w-full bg-primary-clr text-text-clr max-h-[45vh] ${userInput ?  "text-start" : "text-center"} flex items-center placeholder-text-clr focus:outline-hidden resize-none px-3 leading-relaxed`}
         rows={1}
         ref={textareaRef}
         disabled={isTextFieldDisabled || isTranscribing} // Disable textarea when recording

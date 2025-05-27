@@ -56,17 +56,17 @@ export default function Chats() {
       {/* Voice Toggle Button inline */}
       <div className="flex justify-end mb-4">
         <button
-          className="flex items-center gap-2 px-3 py-2 text-text-clr text-sm hover:bg-[var(--hover-clr)] rounded-md transition duration-200"
+          className="flex items-center gap-2 px-3 py-2 text-[var(--primary-clr)] text-sm rounded-md transition duration-200"
           onClick={handleToggleVoice}
           aria-label={`Turn voice ${isVoiceEnabled ? "off" : "on"}`}
-          color="h-4 w-4 text-orange-500"
+          color="h-4 w-4 text-[var(--primary-clr)]"
         >
           {isVoiceEnabled ? (
-            <IconMicrophone className="h-4 w-4 text-orange-500" />
+            <IconMicrophone className="h-4 w-4" />
           ) : (
-            <IconMicrophoneOff className="h-4 w-4 text-orange-500" />
+            <IconMicrophoneOff className="h-4 w-4" />
           )}
-          <span className="text-orange-500">
+          <span className=" text-[var(--primary-clr)]">
             {isVoiceEnabled ? "Voice On" : "Voice Off"}
           </span>
         </button>
