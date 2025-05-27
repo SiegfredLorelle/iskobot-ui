@@ -38,6 +38,13 @@ type DownloadResponse = {
   error?: string;
 };
 
+type DeleteAllResponse = {
+  success: boolean;
+  deletedCount: number;
+  errors: string[];
+  totalFiles?: number;
+};
+
 type ApiError = {
   detail: string | { msg: string }[];
   message?: string;
@@ -250,6 +257,212 @@ export function useFileManagement() {
     [token, endpoint],
   );
 
+  // Simple delete all files (fallback)
+  const deleteAllFiles = useCallback(async (): Promise<boolean> => {
+    if (!token) {
+      setError("Not authenticated");
+      return false;
+    }
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      // Try the batch endpoint first
+      const response = await fetch(`${endpoint}/rag/files/batch`, {
+        method: "DELETE",
+        headers: getAuthHeaders(),
+      });
+
+      if (!response.ok) {
+        // If batch endpoint doesn't exist, fall back to individual deletions
+        if (response.status === 404) {
+          console.log(
+            "Batch endpoint not found, deleting files individually...",
+          );
+
+          const deletePromises = files.map(async (file) => {
+            try {
+              const fileResponse = await fetch(
+                `${endpoint}/rag/files/${file.id}`,
+                {
+                  method: "DELETE",
+                  headers: getAuthHeaders(),
+                },
+              );
+              return fileResponse.ok;
+            } catch {
+              return false;
+            }
+          });
+
+          const results = await Promise.all(deletePromises);
+          const successCount = results.filter(Boolean).length;
+
+          if (successCount > 0) {
+            setFiles([]);
+            return true;
+          } else {
+            throw new Error("Failed to delete files individually");
+          }
+        }
+
+        const errorData: ApiError = await response.json();
+        throw new Error(handleApiError(errorData));
+      }
+
+      // Parse the batch response
+      const result = await response.json();
+
+      // Clear local state if any files were deleted
+      if (result.deleted_count > 0) {
+        setFiles([]);
+      }
+
+      return result.success;
+    } catch (err) {
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to delete all files";
+      setError(errorMessage);
+      console.error("Error deleting all files:", err);
+      return false;
+    } finally {
+      setLoading(false);
+    }
+  }, [token, endpoint, files]);
+
+  // Enhanced version with progress tracking
+  const deleteAllFilesWithProgress = useCallback(
+    async (
+      onProgress?: (progress: {
+        current: number;
+        total: number;
+        fileName?: string;
+      }) => void,
+    ): Promise<DeleteAllResponse> => {
+      if (!token) {
+        setError("Not authenticated");
+        return {
+          success: false,
+          deletedCount: 0,
+          errors: ["Not authenticated"],
+        };
+      }
+
+      setLoading(true);
+      setError(null);
+
+      try {
+        const currentFiles = files.length;
+
+        if (currentFiles === 0) {
+          return { success: true, deletedCount: 0, errors: [] };
+        }
+
+        // Try the batch endpoint first
+        const response = await fetch(`${endpoint}/rag/files/batch`, {
+          method: "DELETE",
+          headers: getAuthHeaders(),
+        });
+
+        if (response.ok) {
+          // Batch endpoint exists and worked
+          const result = await response.json();
+
+          // Update progress if callback provided
+          if (onProgress) {
+            onProgress({
+              current: result.deleted_count || result.deletedCount,
+              total: result.total_files || currentFiles,
+            });
+          }
+
+          // Clear local state if any files were deleted
+          if (result.deleted_count > 0 || result.deletedCount > 0) {
+            setFiles([]);
+          }
+
+          return {
+            success: result.success,
+            deletedCount: result.deleted_count || result.deletedCount,
+            errors: result.errors || [],
+            totalFiles: result.total_files || currentFiles,
+          };
+        } else {
+          // Fall back to individual deletions with progress tracking
+          console.log(
+            "Using individual file deletion with progress tracking...",
+          );
+
+          let deletedCount = 0;
+          const errors: string[] = [];
+
+          // Update initial progress
+          if (onProgress) {
+            onProgress({ current: 0, total: currentFiles });
+          }
+
+          for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+
+            try {
+              const fileResponse = await fetch(
+                `${endpoint}/rag/files/${file.id}`,
+                {
+                  method: "DELETE",
+                  headers: getAuthHeaders(),
+                },
+              );
+
+              if (fileResponse.ok) {
+                deletedCount++;
+              } else {
+                const errorData = await fileResponse.json();
+                errors.push(
+                  `Failed to delete ${file.name}: ${handleApiError(errorData)}`,
+                );
+              }
+            } catch (err) {
+              errors.push(
+                `Failed to delete ${file.name}: ${err instanceof Error ? err.message : "Unknown error"}`,
+              );
+            }
+
+            // Update progress
+            if (onProgress) {
+              onProgress({
+                current: i + 1,
+                total: currentFiles,
+                fileName: file.name,
+              });
+            }
+          }
+
+          // Clear local state if any files were deleted
+          if (deletedCount > 0) {
+            setFiles([]);
+          }
+
+          return {
+            success: deletedCount > 0,
+            deletedCount,
+            errors,
+            totalFiles: currentFiles,
+          };
+        }
+      } catch (err) {
+        const errorMessage =
+          err instanceof Error ? err.message : "Failed to delete all files";
+        setError(errorMessage);
+        console.error("Error deleting all files:", err);
+        return { success: false, deletedCount: 0, errors: [errorMessage] };
+      } finally {
+        setLoading(false);
+      }
+    },
+    [token, endpoint, files],
+  );
+
   return {
     files,
     loading,
@@ -258,6 +471,8 @@ export function useFileManagement() {
     uploadFiles,
     downloadFile,
     deleteFile,
+    deleteAllFiles,
+    deleteAllFilesWithProgress,
   };
 }
 
@@ -286,6 +501,7 @@ export function useWebsiteManagement() {
     }
     return error.message || "An unexpected error occurred";
   };
+
   // Fetch all websites
   const fetchWebsites = useCallback(async () => {
     if (!token) return;
@@ -425,6 +641,8 @@ export function useRAG() {
     downloadFile: fileManagement.downloadFile,
     deleteFile: fileManagement.deleteFile,
     fetchFiles: fileManagement.fetchFiles,
+    deleteAllFiles: fileManagement.deleteAllFiles,
+    deleteAllFilesWithProgress: fileManagement.deleteAllFilesWithProgress,
 
     // Website management
     websites: websiteManagement.websites,
