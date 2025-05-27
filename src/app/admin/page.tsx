@@ -12,8 +12,6 @@ import {
   IconWorld,
   IconPlus,
   IconRefresh,
-  IconDatabase,
-  IconUpload,
   IconGlobe,
 } from "@tabler/icons-react";
 import { useRAG } from "@/app/admin/hooks/useRAG";

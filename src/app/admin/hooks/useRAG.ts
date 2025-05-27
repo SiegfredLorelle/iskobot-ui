@@ -78,22 +78,26 @@ export function useFileManagement() {
   // Fetch all files
   const fetchFiles = useCallback(async () => {
     if (!token) return;
-
     setLoading(true);
     setError(null);
-
     try {
       const response = await fetch(`${endpoint}/rag/files`, {
         headers: getAuthHeaders(),
       });
-
+      
       if (!response.ok) {
         const errorData: ApiError = await response.json();
         throw new Error(handleApiError(errorData));
       }
 
       const data: StorageFile[] = await response.json();
-      setFiles(data);
+      
+      // Sort files by uploaded_at in descending order
+      const sortedFiles = data.sort((a, b) => 
+        new Date(b.uploaded_at).getTime() - new Date(a.uploaded_at).getTime()
+      );
+
+      setFiles(sortedFiles);
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : "An unexpected error occurred";
