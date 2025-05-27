@@ -22,7 +22,7 @@ import { toast } from "react-hot-toast";
 const VALID_TYPES = [
   "application/pdf",
   "application/vnd.openxmlformats-officedocument.wordprocessingml.document", // DOCX
-  "application/vnd.openxmlformats-officedocument.presentationml.presentation" // PPTX
+  "application/vnd.openxmlformats-officedocument.presentationml.presentation", // PPTX
 ] as const;
 type ValidFileType = (typeof VALID_TYPES)[number];
 
@@ -36,7 +36,6 @@ type TabConfig = {
   icon: React.ComponentType<{ size?: number }>;
 };
 
-
 function IngestButton() {
   const { handleIngest, progress, ingesting, error } = useIngestion();
   const [toastId, setToastId] = useState<string | null>(null);
@@ -44,7 +43,7 @@ function IngestButton() {
   useEffect(() => {
     if (ingesting) {
       const id = toast.loading(
-        `Ingestion Progress: ${progress.percentage || 0}% - ${progress.message || "Starting..."}`
+        `Ingestion Progress: ${progress.percentage || 0}% - ${progress.message || "Starting..."}`,
       );
       setToastId(id);
     }
@@ -52,19 +51,23 @@ function IngestButton() {
 
   useEffect(() => {
     if (error) {
-      toast.dismiss(toastId!);
+      if (toastId) {
+        toast.dismiss(toastId);
+      }
       toast.error(`Ingestion failed: ${error}`);
       setToastId(null);
     }
-  }, [error]);
+  }, [error, toastId]);
 
   useEffect(() => {
     if (progress.percentage === 100) {
-      toast.dismiss(toastId!);
+      if (toastId) {
+        toast.dismiss(toastId);
+      }
       toast.success("Ingestion complete! 🎉");
       setToastId(null);
     }
-  }, [progress.percentage]);
+  }, [progress.percentage, toastId]);
 
   const runWithToast = async () => {
     const confirmed = window.confirm(
@@ -79,7 +82,7 @@ This process will:
 Do you want to continue?`,
     );
     if (!confirmed) return;
-    
+
     try {
       await handleIngest();
     } catch (err) {
@@ -155,33 +158,31 @@ export default function RAGAdminUI(): JSX.Element {
     );
   };
 
-const addFiles = (newFiles: File[]): void => {
-  const validFiles = newFiles.filter((f) =>
-    VALID_TYPES.includes(f.type as ValidFileType)
-  );
-  
-  if (validFiles.length !== newFiles.length) {
-    toast.error("Only PDF, DOCX, and PPTX files are supported.");
-    return;
-  }
+  const addFiles = (newFiles: File[]): void => {
+    const validFiles = newFiles.filter((f) =>
+      VALID_TYPES.includes(f.type as ValidFileType),
+    );
 
-  const uniqueFiles = validFiles.filter((nf) =>
-    !files.some((f) => 
-      f.name === nf.name && 
-      f.size === nf.size && 
-      f.type === nf.type
-    )
-  );
+    if (validFiles.length !== newFiles.length) {
+      toast.error("Only PDF, DOCX, and PPTX files are supported.");
+      return;
+    }
 
-  if (uniqueFiles.length !== validFiles.length) {
-    toast.error("Duplicate files are not allowed.");
-    return;
-  }
+    const uniqueFiles = validFiles.filter(
+      (nf) =>
+        !files.some(
+          (f) => f.name === nf.name && f.size === nf.size && f.type === nf.type,
+        ),
+    );
 
-  setFiles([...files, ...uniqueFiles]);
-};
+    if (uniqueFiles.length !== validFiles.length) {
+      toast.error("Duplicate files are not allowed.");
+      return;
+    }
 
-  
+    setFiles([...files, ...uniqueFiles]);
+  };
+
   const [uploadProgress, setUploadProgress] = useState<{
     current: number;
     total: number;
@@ -203,10 +204,12 @@ const addFiles = (newFiles: File[]): void => {
     });
     setUploadProgress(null);
     toast.dismiss(toastId);
-    
+
     if (result.success) {
       if (result.uploadedCount === files.length) {
-        toast.success(`All ${result.uploadedCount} files uploaded successfully!`);
+        toast.success(
+          `All ${result.uploadedCount} files uploaded successfully!`,
+        );
       } else {
         toast.success(
           `Uploaded ${result.uploadedCount} out of ${files.length} files. ${result.errors?.length} errors occurred.`,
@@ -309,9 +312,9 @@ Are you absolutely sure you want to continue?`,
       // Use the enhanced version with progress tracking
       const result = await deleteAllFilesWithProgress((progress) => {
         setDeleteProgress(progress);
-          toast.loading(
-            `Deleting files... ${progress.current}/${progress.total}`,
-          );
+        toast.loading(
+          `Deleting files... ${progress.current}/${progress.total}`,
+        );
       });
 
       toast.dismiss();
@@ -351,7 +354,7 @@ Are you absolutely sure you want to continue?`,
 
     const success = await deleteWebsiteHook(websiteId);
     if (!success) {
-    toast.error("Error deleting website");
+      toast.error("Error deleting website");
     }
   };
 

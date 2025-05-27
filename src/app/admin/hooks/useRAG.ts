@@ -155,7 +155,9 @@ export function useFileManagement() {
             }
           } catch (err) {
             const errorMessage =
-              err instanceof Error ? err.message : "An unexpected error occurred";
+              err instanceof Error
+                ? err.message
+                : "An unexpected error occurred";
             errors.push(`Failed to upload ${file.name}: ${errorMessage}`);
           }
         }
