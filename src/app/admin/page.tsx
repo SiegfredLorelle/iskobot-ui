@@ -143,7 +143,7 @@ const addFiles = (newFiles: File[]): void => {
   );
   
   if (validFiles.length !== newFiles.length) {
-    alert("Only PDF, DOCX, and PPTX files are supported.");
+    toast.error("Only PDF, DOCX, and PPTX files are supported.");
     return;
   }
 
@@ -156,7 +156,7 @@ const addFiles = (newFiles: File[]): void => {
   );
 
   if (uniqueFiles.length !== validFiles.length) {
-    alert("Duplicate files are not allowed.");
+    toast.error("Duplicate files are not allowed.");
     return;
   }
 
@@ -165,19 +165,19 @@ const addFiles = (newFiles: File[]): void => {
 
   const handleUpload = async (): Promise<void> => {
     if (!files.length) {
-      alert("No files selected.");
+      toast.error("No files selected.")
       return;
     }
 
     const result = await uploadFiles(files);
 
     if (result.success) {
-      alert("Files uploaded successfully!");
+      toast.success("Files uploaded successfully!");
       setFiles([]);
       // Clear file input
       if (fileInput.current) fileInput.current.value = "";
     } else {
-      alert(`Upload failed: ${result.error}`);
+      toast.error(`Upload failed: ${result.error}`);
     }
   };
 
@@ -195,7 +195,7 @@ const addFiles = (newFiles: File[]): void => {
 
     const success = await deleteFile(fileId);
     if (!success) {
-      alert("Error deleting file");
+      toast.error("Error deleting file");
     }
   };
 
@@ -205,7 +205,7 @@ const addFiles = (newFiles: File[]): void => {
     try {
       new URL(newWebsite); // Validate URL
     } catch {
-      alert("Please enter a valid URL");
+      toast.error("Please enter a valid URL");
       return;
     }
 
@@ -255,18 +255,11 @@ Are you absolutely sure you want to continue?`,
 
     if (!confirmed) return;
 
-    // Second confirmation for extra safety
-    const doubleConfirmed = window.confirm(
-      `Last chance! This will delete ${fileCount} files permanently. Type "DELETE" in the next prompt to confirm.`,
-    );
-
-    if (!doubleConfirmed) return;
-
     const userInput = window.prompt(
       "Type 'DELETE' (in capital letters) to confirm:",
     );
     if (userInput !== "DELETE") {
-      toast.error("Deletion cancelled - confirmation text didn't match");
+      toast.error("Deletion cancelled");
       return;
     }
 
@@ -277,15 +270,9 @@ Are you absolutely sure you want to continue?`,
       // Use the enhanced version with progress tracking
       const result = await deleteAllFilesWithProgress((progress) => {
         setDeleteProgress(progress);
-        if (progress.fileName) {
-          toast.loading(
-            `Deleting ${progress.fileName}... (${progress.current}/${progress.total})`,
-          );
-        } else {
           toast.loading(
             `Deleting files... ${progress.current}/${progress.total}`,
           );
-        }
       });
 
       toast.dismiss();
@@ -325,7 +312,7 @@ Are you absolutely sure you want to continue?`,
 
     const success = await deleteWebsiteHook(websiteId);
     if (!success) {
-      alert("Error deleting website");
+    toast.error("Error deleting website");
     }
   };
 
