@@ -12,13 +12,11 @@ export const SessionHistory = () => {
       {sessions.map((session) => (
         <div
           key={session.id}
-          onClick={() => switchSession(session.id)}
-          className={`p-4 rounded-lg cursor-pointer hover:bg-gray-100 ${
-            currentSession?.id === session.id ? "bg-blue-50" : ""
-          }`}
+          onClick={() => {}}
+          className={`p-4 rounded-lg bg-[var(--primary-clr)]`}
         >
           <div className="font-medium">{session.title}</div>
-          <div className="text-sm text-gray-500">
+          <div className="text-sm text-[var(--text-clr)]/60">
             {new Date(session.updated_at).toLocaleString("en-US", {
               year: "numeric",
               month: "long",
@@ -29,7 +27,7 @@ export const SessionHistory = () => {
             })}
           </div>
           {session.last_message && session.last_message.trim() !== "" && (
-            <div className="text-sm text-gray-600 truncate">
+            <div className="text-sm text-[var(--text-clr)]/60 truncate">
               Last message: {session.last_message}
             </div>
           )}
