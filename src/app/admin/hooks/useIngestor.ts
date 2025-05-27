@@ -1,49 +1,63 @@
 import { useState } from "react";
 
-type IngestStats = Record<string, unknown>;
+type IngestStats = {
+  percentage?: number;
+  message?: string;
+  error?: string;
+};
 
 export function useIngestion() {
   const [ingesting, setIngesting] = useState(false);
-  const [ingestStats, setIngestStats] = useState<IngestStats | null>(null);
+  const [progress, setProgress] = useState<IngestStats>({});
   const [error, setError] = useState<string | null>(null);
-  const [completedAt, setCompletedAt] = useState<number | null>(null);
   const endpoint = process.env.NEXT_PUBLIC_CHATBOT_ENDPOINT;
 
-  const handleIngest = async () => {
-    setIngesting(true);
-    setError(null);
-    setIngestStats(null);
-    setCompletedAt(null);
+const handleIngest = async () => {
+  setIngesting(true);
+  setError(null);
+  setProgress({});
 
-    try {
-      const response = await fetch(`${endpoint}/ingest`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+  try {
+    const startResponse = await fetch(`${endpoint}/ingest`, { method: "POST" });
+    if (!startResponse.ok) throw new Error("Failed to start ingestion");
+
+    const eventSource = new EventSource(`${endpoint}/ingest/stream`);
+
+    eventSource.addEventListener('progress', (event) => {
+      const data = JSON.parse(event.data);
+      setProgress({
+        percentage: data.percentage,
+        message: data.message
       });
+    });
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      setIngestStats(data.stats);
-      setCompletedAt(Date.now());
-    } catch (err: unknown) {
-      const message =
-        err instanceof Error ? err.message : "Failed to ingest data.";
-      setError(message);
-    } finally {
+    eventSource.addEventListener('complete', () => {
+      eventSource.close();
       setIngesting(false);
-    }
-  };
+    });
 
+    eventSource.addEventListener('error', (event: MessageEvent) => {
+      const data = JSON.parse(event.data);
+      eventSource.close();
+      setIngesting(false);
+      setError(data.error || "Ingestion failed");
+    });
+
+    eventSource.onerror = () => {
+      eventSource.close();
+      setIngesting(false);
+      setError("Connection to ingestion progress failed");
+    };
+
+  } catch (err) {
+    setIngesting(false);
+    setError(err instanceof Error ? err.message : "Ingestion failed");
+  }
+};
   return {
     handleIngest,
-    ingestStats,
+    progress,
     ingesting,
-    error,
-    completedAt,
+    error
   };
 }

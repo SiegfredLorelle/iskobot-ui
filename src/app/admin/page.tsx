@@ -36,26 +36,37 @@ type TabConfig = {
   icon: React.ComponentType<{ size?: number }>;
 };
 
-// Move IngestButton outside to prevent re-creation
+
 function IngestButton() {
-  const { handleIngest, ingestStats, ingesting, error } = useIngestion();
+  const { handleIngest, progress, ingesting, error } = useIngestion();
+  const [toastId, setToastId] = useState<string | null>(null);
 
   useEffect(() => {
-    if (ingestStats) {
-      toast.dismiss();
-      toast.success("Ingestion complete! 🎉");
+    if (ingesting) {
+      const id = toast.loading(
+        `Ingestion Progress: ${progress.percentage || 0}% - ${progress.message || "Starting..."}`
+      );
+      setToastId(id);
     }
-  }, [ingestStats]);
+  }, [ingesting, progress]);
 
   useEffect(() => {
     if (error) {
-      toast.dismiss();
-      toast.error(`Ingestion failed!`);
+      toast.dismiss(toastId!);
+      toast.error(`Ingestion failed: ${error}`);
+      setToastId(null);
     }
   }, [error]);
 
+  useEffect(() => {
+    if (progress.percentage === 100) {
+      toast.dismiss(toastId!);
+      toast.success("Ingestion complete! 🎉");
+      setToastId(null);
+    }
+  }, [progress.percentage]);
+
   const runWithToast = async () => {
-    // Show confirmation dialog with warning
     const confirmed = window.confirm(
       `⚠️ Ingestion and vectorization may take several hours, depending on the number of files and websites. During this process, Iskobot will be temporarily unavailable for answering questions. 😔
 
@@ -67,11 +78,13 @@ This process will:
 
 Do you want to continue?`,
     );
-
     if (!confirmed) return;
-
-    toast.loading("Ingestion started...");
-    await handleIngest();
+    
+    try {
+      await handleIngest();
+    } catch (err) {
+      toast.error("Failed to start ingestion");
+    }
   };
 
   return (
@@ -79,11 +92,16 @@ Do you want to continue?`,
       <button
         onClick={runWithToast}
         disabled={ingesting}
-        className="mt-6 w-full py-3 px-6 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-background-clr to-black hover:from-black hover:to-accent-clr transition-all duration-300 ease-in-out shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+        className="mt-6 w-full py-3 px-6 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-background-clr to-black hover:from-black hover:to-accent-clr transition-all duration-300 ease-in-out shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
       >
-        {ingesting
-          ? "Ingesting..."
-          : "Ingest and Vectorize All Files and Websites for Iskobot's Knowledge"}
+        {ingesting ? (
+          <>
+            <IconRefresh className="animate-spin h-4 w-4" />
+            {progress.message && <span>{progress.message}</span>}
+          </>
+        ) : (
+          "Ingest and Vectorize All Files and Websites to Update Iskobot's Knowledge"
+        )}
       </button>
     </div>
   );
