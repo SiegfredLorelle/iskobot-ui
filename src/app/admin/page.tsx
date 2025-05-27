@@ -163,21 +163,42 @@ const addFiles = (newFiles: File[]): void => {
   setFiles([...files, ...uniqueFiles]);
 };
 
+  
+  const [uploadProgress, setUploadProgress] = useState<{
+    current: number;
+    total: number;
+    fileName?: string;
+  } | null>(null);
+
   const handleUpload = async (): Promise<void> => {
     if (!files.length) {
-      toast.error("No files selected.")
+      toast.error("No files selected.");
       return;
     }
-
-    const result = await uploadFiles(files);
-
+    const toastId = toast.loading(`Uploading 0/${files.length} files...`);
+    const result = await uploadFiles(files, (progress) => {
+      setUploadProgress(progress);
+      toast.loading(
+        `Uploading ${progress.current}/${progress.total} files...`,
+        { id: toastId },
+      );
+    });
+    setUploadProgress(null);
+    toast.dismiss(toastId);
+    
     if (result.success) {
-      toast.success("Files uploaded successfully!");
+      if (result.uploadedCount === files.length) {
+        toast.success(`All ${result.uploadedCount} files uploaded successfully!`);
+      } else {
+        toast.success(
+          `Uploaded ${result.uploadedCount} out of ${files.length} files. ${result.errors?.length} errors occurred.`,
+        );
+      }
       setFiles([]);
-      // Clear file input
       if (fileInput.current) fileInput.current.value = "";
     } else {
-      toast.error(`Upload failed: ${result.error}`);
+      const errorMessage = result.error || "Unknown error occurred";
+      toast.error(`Upload failed: ${errorMessage}`);
     }
   };
 
@@ -470,12 +491,6 @@ Are you absolutely sure you want to continue?`,
                   </div>
 
                   {/* Storage Files Section */}
-                  {deleteProgress && (
-                    <div className="mt-2 text-xs text-admin-clr/60">
-                      Progress: {deleteProgress.current} of{" "}
-                      {deleteProgress.total} files deleted
-                    </div>
-                  )}
                   <div>
                     <div className="flex justify-between items-center mb-6">
                       <h2 className="text-xl font-bold ">Uploaded Files</h2>

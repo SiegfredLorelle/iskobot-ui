@@ -31,8 +31,9 @@ type UploadResponse = {
   success: boolean;
   files?: StorageFile[];
   error?: string;
+  uploadedCount?: number;
+  errors?: string[];
 };
-
 type DownloadResponse = {
   success: boolean;
   error?: string;
@@ -111,37 +112,64 @@ export function useFileManagement() {
 
   // Upload files
   const uploadFiles = useCallback(
-    async (fileList: File[]): Promise<UploadResponse> => {
+    async (
+      fileList: File[],
+      onProgress?: (progress: {
+        current: number;
+        total: number;
+        fileName?: string;
+      }) => void,
+    ): Promise<UploadResponse> => {
       if (!token) {
         return { success: false, error: "Not authenticated" };
       }
-
       setLoading(true);
       setError(null);
-
       try {
-        const formData = new FormData();
-        fileList.forEach((file) => {
+        const uploadedFiles: StorageFile[] = [];
+        const errors: string[] = [];
+        const total = fileList.length;
+        let current = 0;
+
+        for (const file of fileList) {
+          const formData = new FormData();
           formData.append("files", file);
-        });
 
-        const response = await fetch(`${endpoint}/rag/files/upload`, {
-          method: "POST",
-          headers: getAuthHeaders(),
-          body: formData,
-        });
-
-        if (!response.ok) {
-          const errorData: ApiError = await response.json();
-          throw new Error(handleApiError(errorData));
+          try {
+            const response = await fetch(`${endpoint}/rag/files/upload`, {
+              method: "POST",
+              headers: getAuthHeaders(),
+              body: formData,
+            });
+            if (!response.ok) {
+              const errorData: ApiError = await response.json();
+              const errorMessage = handleApiError(errorData);
+              errors.push(`Failed to upload ${file.name}: ${errorMessage}`);
+            } else {
+              const result: StorageFile[] = await response.json();
+              uploadedFiles.push(...result);
+              current++;
+              if (onProgress) {
+                onProgress({ current, total, fileName: file.name });
+              }
+            }
+          } catch (err) {
+            const errorMessage =
+              err instanceof Error ? err.message : "An unexpected error occurred";
+            errors.push(`Failed to upload ${file.name}: ${errorMessage}`);
+          }
         }
-
-        const uploadedFiles: StorageFile[] = await response.json();
 
         // Update local state
         setFiles((prev) => [...uploadedFiles, ...prev]);
 
-        return { success: true, files: uploadedFiles };
+        return {
+          success: uploadedFiles.length > 0,
+          files: uploadedFiles,
+          error: errors.length > 0 ? errors.join(", ") : undefined,
+          uploadedCount: uploadedFiles.length,
+          errors,
+        };
       } catch (err) {
         const errorMessage =
           err instanceof Error ? err.message : "An unexpected error occurred";
