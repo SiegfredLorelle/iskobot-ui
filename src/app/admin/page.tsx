@@ -235,9 +235,17 @@ export default function RAGAdminUI(): JSX.Element {
   const handleDeleteStorageFile = async (fileId: string): Promise<void> => {
     if (!confirm("Are you sure you want to delete this file?")) return;
 
-    const success = await deleteFile(fileId);
-    if (!success) {
-      toast.error("Error deleting file");
+    try {
+      const success = await deleteFile(fileId);
+      if (success) {
+        toast.success("File deleted successfully! 🗑️");
+        await fetchFiles(); // Refresh the list
+      } else {
+        toast.error("Failed to delete file. Please try again.");
+      }
+    } catch (error) {
+      toast.error("An unexpected error occurred while deleting the file");
+      console.error("File deletion error:", error);
     }
   };
 
@@ -251,9 +259,17 @@ export default function RAGAdminUI(): JSX.Element {
       return;
     }
 
-    const result = await addWebsiteHook(newWebsite.trim());
-    if (result) {
-      setNewWebsite("");
+    try {
+      const result = await addWebsiteHook(newWebsite.trim());
+      if (result) {
+        setNewWebsite("");
+        toast.success("Website added successfully! 🌐");
+      } else {
+        toast.error("Failed to add website. Please try again.");
+      }
+    } catch (error) {
+      toast.error("An error occurred while adding the website.");
+      console.error("Website addition error:", error);
     }
   };
 
@@ -352,9 +368,16 @@ Are you absolutely sure you want to continue?`,
   const handleDeleteWebsite = async (websiteId: string): Promise<void> => {
     if (!confirm("Are you sure you want to remove this website?")) return;
 
-    const success = await deleteWebsiteHook(websiteId);
-    if (!success) {
-      toast.error("Error deleting website");
+    try {
+      const success = await deleteWebsiteHook(websiteId);
+      if (success) {
+        toast.success("Website removed successfully");
+      } else {
+        toast.error("Error deleting website");
+      }
+    } catch (error) {
+      toast.error("An unexpected error occurred while deleting the website");
+      console.error("Delete website error:", error);
     }
   };
 
