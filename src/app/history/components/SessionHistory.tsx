@@ -13,7 +13,7 @@ export const SessionHistory = () => {
         <div
           key={session.id}
           onClick={() => {}}
-          className={`p-4 rounded-lg bg-[var(--primary-clr)]`}
+          className="p-4 rounded-lg bg-[var(--primary-clr)]"
         >
           <div className="font-medium">{session.title}</div>
           <div className="text-sm text-[var(--text-clr)]/60">
