@@ -671,9 +671,15 @@ Are you absolutely sure you want to continue?`,
                               <div className="flex items-center space-x-3">
                                 <IconWorld size={20} className="" />
                                 <div>
-                                  <p className="text-sm font-medium ">
+                                  {/* Modified URL element below */}
+                                  <a
+                                    href={website.url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-sm font-medium hover:text-accent-clr hover:underline transition-colors"
+                                  >
                                     {website.url}
-                                  </p>
+                                  </a>
                                   <div className="flex items-center space-x-4 text-xs /80">
                                     <span>
                                       Last scraped:{" "}
