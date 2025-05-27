@@ -110,20 +110,36 @@ export default function InputControls() {
   const [bottomOffset, setBottomOffset] = useState<number>(0);
   const viewport = typeof window !== "undefined" ? window.visualViewport : null;
 
+  type MSWindow = {
+    MSStream?: unknown;
+  } & Window;
+
+  // Then use it in your detection:
+  const iOS = () =>
+    /iPad|iPhone|iPod/.test(navigator.userAgent) &&
+    !(window as MSWindow).MSStream;
   useEffect(() => {
     if (!viewport) return;
 
     const handleResize = () => {
-      // Calculate keyboard height and adjust position
+      // Add iOS window scroll workaround
+      if (iOS()) {
+        window.scrollTo(0, 0);
+      }
+
       const keyboardHeight = window.innerHeight - viewport.height;
       setBottomOffset(keyboardHeight > 50 ? keyboardHeight + 4 : 4);
-
-      // Ensure textarea stays focused
       textareaRef.current?.focus();
     };
 
+    // Add timeout for Android devices
+    const resizeTimeout = setTimeout(handleResize, 100);
+
     viewport.addEventListener("resize", handleResize);
-    return () => viewport.removeEventListener("resize", handleResize);
+    return () => {
+      viewport.removeEventListener("resize", handleResize);
+      clearTimeout(resizeTimeout);
+    };
   }, [viewport]);
 
   return (
@@ -134,52 +150,53 @@ export default function InputControls() {
         transition: "bottom 0.2s ease-in-out",
       }}
     >
-      <div className="fixed inset-x-4 bottom-4 bg-primary-clr flex items-center rounded-3xl px-4 py-4 shadow-lg shadow-text-clr/30">
-        {!userInput && !isRecording && !isTranscribing && (
-          <button
-            onClick={handleSettings}
-            className="ml-2 mt-auto py-2 text-text-clr hover:text-hover-clr"
-          >
-            <IconDotsVertical className="w-6 h-6" />
-          </button>
-        )}
-        <textarea
-          autoFocus
-          placeholder={
-            isRecording
-              ? "Listening..." // Show "Listening..." when recording
-              : isTranscribing
-                ? "Transcribing..."
-                : "Type your message..."
-          }
-          value={userInput}
-          onChange={(e) => setUserInput(e.target.value)}
-          onKeyDown={handleKeyDown}
-          className={`w-full bg-primary-clr text-text-clr max-h-[45vh] ${userInput ? "text-start" : "text-center"} flex items-center placeholder-text-clr focus:outline-hidden resize-none px-3 leading-relaxed`}
-          rows={1}
-          ref={textareaRef}
-          disabled={isTextFieldDisabled || isTranscribing} // Disable textarea when recording
-        />
+      {!userInput && !isRecording && !isTranscribing && (
         <button
-          onClick={userInput ? handleSend : handleRecording}
-          aria-label={
-            userInput
-              ? "Send message"
-              : isRecording
-                ? "Stop and download recording"
-                : "Start recording"
-          }
+          onClick={handleSettings}
           className="ml-2 mt-auto py-2 text-text-clr hover:text-hover-clr"
         >
-          {userInput ? (
-            <IconSend className="w-6 h-6" />
-          ) : (
-            <IconMicrophoneFilled
-              className={`w-6 h-6 ${isRecording ? "text-red-500" : ""}`}
-            />
-          )}
+          <IconDotsVertical className="w-6 h-6" />
         </button>
-      </div>
+      )}
+      <textarea
+        autoFocus
+        placeholder={
+          isRecording
+            ? "Listening..." // Show "Listening..." when recording
+            : isTranscribing
+              ? "Transcribing..."
+              : "Type your message..."
+        }
+        value={userInput}
+        onChange={(e) => setUserInput(e.target.value)}
+        onKeyDown={handleKeyDown}
+        enterKeyHint="send"
+        inputMode="text"
+        autoCapitalize="sentences"
+        className={`w-full bg-primary-clr text-text-clr max-h-[45vh] ${userInput ? "text-start" : "text-center"} flex items-center placeholder-text-clr focus:outline-hidden resize-none px-3 leading-relaxed`}
+        rows={1}
+        ref={textareaRef}
+        disabled={isTextFieldDisabled || isTranscribing} // Disable textarea when recording
+      />
+      <button
+        onClick={userInput ? handleSend : handleRecording}
+        aria-label={
+          userInput
+            ? "Send message"
+            : isRecording
+              ? "Stop and download recording"
+              : "Start recording"
+        }
+        className="ml-2 mt-auto py-2 text-text-clr hover:text-hover-clr"
+      >
+        {userInput ? (
+          <IconSend className="w-6 h-6" />
+        ) : (
+          <IconMicrophoneFilled
+            className={`w-6 h-6 ${isRecording ? "text-red-500" : ""}`}
+          />
+        )}
+      </button>
     </div>
   );
 }
