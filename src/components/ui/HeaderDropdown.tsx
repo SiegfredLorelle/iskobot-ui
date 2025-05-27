@@ -91,7 +91,7 @@ export default function UserDropdown() {
                 {/* History Link */}
                 <Link
                   href="/history"
-                  className="flex items-center gap-2 px-3 py-2 text-text-clr text-sm hover:bg-background-clr/80 rounded-md transition duration-200"
+                  className="flex items-center gap-2 px-3 py-2 text-text-clr text-sm hover:bg-[var(--hover-clr)] rounded-md transition duration-200"
                   onClick={closeDropdown}
                 >
                   <IconHistory className="h-4 w-4" />
@@ -102,7 +102,7 @@ export default function UserDropdown() {
                 {(user.role === "admin" || user.role === "super_admin") && (
                   <Link
                     href="/admin"
-                    className="flex items-center gap-2 px-3 py-2 text-text-clr text-sm hover:bg-background-clr/80 rounded-md transition duration-200"
+                    className="flex items-center gap-2 px-3 py-2 text-text-clr text-sm hover:bg-[var(--hover-clr)] rounded-md transition duration-200"
                     onClick={closeDropdown}
                   >
                     <IconBrain className="h-4 w-4" />
@@ -114,7 +114,7 @@ export default function UserDropdown() {
                 {user.role === "super_admin" && (
                   <Link
                     href="/admin/accounts"
-                    className="flex items-center gap-2 px-3 py-2 text-text-clr text-sm hover:bg-background-clr/80 rounded-md transition duration-200"
+                    className="flex items-center gap-2 px-3 py-2 text-text-clr text-sm hover:bg-[var(--hover-clr)] rounded-md transition duration-200"
                     onClick={closeDropdown}
                   >
                     <IconSettings className="h-4 w-4" />
@@ -125,7 +125,7 @@ export default function UserDropdown() {
                 {/* Sign Out Button */}
                 <button
                   onClick={handleSignOut}
-                  className="flex items-center gap-2 w-full px-3 py-2 text-text-clr text-sm hover:bg-background-clr/80 rounded-md transition duration-200 text-left"
+                  className="flex items-center gap-2 w-full px-3 py-2 text-text-clr text-sm hover:bg-[var(--hover-clr)] rounded-md transition duration-200 text-left"
                 >
                   <IconLogout className="h-4 w-4" />
                   Sign Out

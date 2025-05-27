@@ -83,7 +83,7 @@ Do you want to continue?`,
       <button
         onClick={runWithToast}
         disabled={ingesting}
-        className="mt-6 w-full py-3 px-6 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-accent-clr to-foreground-clr hover:from-foreground-clr hover:to-accent-clr transition-all duration-300 ease-in-out shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+        className="mt-6 w-full py-3 px-6 rounded-xl text-sm font-semibold text-white bg-gradient-to-r from-background-clr to-black hover:from-black hover:to-accent-clr transition-all duration-300 ease-in-out shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {ingesting
           ? "Ingesting..."
@@ -266,9 +266,9 @@ export default function RAGAdminUI(): JSX.Element {
 
   return (
     <AdminProtectedRoute allowedRoles={["admin", "super_admin"]}>
-      <div className="min-h-screen py-8 text-admin-clr">
+      <div className="min-h-screen py-8 ">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-primary-clr/10 backdrop-blur-lg backdrop-grayscale border border-gray-500/20 shadow-md rounded-xl">
+          <div className="bg-primary-clr backdrop-blur-lg backdrop-grayscale border border-gray-500/20 shadow-md rounded-xl">
             <div className="">
               <nav className="-mb-px flex space-x-8 px-6">
                 {tabs.map((tab) => (
@@ -277,8 +277,8 @@ export default function RAGAdminUI(): JSX.Element {
                     onClick={() => setActiveTab(tab.id)}
                     className={`${
                       activeTab === tab.id
-                        ? "border-foreground-clr text-admin-clr"
-                        : "border-transparent text-admin-clr hover:border-foreground-clr"
+                        ? "border-foreground-clr "
+                        : "border-transparent  hover:border-foreground-clr"
                     } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm flex items-center space-x-2`}
                   >
                     <tab.icon size={16} />
@@ -293,7 +293,7 @@ export default function RAGAdminUI(): JSX.Element {
                 <div>
                   {/* Upload Section */}
                   <div className="max-w-2xl mx-auto mb-8">
-                    <h2 className="text-xl font-bold text-admin-clr mb-4">
+                    <h2 className="text-xl font-bold  mb-4">
                       Upload New Files
                     </h2>
                     <div
@@ -301,20 +301,20 @@ export default function RAGAdminUI(): JSX.Element {
                       onDrop={handleDrop}
                       onDragOver={handleDragOver}
                     >
-                      <IconPhoto size={48} className="text-admin-clr mb-3" />
-                      <p className="text-base font-medium text-admin-clr mb-1">
+                      <IconPhoto size={48} className=" mb-3" />
+                      <p className="text-base font-medium  mb-1">
                         Drag & Drop Files
                       </p>
-                      <p className="text-sm text-admin-clr mb-1">
+                      <p className="text-sm  mb-1">
                         or{" "}
                         <span
-                          className="text-admin-clr underline cursor-pointer hover:text-accent-clr"
+                          className=" underline cursor-pointer hover:text-accent-clr"
                           onClick={() => fileInput.current?.click()}
                         >
                           browse
                         </span>
                       </p>
-                      <p className="text-xs text-admin-clr">
+                      <p className="text-xs ">
                         Supports: PDF, DOCX, PPTX
                       </p>
                       <input
@@ -329,7 +329,7 @@ export default function RAGAdminUI(): JSX.Element {
 
                     {files.length > 0 && (
                       <div className="mt-4 space-y-2">
-                        <h3 className="text-sm font-medium text-admin-clr">
+                        <h3 className="text-sm font-medium ">
                           Selected Files:
                         </h3>
                         {files.map((file, index) => (
@@ -338,18 +338,18 @@ export default function RAGAdminUI(): JSX.Element {
                             className="flex items-center justify-between bg-background p-3 rounded-md border border-foreground-clr"
                           >
                             <div className="flex items-center space-x-2">
-                              <IconFile size={16} className="text-admin-clr" />
-                              <span className="text-sm text-admin-clr">
+                              <IconFile size={16} className="" />
+                              <span className="text-sm ">
                                 {file.name}
                               </span>
-                              <span className="text-xs text-admin-clr/80">
+                              <span className="text-xs /80">
                                 ({formatFileSize(file.size)})
                               </span>
                             </div>
                             <div className="flex items-center space-x-2">
                               <button
                                 onClick={() => handlePreview(file, index)}
-                                className="text-admin-clr"
+                                className=""
                                 title="Preview"
                               >
                                 <IconEye size={16} />
@@ -367,7 +367,7 @@ export default function RAGAdminUI(): JSX.Element {
                         <button
                           onClick={handleUpload}
                           disabled={loading}
-                          className="w-full mt-4 px-4 py-2 border border-foreground-clr/30 rounded-md text-sm text-admin-clr hover:bg-foreground-clr/10 disabled:opacity-50 transition duration-200"
+                          className="w-full mt-4 px-4 py-2 border border-foreground-clr/30 rounded-md text-sm  hover:bg-foreground-clr/10 disabled:opacity-50 transition duration-200"
                         >
                           {loading ? "Uploading..." : "Upload Files"}
                         </button>
@@ -378,13 +378,13 @@ export default function RAGAdminUI(): JSX.Element {
                   {/* Storage Files Section */}
                   <div>
                     <div className="flex justify-between items-center mb-6">
-                      <h2 className="text-xl font-bold text-admin-clr">
+                      <h2 className="text-xl font-bold ">
                         Uploaded Files
                       </h2>
                       <button
                         onClick={fetchFiles}
                         disabled={loading}
-                        className="flex items-center space-x-2 px-3 py-2 border border-foreground-clr/30 rounded-md text-sm text-admin-clr hover:bg-foreground-clr/10 disabled:opacity-50 transition duration-200"
+                        className="flex items-center space-x-2 px-3 py-2 border border-foreground-clr/30 rounded-md text-sm  hover:bg-foreground-clr/10 disabled:opacity-50 transition duration-200"
                       >
                         <IconRefresh size={16} />
                         <span>Refresh</span>
@@ -393,7 +393,7 @@ export default function RAGAdminUI(): JSX.Element {
 
                     <div className="bg-primary-clr/10 border border-gray-200/20 shadow-md overflow-hidden rounded-md">
                       {storageFiles.length === 0 ? (
-                        <div className="px-6 py-8 text-center text-admin-clr/60">
+                        <div className="px-6 py-8 text-center /60">
                           No files uploaded yet.
                         </div>
                       ) : (
@@ -404,13 +404,13 @@ export default function RAGAdminUI(): JSX.Element {
                                 <div className="flex items-center space-x-3">
                                   <IconFile
                                     size={20}
-                                    className="text-admin-clr"
+                                    className=""
                                   />
                                   <div>
-                                    <p className="text-sm font-medium text-admin-clr">
+                                    <p className="text-sm font-medium ">
                                       {file.name}
                                     </p>
-                                    <p className="text-xs text-admin-clr/80">
+                                    <p className="text-xs /80">
                                       {formatFileSize(file.size)} • Uploaded{" "}
                                       {formatDate(file.uploaded_at)}
                                     </p>
@@ -442,7 +442,7 @@ export default function RAGAdminUI(): JSX.Element {
               {activeTab === "websites" && (
                 <div>
                   <div className="mb-6">
-                    <h2 className="text-xl font-bold text-admin-clr mb-4">
+                    <h2 className="text-xl font-bold  mb-4">
                       Website Scraping
                     </h2>
                     <div className="flex space-x-2">
@@ -451,13 +451,13 @@ export default function RAGAdminUI(): JSX.Element {
                         value={newWebsite}
                         onChange={(e) => setNewWebsite(e.target.value)}
                         placeholder="Enter website URL (e.g., https://example.com)"
-                        className="flex-1 px-3 py-2 border border-foreground-clr/30 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-foreground-clr focus:border-background-clr bg-background-clr/20 text-admin-clr"
+                        className="flex-1 px-3 py-2 border border-foreground-clr/30 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-foreground-clr focus:border-background-clr bg-background-clr/20 "
                         disabled={loading}
                       />
                       <button
                         onClick={handleAddWebsite}
                         disabled={loading || !newWebsite.trim()}
-                        className="flex items-center space-x-2 px-4 py-2 bg-background-clr/80 text-admin-clr rounded-md hover:bg-background-clr/50 text-sm transition duration-200 disabled:opacity-50"
+                        className="flex items-center space-x-2 px-4 py-2 bg-background-clr/80  rounded-md hover:bg-background-clr/50 text-sm transition duration-200 disabled:opacity-50"
                       >
                         <IconPlus size={16} />
                         <span>Add</span>
@@ -467,7 +467,7 @@ export default function RAGAdminUI(): JSX.Element {
 
                   <div className="bg-primary-clr/10 border border-gray-200/20 shadow-md overflow-hidden rounded-md">
                     {websites.length === 0 ? (
-                      <div className="px-6 py-8 text-center text-admin-clr/60">
+                      <div className="px-6 py-8 text-center /60">
                         No websites added yet.
                       </div>
                     ) : (
@@ -478,13 +478,13 @@ export default function RAGAdminUI(): JSX.Element {
                               <div className="flex items-center space-x-3">
                                 <IconWorld
                                   size={20}
-                                  className="text-admin-clr"
+                                  className=""
                                 />
                                 <div>
-                                  <p className="text-sm font-medium text-admin-clr">
+                                  <p className="text-sm font-medium ">
                                     {website.url}
                                   </p>
-                                  <div className="flex items-center space-x-4 text-xs text-admin-clr/80">
+                                  <div className="flex items-center space-x-4 text-xs /80">
                                     <span>
                                       Last scraped:{" "}
                                       {formatDate(website.last_scraped)}
