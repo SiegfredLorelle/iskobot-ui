@@ -26,6 +26,16 @@ const VALID_TYPES = [
 ] as const;
 type ValidFileType = (typeof VALID_TYPES)[number];
 
+
+const getFileTypeDisplay = (mimeType: string): string => {
+  const typeMap: Record<string, string> = {
+    'application/pdf': 'PDF',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document': 'DOCX',
+    'application/vnd.openxmlformats-officedocument.presentationml.presentation': 'PPTX',
+  };
+  return typeMap[mimeType] || mimeType;
+};
+
 const ITEMS_PER_PAGE = 10;
 
 type TabType = "files" | "websites";
@@ -588,11 +598,9 @@ Are you absolutely sure you want to continue?`,
                                   <div className="flex items-center space-x-3">
                                     <IconFile size={20} className="" />
                                     <div>
-                                      <p className="text-sm font-medium ">
-                                        {file.name}
-                                      </p>
+                                      <p className="text-sm font-medium ">{file.name}</p>
                                       <p className="text-xs /80">
-                                        {formatFileSize(file.size)} • Uploaded{" "}
+                                        {getFileTypeDisplay(file.type)} • {formatFileSize(file.size)} • Uploaded{" "}
                                         {formatDate(file.uploaded_at)}
                                       </p>
                                     </div>
