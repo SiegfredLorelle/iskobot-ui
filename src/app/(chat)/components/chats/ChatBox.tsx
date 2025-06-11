@@ -8,26 +8,56 @@ export default function ChatBox({
   text,
   isUser = false,
   wide = false,
+  timestamp,
 }: ChatBoxProps) {
+  // Format timestamp for display
+  const formatTimestamp = (timestamp?: Date | string) => {
+    if (!timestamp) return "";
+    
+    const date = timestamp instanceof Date ? timestamp : new Date(timestamp);
+    const now = new Date();
+    const diffInMinutes = Math.floor((now.getTime() - date.getTime()) / (1000 * 60));
+    
+    if (diffInMinutes < 1) return "Just now";
+    if (diffInMinutes < 60) return `${diffInMinutes}m ago`;
+    if (diffInMinutes < 1440) return `${Math.floor(diffInMinutes / 60)}h ago`;
+    
+    // For older messages, show date and time
+    return date.toLocaleString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true
+    });
+  };
+
   return (
     <div className={`flex ${isUser ? "flex-row-reverse ml-auto" : "flex-row"}`}>
       <ChatBubble isUser={isUser} />
-      <div
-        className={`p-3 bg-primary-clr shadow-md text-text-clr rounded-md ${isUser ? "me-2" : "ms-2"} ${wide ? "p-5 w-full text-2xl font-bold" : "p-4 max-w-md"} `}
-      >
-        {isUser ? (
-          // For user messages, display as plain text
-          <p>{text}</p>
-        ) : (
-          // For bot messages, render as Markdown
-          <div className="markdown-content">
-            <ReactMarkdown
-              rehypePlugins={[rehypeSanitize]} // Sanitize HTML to prevent XSS
-              remarkPlugins={[remarkGfm]} // Support GitHub Flavored Markdown
-            >
-              {text}
-            </ReactMarkdown>
-          </div>
+      <div className={`flex flex-col ${isUser ? "items-end me-2" : "items-start ms-2"}`}>
+        <div
+          className={`p-3 bg-primary-clr shadow-md text-text-clr rounded-md ${wide ? "p-5 w-full text-2xl font-bold" : "p-4 max-w-md"} `}
+        >
+          {isUser ? (
+            // For user messages, display as plain text
+            <p>{text}</p>
+          ) : (
+            // For bot messages, render as Markdown
+            <div className="markdown-content">
+              <ReactMarkdown
+                rehypePlugins={[rehypeSanitize]} // Sanitize HTML to prevent XSS
+                remarkPlugins={[remarkGfm]} // Support GitHub Flavored Markdown
+              >
+                {text}
+              </ReactMarkdown>
+            </div>
+          )}
+        </div>
+        {timestamp && (
+          <span className="text-xs text-gray-500 mt-1 px-1">
+            {formatTimestamp(timestamp)}
+          </span>
         )}
       </div>
     </div>
