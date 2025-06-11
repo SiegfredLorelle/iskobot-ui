@@ -77,7 +77,7 @@ export default function Chats() {
           key={index} 
           isUser={message.isUser} 
           text={message.text}
-          timestamp={message.timestamp} // ← Added this line!
+          timestamp={message.timestamp} 
         />
       ))}
       {mode === "loading" && <ChatBox text="..." />}

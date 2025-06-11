@@ -3,6 +3,7 @@ import type { ChatBoxProps } from "@/app/(chat)/types/ChatBoxProps";
 import ReactMarkdown from "react-markdown";
 import rehypeSanitize from "rehype-sanitize";
 import remarkGfm from "remark-gfm";
+import { useState, useEffect } from "react";
 
 export default function ChatBox({
   text,
@@ -10,26 +11,44 @@ export default function ChatBox({
   wide = false,
   timestamp,
 }: ChatBoxProps) {
+  const [currentTime, setCurrentTime] = useState(new Date());
+
+  // Update current time every minute
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 60000); // Update every 60 seconds
+
+    return () => clearInterval(interval);
+  }, []);
+
   // Format timestamp for display
   const formatTimestamp = (timestamp?: Date | string) => {
     if (!timestamp) return "";
     
     const date = timestamp instanceof Date ? timestamp : new Date(timestamp);
-    const now = new Date();
-    const diffInMinutes = Math.floor((now.getTime() - date.getTime()) / (1000 * 60));
+    const now = currentTime;
     
-    if (diffInMinutes < 1) return "Just now";
-    if (diffInMinutes < 60) return `${diffInMinutes}m ago`;
-    if (diffInMinutes < 1440) return `${Math.floor(diffInMinutes / 60)}h ago`;
+    // Check if the message is from today
+    const isToday = date.toDateString() === now.toDateString();
     
-    // For older messages, show date and time
-    return date.toLocaleString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: true
-    });
+    if (isToday) {
+      // Show time for today's messages
+      return date.toLocaleString('en-US', {
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true
+      });
+    } else {
+      // Show date and time for older messages
+      return date.toLocaleString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true
+      });
+    }
   };
 
   return (
