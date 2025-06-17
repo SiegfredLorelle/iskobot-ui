@@ -33,7 +33,8 @@ export default function UserDropdown() {
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const menuDropdownRef = useRef<HTMLDivElement>(null);
   const userDropdownRef = useRef<HTMLDivElement>(null);
-  const { user, isAuthenticated, isLoading, signOut, updateProfile } = useAuth();
+  const { user, isAuthenticated, isLoading, signOut, updateProfile } =
+    useAuth();
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -76,8 +77,11 @@ export default function UserDropdown() {
 
   // Get the appropriate icon component
   const getUserIcon = () => {
-    const iconName = user?.profile_icon || 'circle';
-    return PROFILE_ICON_MAP[iconName as keyof typeof PROFILE_ICON_MAP] || IconUserCircle;
+    const iconName = user?.profile_icon || "circle";
+    return (
+      PROFILE_ICON_MAP[iconName as keyof typeof PROFILE_ICON_MAP] ||
+      IconUserCircle
+    );
   };
 
   const UserIcon = getUserIcon();
@@ -113,7 +117,7 @@ export default function UserDropdown() {
                         {user.email}
                       </div>
                       <div className="text-text-clr/50 text-xs capitalize">
-                        {user.role?.replace('_', ' ')}
+                        {user.role?.replace("_", " ")}
                       </div>
                     </div>
                   </div>
@@ -159,7 +163,9 @@ export default function UserDropdown() {
                 <ThemeToggle />
 
                 {isLoading ? (
-                  <div className="px-3 py-2 text-text-clr text-sm">Loading...</div>
+                  <div className="px-3 py-2 text-text-clr text-sm">
+                    Loading...
+                  </div>
                 ) : isAuthenticated && user ? (
                   <>
                     {/* Navigation Links */}

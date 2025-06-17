@@ -25,28 +25,28 @@ export default function ChatBox({
   // Format timestamp for display
   const formatTimestamp = (timestamp?: Date | string) => {
     if (!timestamp) return "";
-    
+
     const date = timestamp instanceof Date ? timestamp : new Date(timestamp);
     const now = currentTime;
-    
+
     // Check if the message is from today
     const isToday = date.toDateString() === now.toDateString();
-    
+
     if (isToday) {
       // Show time for today's messages
-      return date.toLocaleString('en-US', {
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: true
+      return date.toLocaleString("en-US", {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true,
       });
     } else {
       // Show date and time for older messages
-      return date.toLocaleString('en-US', {
-        month: 'short',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit',
-        hour12: true
+      return date.toLocaleString("en-US", {
+        month: "short",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true,
       });
     }
   };
@@ -54,7 +54,9 @@ export default function ChatBox({
   return (
     <div className={`flex ${isUser ? "flex-row-reverse ml-auto" : "flex-row"}`}>
       <ChatBubble isUser={isUser} />
-      <div className={`flex flex-col ${isUser ? "items-end me-2" : "items-start ms-2"}`}>
+      <div
+        className={`flex flex-col ${isUser ? "items-end me-2" : "items-start ms-2"}`}
+      >
         <div
           className={`p-3 bg-primary-clr shadow-md text-text-clr rounded-md ${wide ? "p-5 w-full text-2xl font-bold" : "p-4 max-w-md"} `}
         >

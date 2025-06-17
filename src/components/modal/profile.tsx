@@ -10,22 +10,22 @@ import {
   IconDeviceFloppy as IconSave,
 } from "@tabler/icons-react";
 
-interface User {
+type User = {
   id: string;
   email: string;
   display_name?: string;
   full_name?: string;
   role?: string;
   profile_icon?: string;
-  profile_image?: string; 
-}
+  profile_image?: string;
+};
 
-interface ProfileSettingsModalProps {
+type ProfileSettingsModalProps = {
   isOpen: boolean;
   onClose: () => void;
   user: User;
   onSave: (updatedUser: Partial<User>, imageFile: File | null) => Promise<void>; // Passes actual File for upload
-}
+};
 
 export default function ProfileSettingsModal({
   isOpen,
@@ -33,8 +33,12 @@ export default function ProfileSettingsModal({
   user,
   onSave,
 }: ProfileSettingsModalProps) {
-  const [displayName, setDisplayName] = useState(user.display_name || user.full_name || "");
-  const [profileImage, setProfileImage] = useState<string | undefined>(user.profile_image);
+  const [displayName, setDisplayName] = useState(
+    user.display_name || user.full_name || "",
+  );
+  const [profileImage, setProfileImage] = useState<string | undefined>(
+    user.profile_image,
+  );
   const [imageFile, setImageFile] = useState<File | null>(null); // Actual file for backend upload
   const [isLoading, setIsLoading] = useState(false);
   const [imageError, setImageError] = useState<string | null>(null);
@@ -46,7 +50,10 @@ export default function ProfileSettingsModal({
   // Handles modal closing on outside clicks or Escape key
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
+      if (
+        modalRef.current &&
+        !modalRef.current.contains(event.target as Node)
+      ) {
         onClose();
       }
     };
@@ -80,30 +87,33 @@ export default function ProfileSettingsModal({
   }, [user]);
 
   // Validates and sets new profile image for preview and upload
-  const handleImageUpload = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    setImageError(null);
+  const handleImageUpload = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      const file = event.target.files?.[0];
+      setImageError(null);
 
-    if (!file) return;
+      if (!file) return;
 
-    if (!file.type.startsWith('image/')) {
-      setImageError('Please select a valid image file (JPG, PNG, GIF).');
-      return;
-    }
+      if (!file.type.startsWith("image/")) {
+        setImageError("Please select a valid image file (JPG, PNG, GIF).");
+        return;
+      }
 
-    const MAX_FILE_SIZE_MB = 5;
-    if (file.size > MAX_FILE_SIZE_MB * 1024 * 1024) {
-      setImageError(`Image size must be less than ${MAX_FILE_SIZE_MB}MB.`);
-      return;
-    }
+      const MAX_FILE_SIZE_MB = 5;
+      if (file.size > MAX_FILE_SIZE_MB * 1024 * 1024) {
+        setImageError(`Image size must be less than ${MAX_FILE_SIZE_MB}MB.`);
+        return;
+      }
 
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      setProfileImage(e.target?.result as string);
-      setImageFile(file);
-    };
-    reader.readAsDataURL(file);
-  }, []);
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setProfileImage(e.target?.result as string);
+        setImageFile(file);
+      };
+      reader.readAsDataURL(file);
+    },
+    [],
+  );
 
   // Clears current profile image selection
   const handleRemoveImage = useCallback(() => {
@@ -111,21 +121,28 @@ export default function ProfileSettingsModal({
     setImageFile(null);
     setImageError(null);
     if (fileInputRef.current) {
-      fileInputRef.current.value = '';
+      fileInputRef.current.value = "";
     }
   }, []);
 
   // Validates display name
-  const isDisplayNameValid = useCallback(() => displayName.trim().length > 0, [displayName]);
+  const isDisplayNameValid = useCallback(
+    () => displayName.trim().length > 0,
+    [displayName],
+  );
 
   // Checks overall form validity
-  const isFormValid = useCallback(() => isDisplayNameValid(), [isDisplayNameValid]);
+  const isFormValid = useCallback(
+    () => isDisplayNameValid(),
+    [isDisplayNameValid],
+  );
 
   // Detects if any changes have been made to the form
   const hasChanges = useCallback(() => {
     const initialDisplayName = user.display_name || user.full_name || "";
     const nameChanged = displayName.trim() !== initialDisplayName;
-    const imageChanged = profileImage !== user.profile_image || imageFile !== null;
+    const imageChanged =
+      profileImage !== user.profile_image || imageFile !== null;
     return nameChanged || imageChanged;
   }, [displayName, profileImage, imageFile, user]);
 
@@ -192,7 +209,9 @@ export default function ProfileSettingsModal({
       >
         {/* Modal header */}
         <div className="flex items-center justify-between p-6 border-b border-background-clr/20">
-          <h2 className="text-xl font-semibold text-text-clr">Profile Settings</h2>
+          <h2 className="text-xl font-semibold text-text-clr">
+            Profile Settings
+          </h2>
           <button
             onClick={onClose}
             className="p-1 text-text-clr/70 hover:text-text-clr hover:bg-[var(--hover-clr)] rounded-md transition duration-200"
@@ -206,18 +225,19 @@ export default function ProfileSettingsModal({
         <div className="p-6 space-y-6">
           {/* User profile preview and basic info */}
           <div className="text-center">
-            <div className="mb-2">
-              {renderProfilePreview()}
-            </div>
+            <div className="mb-2">{renderProfilePreview()}</div>
             <div className="text-text-clr/70 text-sm">{user.email}</div>
             <div className="text-text-clr/50 text-xs capitalize mt-1">
-              {user.role?.replace('_', ' ')}
+              {user.role?.replace("_", " ")}
             </div>
           </div>
 
           {/* Display Name input field */}
           <div>
-            <label htmlFor="displayName" className="block text-sm font-medium text-text-clr mb-2">
+            <label
+              htmlFor="displayName"
+              className="block text-sm font-medium text-text-clr mb-2"
+            >
               Display Name <span className="text-red-400">*</span>
             </label>
             <input
@@ -230,7 +250,9 @@ export default function ProfileSettingsModal({
               maxLength={50}
             />
             {showValidationErrors && !isDisplayNameValid() && (
-              <p className="text-red-400 text-xs mt-1">Display name is required.</p>
+              <p className="text-red-400 text-xs mt-1">
+                Display name is required.
+              </p>
             )}
           </div>
 
@@ -255,7 +277,7 @@ export default function ProfileSettingsModal({
                 className="flex items-center gap-2 px-3 py-2 bg-background-clr text-[var(--hover-clr)] rounded-md transition duration-200 text-sm"
               >
                 <IconUpload className="h-4 w-4" />
-                {profileImage ? 'Change Image' : 'Upload Image'}
+                {profileImage ? "Change Image" : "Upload Image"}
               </button>
 
               {profileImage && (
@@ -281,7 +303,9 @@ export default function ProfileSettingsModal({
 
           {/* Read-only account information */}
           <div className="pt-4 border-t border-background-clr/20">
-            <h3 className="text-sm font-medium text-text-clr mb-3">Account Information</h3>
+            <h3 className="text-sm font-medium text-text-clr mb-3">
+              Account Information
+            </h3>
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
                 <span className="text-text-clr/70">Email:</span>
@@ -289,7 +313,9 @@ export default function ProfileSettingsModal({
               </div>
               <div className="flex justify-between">
                 <span className="text-text-clr/70">Role:</span>
-                <span className="text-text-clr capitalize">{user.role?.replace('_', ' ')}</span>
+                <span className="text-text-clr capitalize">
+                  {user.role?.replace("_", " ")}
+                </span>
               </div>
             </div>
           </div>

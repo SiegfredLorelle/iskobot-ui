@@ -73,11 +73,11 @@ export default function Chats() {
       </div>
 
       {messages.map((message, index) => (
-        <ChatBox 
-          key={index} 
-          isUser={message.isUser} 
+        <ChatBox
+          key={index}
+          isUser={message.isUser}
           text={message.text}
-          timestamp={message.timestamp} 
+          timestamp={message.timestamp}
         />
       ))}
       {mode === "loading" && <ChatBox text="..." />}
