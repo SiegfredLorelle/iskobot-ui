@@ -24,7 +24,7 @@ type ProfileSettingsModalProps = {
   isOpen: boolean;
   onClose: () => void;
   user: User;
-  onSave: (updatedUser: Partial<User>, imageFile: File | null) => Promise<void>; // Passes actual File for upload
+  onSave: (updatedUser: Partial<User>, imageFile: File | null) => Promise<void>;
 };
 
 export default function ProfileSettingsModal({

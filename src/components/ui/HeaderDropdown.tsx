@@ -9,22 +9,17 @@ import {
   IconBrain,
   IconSettings,
   IconUserCircle,
-  IconUserHeart,
-  IconUserStar,
-  IconUserShield,
 } from "@tabler/icons-react";
 import ThemeToggle from "@/components/toggle/ThemeToggle";
 import ProfileSettingsModal from "@/components/modal/profile";
 import Link from "next/link";
 import { useAuth } from "@/app/(auth)/hooks/useAuth";
+import type { UserType, UpdateUserRequest } from "@/app/(auth)/types/UserType";
 
 // Icon mapping for profile icons
 const PROFILE_ICON_MAP = {
   default: IconUser,
   circle: IconUserCircle,
-  heart: IconUserHeart,
-  star: IconUserStar,
-  shield: IconUserShield,
 };
 
 export default function UserDropdown() {
@@ -69,7 +64,14 @@ export default function UserDropdown() {
     setIsProfileModalOpen(true);
   };
 
-  const handleSaveProfile = async (updatedData: any) => {
+  const handleSaveProfile = async (updatedUser: Partial<UserType>) => {
+    const updatedData: UpdateUserRequest = {
+      display_name: updatedUser.display_name,
+      profile_icon:
+        updatedUser.profile_icon === "default" ? "default" : undefined,
+      profile_image: updatedUser.profile_image, // or process imageFile to base64
+    };
+
     if (updateProfile) {
       await updateProfile(updatedData);
     }
